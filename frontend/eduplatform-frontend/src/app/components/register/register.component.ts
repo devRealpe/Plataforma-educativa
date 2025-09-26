@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
@@ -16,7 +17,10 @@ export class RegisterComponent {
   confirmPassword: string = '';
   role: string = 'student';
 
-  constructor(private authService: AuthService) {}
+  constructor(private authService: AuthService, private router: Router) {}
+  goToLogin() {
+    this.router.navigate(['/login']);
+  }
 
   onSubmit() {
     if (this.password !== this.confirmPassword) {

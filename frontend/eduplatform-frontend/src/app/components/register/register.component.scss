@@ -1,84 +1,188 @@
-.register-container {
+/* Layout principal */
+.register-wrapper {
   display: flex;
+  height: 100vh;
+  background: linear-gradient(
+    135deg,
+    oklch(0.95 0.05 280) 0%,
+    oklch(0.98 0.02 120) 50%,
+    oklch(0.92 0.08 320) 100%
+  );
+  font-family: "Inter", Arial, sans-serif;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  background: linear-gradient(135deg, #10b981, #3b82f6);
-  font-family: Arial, sans-serif;
+  gap: 2rem;
+  padding: 1rem;
 }
 
+/* Panel izquierdo */
+.register-left {
+  flex: 1;
+  max-width: 450px;
+  color: #374151;
+}
+
+.brand {
+  margin-bottom: 2rem;
+}
+
+.brand-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.brand h1 {
+  font-size: 1.8rem;
+  margin: 0.5rem 0;
+}
+
+.brand p {
+  font-size: 1rem;
+  color: #6b7280;
+}
+
+.features {
+  margin-top: 2rem;
+}
+
+.feature {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.feature .icon {
+  font-size: 1.5rem;
+  margin-right: 0.8rem;
+}
+
+.feature h4 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.feature p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #6b7280;
+}
+
+/* Tarjeta derecha */
 .register-card {
   background: #fff;
   padding: 2rem;
   border-radius: 1rem;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
   width: 400px;
   text-align: center;
+}
 
-  h2 {
-    margin-bottom: 1.5rem;
-    color: #333;
-  }
+.tabs {
+  display: flex;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  margin-bottom: 1.5rem;
+  background: #f3f4f6;
+}
 
-  .form-group {
-    margin-bottom: 1rem;
-    text-align: left;
+.tabs button {
+  flex: 1;
+  padding: 0.8rem;
+  border: none;
+  background: none;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s;
+}
 
-    label {
-      display: block;
-      font-size: 0.9rem;
-      margin-bottom: 0.5rem;
-      color: #555;
-    }
+.tabs button.active {
+  background: #6366f1;
+  color: white;
+}
 
-    input,
-    select {
-      width: 100%;
-      padding: 0.7rem;
-      border: 1px solid #ccc;
-      border-radius: 0.5rem;
-      font-size: 1rem;
-      transition: border-color 0.3s;
+h2 {
+  margin: 0.5rem 0;
+  color: #111827;
+}
 
-      &:focus {
-        outline: none;
-        border-color: #10b981;
-      }
-    }
-  }
+.subtitle {
+  font-size: 0.9rem;
+  color: #6b7280;
+  margin-bottom: 1.5rem;
+}
 
-  button {
-    width: 100%;
-    padding: 0.8rem;
-    background: #10b981;
-    color: white;
-    border: none;
-    border-radius: 0.5rem;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background 0.3s;
+/* Inputs */
+.form-group {
+  text-align: left;
+  margin-bottom: 1rem;
+}
 
-    &:hover:not(:disabled) {
-      background: #059669;
-    }
+label {
+  font-size: 0.9rem;
+  color: #374151;
+  margin-bottom: 0.3rem;
+  display: block;
+}
 
-    &:disabled {
-      background: #a7f3d0;
-      cursor: not-allowed;
-    }
-  }
+.input-wrapper {
+  display: flex;
+  align-items: center;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+  padding: 0.6rem;
+}
 
-  .login-link {
-    margin-top: 1rem;
-    font-size: 0.9rem;
+.input-wrapper .icon {
+  margin-right: 0.5rem;
+  color: #9ca3af;
+}
 
-    a {
-      color: #3b82f6;
-      text-decoration: none;
+input,
+select {
+  border: none;
+  outline: none;
+  flex: 1;
+  background: transparent;
+  font-size: 0.95rem;
+}
 
-      &:hover {
-        text-decoration: underline;
-      }
-    }
-  }
+/* Checkbox */
+.checkbox {
+  text-align: left;
+  margin: 1rem 0;
+  font-size: 0.85rem;
+  color: #374151;
+}
+
+.checkbox a {
+  color: #6366f1;
+  text-decoration: none;
+}
+
+.checkbox a:hover {
+  text-decoration: underline;
+}
+
+/* Botón */
+.btn-primary {
+  width: 100%;
+  padding: 0.9rem;
+  background: #6366f1;
+  color: white;
+  border: none;
+  border-radius: 0.7rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.btn-primary:hover {
+  background: #4f46e5;
+}
+
+.btn-primary:disabled {
+  background: #c7d2fe;
+  cursor: not-allowed;
 }
