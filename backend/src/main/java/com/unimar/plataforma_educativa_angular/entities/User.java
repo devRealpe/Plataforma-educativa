@@ -29,4 +29,8 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
+    public String getNombre() {
+        return nombre;
+    }
+
 }

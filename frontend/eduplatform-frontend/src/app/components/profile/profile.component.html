@@ -1,0 +1,69 @@
+<div class="profile-container">
+  <!-- Botón de Cerrar Sesión arriba a la derecha -->
+  <div class="logout-container">
+    <button mat-flat-button color="warn" class="logout-btn" (click)="logout()">
+      <mat-icon>logout</mat-icon>
+      Cerrar Sesión
+    </button>
+  </div>
+
+  <h2>Mi Perfil</h2>
+  <p class="subtitle">Gestiona tu información personal</p>
+
+  <!-- Card Información Personal -->
+  <mat-card class="profile-card">
+    <div class="profile-header">
+      <img
+        src="https://i.pravatar.cc/100"
+        alt="avatar"
+        class="profile-avatar"
+      />
+      <div class="profile-info">
+        <h3><span class="badge">Estudiante</span></h3>
+        <p><mat-icon>email</mat-icon> &#64;email.com</p>
+      </div>
+    </div>
+
+    <div class="profile-details">
+      <div class="detail">
+        <label>Nombre Completo</label>
+        <p></p>
+      </div>
+      <div class="detail">
+        <label>Correo Electrónico</label>
+        <p></p>
+      </div>
+      <div class="detail">
+        <label>Rol</label>
+        <p>Estudiante</p>
+      </div>
+      <div class="detail full">
+        <label>Biografía</label>
+        <p></p>
+      </div>
+    </div>
+  </mat-card>
+
+  <!-- Card Progreso -->
+  <mat-card class="progress-card">
+    <div class="progress-stats">
+      <div class="stat">
+        <h3></h3>
+        <p>Nivel Actual</p>
+        <span></span>
+      </div>
+      <div class="stat">
+        <h3></h3>
+        <p>Cursos Completados</p>
+      </div>
+      <div class="stat">
+        <h3></h3>
+        <p>Retos Ganados</p>
+      </div>
+      <div class="stat">
+        <h3></h3>
+        <p>Días de Estudio</p>
+      </div>
+    </div>
+  </mat-card>
+</div>
