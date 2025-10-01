@@ -1,0 +1,265 @@
+<div class="app-container">
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <div class="logo">
+        <div class="logo-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+            <path d="M12 2L2 7V17L12 22L22 17V7L12 2Z" fill="white" />
+            <circle cx="12" cy="12" r="3" fill="#2563eb" />
+          </svg>
+        </div>
+        <h1>Mariana Learning</h1>
+      </div>
+      <div class="header-actions">
+        <button class="profile-btn">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+          >
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+          Mi Perfil
+        </button>
+        <button class="teacher-btn">Panel de Profesor</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+      <div *ngFor="let stat of stats" class="stat-card">
+        <div class="stat-info">
+          <p class="stat-title">{{ stat.title }}</p>
+          <h2 class="stat-value">{{ stat.value }}</h2>
+        </div>
+        <div class="stat-icon" [style.background-color]="stat.bgColor">
+          <span [innerHTML]="stat.icon"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Courses Section -->
+    <div class="courses-section">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Mis Cursos</h2>
+          <p class="section-subtitle">
+            Gestiona tus cursos y contenido educativo
+          </p>
+        </div>
+        <button class="create-course-btn">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+          Crear Nuevo Curso
+        </button>
+      </div>
+
+      <!-- Course Card -->
+      <div *ngFor="let course of courses" class="course-card">
+        <div class="course-header">
+          <div class="course-progress"></div>
+          <div class="course-main-info">
+            <div class="course-title-row">
+              <h3 class="course-title">{{ course.title }}</h3>
+              <span
+                class="course-status"
+                [style.background-color]="course.statusColor"
+              >
+                {{ course.status }}
+              </span>
+            </div>
+            <p class="course-description">{{ course.description }}</p>
+
+            <div class="course-stats">
+              <div class="course-stat">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#2563eb"
+                  stroke-width="2"
+                >
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                  <circle cx="9" cy="7" r="4" />
+                  <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                </svg>
+                <span>{{ course.students }} estudiantes</span>
+              </div>
+              <div class="course-stat">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#10b981"
+                  stroke-width="2"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <path d="M12 6v6l4 2" />
+                </svg>
+                <span>{{ course.exercises }} ejercicios</span>
+              </div>
+              <div class="course-stat">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="#f59e0b"
+                  stroke-width="2"
+                >
+                  <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+                  <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+                  <path d="M4 22h16" />
+                  <path
+                    d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"
+                  />
+                  <path
+                    d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"
+                  />
+                  <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+                </svg>
+                <span>{{ course.challenges }} retos</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Invite Link -->
+        <div class="invite-section">
+          <p class="invite-label">Link de Invitación</p>
+          <div class="invite-link-box">
+            <code class="invite-link">{{ course.inviteLink }}</code>
+            <button
+              class="copy-btn"
+              (click)="copyToClipboard(course.inviteLink)"
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                <path
+                  d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+          <button class="action-btn primary">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+            Agregar Ejercicio
+          </button>
+          <button class="action-btn secondary">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+              <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+              <path d="M4 22h16" />
+              <path
+                d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"
+              />
+              <path
+                d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"
+              />
+              <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+            </svg>
+            Agregar Reto
+          </button>
+        </div>
+
+        <!-- Exercises List -->
+        <div class="content-section">
+          <h4 class="content-title">Ejercicios</h4>
+          <div
+            *ngFor="let exercise of course.exercisesList"
+            class="content-item"
+          >
+            <div class="content-item-info">
+              <span class="level-badge level-1">{{ exercise.level }}</span>
+              <span class="content-item-title">{{ exercise.title }}</span>
+            </div>
+            <span class="xp-badge">+{{ exercise.xp }} XP</span>
+          </div>
+        </div>
+
+        <!-- Challenges List -->
+        <div class="content-section">
+          <h4 class="content-title">Retos</h4>
+          <div
+            *ngFor="let challenge of course.challengesList"
+            class="content-item"
+          >
+            <div class="content-item-info">
+              <span class="level-badge difficulty">{{
+                challenge.difficulty
+              }}</span>
+              <span class="content-item-title">{{ challenge.title }}</span>
+            </div>
+            <span class="points-badge">
+              <svg
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="currentColor"
+              >
+                <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+                <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+                <path d="M4 22h16" />
+                <path
+                  d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"
+                />
+                <path
+                  d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"
+                />
+                <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+              </svg>
+              {{ challenge.points }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

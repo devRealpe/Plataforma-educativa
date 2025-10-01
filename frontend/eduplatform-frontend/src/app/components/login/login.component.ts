@@ -65,9 +65,22 @@ export class LoginComponent {
           panelClass: ['snackbar-success'],
         });
 
-        // Redirigir a perfil
-        this.router.navigate(['/profile']);
+        // Redirigir según rol
+        console.log('ROLE BACKEND:', response.role);
+
+        switch (response.role.toUpperCase()) {
+          case 'TEACHER':
+            this.router.navigate(['/teacher-dashboard']);
+            break;
+          case 'STUDENT':
+            this.router.navigate(['/student-dashboard']);
+            break;
+          default:
+            this.router.navigate(['/login']); // fallback
+            break;
+        }
       },
+
       error: (err) => {
         console.error(err);
         this.snackBar.open('❌ Credenciales incorrectas', 'Cerrar', {

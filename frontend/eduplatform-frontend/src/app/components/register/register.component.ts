@@ -61,7 +61,6 @@ export class RegisterComponent {
 
   onPrivacyAccepted() {
     this.isPrivacyOpen = false;
-    this.termsAccepted = false; // Marca el checkbox automáticamente
   }
 
   // --- Modal de Términos ---
