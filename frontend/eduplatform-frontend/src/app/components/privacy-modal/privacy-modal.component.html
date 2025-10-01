@@ -1,0 +1,104 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="closeModal()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <!-- Header -->
+    <div class="modal-header">
+      <div class="header-content">
+        <div class="icon-wrapper">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          </svg>
+        </div>
+        <h2>Política de Privacidad</h2>
+      </div>
+      <button class="close-button" (click)="closeModal()">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Content -->
+    <div class="modal-content">
+      <div class="section-card">
+        <h3 class="section-title">1. Información que Recopilamos</h3>
+        <p class="section-text">
+          Podemos recopilar información personal como tu nombre, correo
+          electrónico y datos relacionados con tu progreso académico. Esta
+          información es necesaria para garantizar una experiencia educativa
+          personalizada y eficiente.
+        </p>
+      </div>
+
+      <div class="section-card">
+        <h3 class="section-title">2. Uso de la Información</h3>
+        <p class="section-text">
+          Utilizamos tus datos para gestionar tu cuenta, personalizar tu
+          experiencia de aprendizaje, enviar notificaciones relevantes y mejorar
+          continuamente la plataforma.
+        </p>
+      </div>
+
+      <div class="section-card">
+        <h3 class="section-title">3. Protección de Datos</h3>
+        <p class="section-text">
+          Aplicamos medidas de seguridad como cifrado, controles de acceso y
+          prácticas recomendadas de la industria para proteger tu información
+          contra accesos no autorizados, pérdida o divulgación indebida.
+        </p>
+      </div>
+
+      <div class="section-card">
+        <h3 class="section-title">4. Compartir Información</h3>
+        <p class="section-text">
+          No vendemos ni comercializamos tu información personal. Solo
+          compartimos datos con proveedores de servicios que nos ayudan a operar
+          la plataforma, siempre bajo estrictos acuerdos de confidencialidad.
+        </p>
+      </div>
+
+      <div class="section-card">
+        <h3 class="section-title">5. Derechos del Usuario</h3>
+        <p class="section-text">
+          Tienes derecho a acceder, actualizar o solicitar la eliminación de tus
+          datos personales. También puedes limitar su uso o solicitar más
+          información sobre cómo se manejan tus datos.
+        </p>
+      </div>
+
+      <div class="section-card">
+        <h3 class="section-title">6. Modificaciones</h3>
+        <p class="section-text">
+          Esta política puede actualizarse en el futuro para adaptarse a cambios
+          legales o mejoras en la plataforma. Te notificaremos oportunamente en
+          caso de cambios importantes.
+        </p>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="modal-footer">
+      <button class="btn-accept" (click)="acceptPrivacy()">Entendido</button>
+    </div>
+  </div>
+</div>

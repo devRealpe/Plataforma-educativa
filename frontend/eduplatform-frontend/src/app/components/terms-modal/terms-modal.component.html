@@ -1,0 +1,102 @@
+<div class="modal-overlay" *ngIf="isOpen" (click)="closeModal()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <!-- Header -->
+    <div class="modal-header">
+      <div class="header-content">
+        <div class="icon-wrapper">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M19 21H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h6l2 2h6a2 2 0 0 1 2 2z"
+            />
+          </svg>
+        </div>
+        <h2>Términos de Servicio</h2>
+      </div>
+      <button class="close-button" (click)="closeModal()">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Content -->
+    <div class="modal-content">
+      <!-- Section 1 -->
+      <div class="section-card">
+        <h3 class="section-title">1. Uso de la Plataforma</h3>
+        <p class="section-text">
+          Este servicio está diseñado con fines <strong>educativos</strong>.
+          Aunque usamos una interfaz inspirada en videojuegos, la aplicación no
+          es un juego, sino un entorno de aprendizaje. No está permitido
+          utilizar la plataforma para actividades fraudulentas o ilícitas.
+        </p>
+      </div>
+
+      <!-- Section 2 -->
+      <div class="section-card">
+        <h3 class="section-title">2. Responsabilidades del Usuario</h3>
+        <p class="section-text">
+          Como usuario, eres responsable de mantener la seguridad de tu cuenta,
+          incluyendo tu nombre de usuario y contraseña. Todas las acciones
+          realizadas bajo tu cuenta se considerarán de tu responsabilidad.
+        </p>
+      </div>
+
+      <!-- Section 3 -->
+      <div class="section-card">
+        <h3 class="section-title">3. Contenido Educativo</h3>
+        <p class="section-text">
+          El material disponible en la plataforma tiene como único propósito
+          apoyar el aprendizaje académico. Está prohibido reproducir, distribuir
+          o utilizar este contenido con fines comerciales o fuera del marco
+          educativo.
+        </p>
+      </div>
+
+      <!-- Section 4 -->
+      <div class="section-card">
+        <h3 class="section-title">4. Modificaciones y Actualizaciones</h3>
+        <p class="section-text">
+          Nos reservamos el derecho de actualizar y mejorar la plataforma, así
+          como de modificar estos términos cuando sea necesario. Cualquier
+          cambio será notificado oportunamente a los usuarios.
+        </p>
+      </div>
+
+      <!-- Section 5 -->
+      <div class="section-card">
+        <h3 class="section-title">5. Aceptación</h3>
+        <p class="section-text">
+          Al registrarte y usar la plataforma, confirmas que has leído,
+          comprendido y aceptas cumplir con estos Términos de Servicio.
+        </p>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="modal-footer">
+      <button class="btn-accept" (click)="acceptTerms()">Aceptar</button>
+    </div>
+  </div>
+</div>

@@ -1,138 +1,317 @@
-<div class="register-wrapper">
-  <!-- Panel izquierdo -->
-  <div class="register-left">
-    <div class="brand">
-      <div class="brand-icon">🎓</div>
-      <h1>Mariana Learning</h1>
-      <p>
-        Plataforma educativa que conecta estudiantes y profesores en un ambiente
-        de aprendizaje colaborativo
+<!-- register.component.html -->
+<div class="register-container">
+  <div class="register-content">
+    <!-- Logo y título -->
+    <div class="brand-header">
+      <div class="brand-logo">
+        <div class="logo-circle">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="32"
+            height="32"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <!-- Control de videojuego 🎮 -->
+            <rect x="2" y="6" width="20" height="12" rx="6" ry="6" />
+            <path d="M6 12h4" />
+            <path d="M8 10v4" />
+            <circle cx="16" cy="10" r="1" />
+            <circle cx="16" cy="14" r="1" />
+          </svg>
+        </div>
+        <h1 class="brand-title">Mariana Learning</h1>
+      </div>
+    </div>
+
+    <!-- Card de registro -->
+    <div class="register-card">
+      <div class="card-header">
+        <h2>¡Comienza tu aventura!</h2>
+        <p class="subtitle">Crea tu cuenta y empieza a aprender</p>
+      </div>
+
+      <form (ngSubmit)="onSubmit()" #registerForm="ngForm">
+        <!-- Nombre Completo -->
+        <div class="form-group">
+          <label for="name">Nombre Completo</label>
+          <div class="input-wrapper">
+            <svg
+              class="input-icon"
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+            <input
+              type="text"
+              id="name"
+              name="name"
+              [(ngModel)]="name"
+              required
+              placeholder="Tu nombre"
+            />
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+          <label for="email">Correo Electrónico</label>
+          <div class="input-wrapper">
+            <svg
+              class="input-icon"
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect width="20" height="16" x="2" y="4" rx="2" />
+              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+            </svg>
+
+            <input
+              type="email"
+              id="email"
+              name="email"
+              [(ngModel)]="email"
+              #emailControl="ngModel"
+              required
+              email
+              placeholder="tu@email.com"
+            />
+          </div>
+
+          <!-- Mensaje de error dinámico -->
+          <small
+            class="error-text"
+            *ngIf="
+              emailControl.invalid &&
+              (emailControl.dirty || emailControl.touched)
+            "
+          >
+            <span *ngIf="emailControl.errors?.['required']"
+              >El correo es requerido</span
+            >
+            <span *ngIf="emailControl.errors?.['email']"
+              >Ingresa un correo válido (ejemplo:
+              nombre&#64;umariana.edu.co)</span
+            >
+          </small>
+        </div>
+
+        <!-- Rol -->
+        <div class="form-group">
+          <label>Rol</label>
+          <div class="role-selector">
+            <!-- Estudiante -->
+            <button
+              type="button"
+              class="role-button student-role"
+              [class.active]="role === 'student'"
+              (click)="selectRole('student')"
+            >
+              <svg
+                class="role-icon"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                <path d="M6 12v5c3 3 9 3 12 0v-5" />
+              </svg>
+              <span>Estudiante</span>
+            </button>
+
+            <!-- Profesor -->
+            <button
+              type="button"
+              class="role-button teacher-role"
+              [class.active]="role === 'teacher'"
+              (click)="selectRole('teacher')"
+            >
+              <svg
+                class="role-icon"
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"
+                />
+              </svg>
+              <span>Profesor</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Contraseña -->
+        <div class="form-group">
+          <label for="password">Contraseña</label>
+          <div class="input-wrapper">
+            <svg
+              class="input-icon"
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              [(ngModel)]="password"
+              required
+              placeholder="········"
+            />
+          </div>
+        </div>
+
+        <!-- Confirmar Contraseña -->
+        <div class="form-group">
+          <label for="confirmPassword">Confirmar Contraseña</label>
+          <div class="input-wrapper">
+            <svg
+              class="input-icon"
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+            <input
+              type="password"
+              id="confirmPassword"
+              name="confirmPassword"
+              [(ngModel)]="confirmPassword"
+              required
+              placeholder="········"
+            />
+          </div>
+        </div>
+
+        <!-- Aceptar términos y condiciones -->
+        <div class="form-group terms-checkbox">
+          <label>
+            <input
+              type="checkbox"
+              name="termsAccepted"
+              [(ngModel)]="termsAccepted"
+              #termsAcceptedControl="ngModel"
+              required
+            />
+            <span>
+              He leído y acepto los
+              <a href="#" (click)="openTermsModal($event)"
+                >términos de servicio</a
+              >
+              y la
+              <a href="#" (click)="openPrivacyModal($event)"
+                >política de privacidad</a
+              >
+            </span>
+          </label>
+
+          <!-- Mensaje de error si no marca la casilla -->
+          <small
+            class="error-text"
+            *ngIf="termsAcceptedControl.invalid && registerForm.submitted"
+          >
+            Debes aceptar los términos y condiciones para continuar.
+          </small>
+        </div>
+
+        <!-- Botón de registro -->
+        <button
+          type="submit"
+          [disabled]="!registerForm.valid || !role"
+          class="btn-primary"
+        >
+          <svg
+            class="btn-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z" />
+          </svg>
+          Crear Cuenta
+        </button>
+      </form>
+
+      <!-- Link de login -->
+      <p class="login-link">
+        ¿Ya tienes cuenta?
+        <a (click)="goToLogin()">Inicia sesión</a>
       </p>
     </div>
 
-    <div class="features">
-      <div class="feature">
-        <span class="icon">📘</span>
-        <div>
-          <h4>Cursos Interactivos</h4>
-          <p>Aprende de manera diferente</p>
-        </div>
-      </div>
-      <div class="feature">
-        <span class="icon">👥</span>
-        <div>
-          <h4>Comunidad Activa</h4>
-          <p>Conecta con otros estudiantes</p>
-        </div>
-      </div>
-    </div>
-  </div>
+    <app-privacy-modal
+      [isOpen]="isPrivacyOpen"
+      (closed)="onPrivacyClosed()"
+      (accepted)="onPrivacyAccepted()"
+    >
+    </app-privacy-modal>
 
-  <!-- Tarjeta derecha -->
-  <div class="register-card">
-    <!-- Tabs -->
-    <div class="tabs">
-      <button type="button" (click)="goToLogin()">Iniciar Sesión</button>
-      <button class="active">Registrarse</button>
-    </div>
+    <app-terms-modal
+      [isOpen]="isTermsOpen"
+      (closed)="onTermsClosed()"
+      (accepted)="onTermsAccepted()"
+    >
+    </app-terms-modal>
 
-    <h2>Únete a Mariana Learning</h2>
-    <p class="subtitle">Crea tu cuenta y comienza a aprender</p>
-
-    <form (ngSubmit)="onSubmit()" #registerForm="ngForm">
-      <!-- Nombre -->
-      <div class="form-group">
-        <label for="name">Nombre Completo</label>
-        <div class="input-wrapper">
-          <span class="icon">👤</span>
-          <input
-            type="text"
-            id="name"
-            name="name"
-            [(ngModel)]="name"
-            required
-            placeholder="Tu nombre completo"
-          />
-        </div>
-      </div>
-
-      <!-- Email -->
-      <div class="form-group">
-        <label for="email">Correo Electrónico</label>
-        <div class="input-wrapper">
-          <span class="icon">📧</span>
-          <input
-            type="email"
-            id="email"
-            name="email"
-            [(ngModel)]="email"
-            required
-            placeholder="tu@email.com"
-          />
-        </div>
-      </div>
-
-      <!-- Rol -->
-      <div class="form-group">
-        <label for="role">Rol</label>
-        <div class="input-wrapper">
-          <span class="icon">🎯</span>
-          <select id="role" name="role" [(ngModel)]="role" required>
-            <option value="" disabled selected>Selecciona tu rol</option>
-            <option value="student">Estudiante</option>
-            <option value="teacher">Profesor</option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Contraseña -->
-      <div class="form-group">
-        <label for="password">Contraseña</label>
-        <div class="input-wrapper">
-          <span class="icon">🔒</span>
-          <input
-            type="password"
-            id="password"
-            name="password"
-            [(ngModel)]="password"
-            required
-            placeholder="********"
-          />
-        </div>
-      </div>
-
-      <!-- Confirmar Contraseña -->
-      <div class="form-group">
-        <label for="confirmPassword">Confirmar Contraseña</label>
-        <div class="input-wrapper">
-          <span class="icon">🔒</span>
-          <input
-            type="password"
-            id="confirmPassword"
-            name="confirmPassword"
-            [(ngModel)]="confirmPassword"
-            required
-            placeholder="********"
-          />
-        </div>
-      </div>
-
-      <!-- Checkbox -->
-      <div class="checkbox">
-        <label>
-          <input type="checkbox" required />
-          Acepto los <a href="#">términos y condiciones</a>
-        </label>
-      </div>
-
-      <!-- Botón -->
-      <button
-        type="submit"
-        [disabled]="!registerForm.valid"
-        class="btn-primary"
-      >
-        Crear Cuenta
-      </button>
-    </form>
+    <!-- Footer -->
+    <p class="footer-text">
+      Al registrarte, aceptas nuestros términos y condiciones
+    </p>
   </div>
 </div>

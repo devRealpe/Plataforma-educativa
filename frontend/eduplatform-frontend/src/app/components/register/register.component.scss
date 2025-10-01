@@ -1,188 +1,357 @@
-/* Layout principal */
-.register-wrapper {
+/* register.component.scss */
+
+.register-container {
+  min-height: 100vh;
   display: flex;
-  height: 100vh;
-  background: linear-gradient(
-    135deg,
-    oklch(0.95 0.05 280) 0%,
-    oklch(0.98 0.02 120) 50%,
-    oklch(0.92 0.08 320) 100%
-  );
-  font-family: "Inter", Arial, sans-serif;
+  align-items: center;
   justify-content: center;
-  align-items: center;
-  gap: 2rem;
+  background: linear-gradient(135deg, #f1f5f9 0%, #dbeafe 50%, #e0e7ff 100%);
   padding: 1rem;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-/* Panel izquierdo */
-.register-left {
-  flex: 1;
-  max-width: 450px;
-  color: #374151;
+.register-content {
+  width: 100%;
+  max-width: 500px;
 }
 
-.brand {
-  margin-bottom: 2rem;
+/* Logo y header */
+.brand-header {
+  text-align: center;
+  margin-top: 1rem;
 }
 
-.brand-icon {
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
+.brand-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
 }
 
-.brand h1 {
-  font-size: 1.8rem;
-  margin: 0.5rem 0;
-}
-
-.brand p {
-  font-size: 1rem;
-  color: #6b7280;
-}
-
-.features {
-  margin-top: 2rem;
-}
-
-.feature {
+.logo-circle {
+  width: 56px;
+  height: 56px;
+  background: #2563eb;
+  border-radius: 50%;
   display: flex;
   align-items: center;
-  margin-bottom: 1rem;
-}
-
-.feature .icon {
-  font-size: 1.5rem;
-  margin-right: 0.8rem;
-}
-
-.feature h4 {
-  margin: 0;
-  font-size: 1rem;
-  font-weight: 600;
-}
-
-.feature p {
-  margin: 0;
-  font-size: 0.9rem;
-  color: #6b7280;
-}
-
-/* Tarjeta derecha */
-.register-card {
-  background: #fff;
-  padding: 2rem;
-  border-radius: 1rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-  width: 400px;
-  text-align: center;
-}
-
-.tabs {
-  display: flex;
-  border-radius: 0.5rem;
-  overflow: hidden;
-  margin-bottom: 1.5rem;
-  background: #f3f4f6;
-}
-
-.tabs button {
-  flex: 1;
-  padding: 0.8rem;
-  border: none;
-  background: none;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-.tabs button.active {
-  background: #6366f1;
+  justify-content: center;
   color: white;
 }
 
-h2 {
-  margin: 0.5rem 0;
-  color: #111827;
+.brand-title {
+  font-size: 1.875rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, #2563eb 0%, #10b981 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
 }
 
-.subtitle {
-  font-size: 0.9rem;
-  color: #6b7280;
+/* Card principal */
+.register-card {
+  background: white;
+  border-radius: 1rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  padding: 2rem;
+}
+
+.card-header {
+  text-align: center;
   margin-bottom: 1.5rem;
+
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 0.5rem 0;
+  }
+
+  .subtitle {
+    color: #6b7280;
+    font-size: 0.875rem;
+    margin: 0;
+  }
 }
 
-/* Inputs */
+/* Formulario */
 .form-group {
-  text-align: left;
   margin-bottom: 1rem;
 }
 
 label {
-  font-size: 0.9rem;
-  color: #374151;
-  margin-bottom: 0.3rem;
   display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #111827;
+  margin-bottom: 0.5rem;
 }
 
 .input-wrapper {
+  position: relative;
   display: flex;
   align-items: center;
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.5rem;
-  padding: 0.6rem;
 }
 
-.input-wrapper .icon {
-  margin-right: 0.5rem;
+.input-icon {
+  position: absolute;
+  left: 0.75rem;
   color: #9ca3af;
+  pointer-events: none;
 }
 
-input,
-select {
-  border: none;
+input {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.75rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 0.9375rem;
   outline: none;
-  flex: 1;
-  background: transparent;
-  font-size: 0.95rem;
+  transition: all 0.2s;
+
+  &::placeholder {
+    color: #9ca3af;
+  }
+
+  &:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  }
+
+  &.ng-invalid.ng-touched,
+  &.ng-invalid.ng-dirty {
+    border-color: #ef4444;
+  }
 }
 
-/* Checkbox */
-.checkbox {
-  text-align: left;
-  margin: 1rem 0;
-  font-size: 0.85rem;
-  color: #374151;
+/* Checkbox de términos */
+.terms-checkbox {
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+
+  label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    font-weight: 400;
+    font-size: 0.875rem;
+    color: #374151;
+    line-height: 1.5;
+    cursor: pointer;
+  }
+
+  input[type='checkbox'] {
+    width: 18px;
+    height: 18px;
+    min-width: 18px;
+    margin-top: 0.125rem;
+    padding: 0;
+    border: 2px solid #d1d5db;
+    border-radius: 0.25rem;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:checked {
+      background-color: #2563eb;
+      border-color: #2563eb;
+    }
+
+    &:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+  }
+
+  a {
+    color: #2563eb;
+    text-decoration: none;
+    font-weight: 600;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }
 
-.checkbox a {
-  color: #6366f1;
-  text-decoration: none;
+/* Mensaje de error */
+.error-text {
+  display: block;
+  color: #ef4444;
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+  margin-left: 0.25rem;
 }
 
-.checkbox a:hover {
-  text-decoration: underline;
+/* Selector de rol */
+.role-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
 }
 
-/* Botón */
+.role-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  border: 2px solid #e5e7eb;
+  border-radius: 0.75rem;
+  background: white;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &:hover {
+    border-color: #2563eb;
+    background: #eff6ff;
+  }
+
+  &.active {
+    border-color: #2563eb;
+    background: #eff6ff;
+
+    .role-icon {
+      color: #2563eb;
+    }
+
+    span {
+      color: #2563eb;
+      font-weight: 600;
+    }
+  }
+
+  .role-icon {
+    width: 32px;
+    height: 32px;
+    color: #6b7280;
+    transition: color 0.2s;
+  }
+
+  span {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: #374151;
+    transition: all 0.2s;
+  }
+}
+
+/* Botón principal */
 .btn-primary {
   width: 100%;
-  padding: 0.9rem;
-  background: #6366f1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1rem;
+  background: #2563eb;
   color: white;
   border: none;
-  border-radius: 0.7rem;
+  border-radius: 0.5rem;
   font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: background 0.2s;
+  margin-top: 1.5rem;
+
+  &:hover:not(:disabled) {
+    background: #1d4ed8;
+  }
+
+  &:disabled {
+    background: #93c5fd;
+    cursor: not-allowed;
+  }
+
+  .btn-icon {
+    width: 20px;
+    height: 20px;
+  }
 }
 
-.btn-primary:hover {
-  background: #4f46e5;
+/* Términos */
+.terms-text {
+  text-align: center;
+  font-size: 0.75rem;
+  color: #6b7280;
+  margin: 1rem 0 0.5rem 0;
+  line-height: 1.5;
+
+  a {
+    color: #2563eb;
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
 }
 
-.btn-primary:disabled {
-  background: #c7d2fe;
-  cursor: not-allowed;
+/* Link de login */
+.login-link {
+  text-align: center;
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin: 0.5rem 0 0 0;
+
+  a {
+    color: #2563eb;
+    font-weight: 600;
+    text-decoration: none;
+
+    &:hover {
+      color: #1d4ed8;
+    }
+  }
+}
+
+/* Footer */
+.footer-text {
+  text-align: center;
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-top: 1.5rem;
+}
+
+.terms-checkbox label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.terms-checkbox label span {
+  display: block;
+  line-height: 1.5;
+}
+
+
+/* Responsive */
+@media (max-width: 480px) {
+  .register-card {
+    padding: 1.5rem;
+  }
+
+  .brand-title {
+    font-size: 1.5rem;
+  }
+
+  .logo-circle {
+    width: 48px;
+    height: 48px;
+  }
+
+  .role-button {
+    padding: 0.875rem;
+
+    .role-icon {
+      width: 28px;
+      height: 28px;
+    }
+
+    span {
+      font-size: 0.875rem;
+    }
+  }
 }

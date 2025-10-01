@@ -1,0 +1,186 @@
+<!-- landing.component.html -->
+<div class="landing-container">
+  <!-- Header/Navbar -->
+  <header class="navbar">
+    <div class="navbar-content">
+      <!-- Logo -->
+      <div class="brand">
+        <div class="brand-icon">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="32"
+            height="32"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <!-- Control de videojuego 🎮 -->
+            <rect x="2" y="6" width="20" height="12" rx="6" ry="6" />
+            <path d="M6 12h4" />
+            <path d="M8 10v4" />
+            <circle cx="16" cy="10" r="1" />
+            <circle cx="16" cy="14" r="1" />
+          </svg>
+        </div>
+        <span class="brand-name">Mariana Learning</span>
+      </div>
+
+      <!-- Navigation -->
+      <nav class="nav-links">
+        <a (click)="goToLogin()" class="nav-link">Iniciar Sesión</a>
+        <button (click)="goToRegister()" class="btn-register">
+          Registrarse
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-content">
+      <!-- Badge -->
+      <div class="badge">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path
+            d="M12 2v6.5m0 0 4-4m-4 4-4-4M12 22v-6.5m0 0 4 4m-4-4-4 4m10-10h-6.5m0 0 4-4m-4 4 4 4M2 12h6.5m0 0-4-4m4 4-4 4"
+          />
+        </svg>
+        <span>Aprende de forma diferente</span>
+      </div>
+
+      <!-- Título principal -->
+      <h1 class="hero-title">
+        Educación que se siente<br />como un
+        <span class="gradient-text">videojuego</span>
+      </h1>
+
+      <!-- Descripción -->
+      <p class="hero-description">
+        Transforma el aprendizaje en una aventura épica. Completa retos,<br />
+        gana monedas y domina nuevas habilidades.
+      </p>
+
+      <!-- Botones de acción -->
+      <div class="hero-actions">
+        <button (click)="goToRegister()" class="btn-primary">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z" />
+          </svg>
+          Comenzar Aventura
+        </button>
+        <button (click)="goToLogin()" class="btn-secondary">
+          Ya tengo cuenta
+        </button>
+      </div>
+    </div>
+
+    <!-- Features Cards -->
+    <div class="features-grid">
+      <!-- Card 1: Aprende Jugando -->
+      <div class="feature-card">
+        <div class="feature-icon blue">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="32"
+            height="32"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="6" r="3" />
+            <rect x="6" y="12" width="12" height="8" rx="2" />
+            <line x1="12" y1="9" x2="12" y2="12" />
+          </svg>
+        </div>
+        <h3 class="feature-title">Educación con estilo gamer</h3>
+        <p class="feature-description">
+          Lecciones presentadas como misiones y retos dinámicos
+        </p>
+      </div>
+
+      <!-- Card 2: Sistema de Logros -->
+      <div class="feature-card">
+        <div class="feature-icon green">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="32"
+            height="32"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+            <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+            <path d="M4 22h16" />
+            <path
+              d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"
+            />
+            <path
+              d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"
+            />
+            <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+          </svg>
+        </div>
+        <h3 class="feature-title">Sistema de Logros</h3>
+        <p class="feature-description">
+          Gana insignias y monedas mientras progresas en tu aprendizaje
+        </p>
+      </div>
+
+      <!-- Card 3: Progreso Visual -->
+      <div class="feature-card">
+        <div class="feature-icon yellow">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="32"
+            height="32"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M12 2v6.5m0 0 4-4m-4 4-4-4M12 22v-6.5m0 0 4 4m-4-4-4 4m10-10h-6.5m0 0 4-4m-4 4 4 4M2 12h6.5m0 0-4-4m4 4-4 4"
+            />
+          </svg>
+        </div>
+        <h3 class="feature-title">Progreso Visual</h3>
+        <p class="feature-description">
+          Observa tu evolución con estadísticas y niveles que impulsan tu
+          aprendizaje
+        </p>
+      </div>
+    </div>
+  </section>
+</div>
