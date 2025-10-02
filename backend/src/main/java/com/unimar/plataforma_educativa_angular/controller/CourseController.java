@@ -1,5 +1,6 @@
 package com.unimar.plataforma_educativa_angular.controller;
 
+import com.unimar.plataforma_educativa_angular.dto.CourseDTO;
 import com.unimar.plataforma_educativa_angular.entities.Course;
 import com.unimar.plataforma_educativa_angular.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.security.core.Authentication;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/courses")
@@ -26,30 +28,43 @@ public class CourseController {
         this.userRepository = userRepository;
     }
 
+    // Para profesores - Obtener sus cursos
     @GetMapping
-    public ResponseEntity<List<Course>> getMyCourses(Authentication auth) {
+    public ResponseEntity<List<CourseDTO>> getMyCourses(Authentication auth) {
         String teacherEmail = auth.getName();
         List<Course> courses = courseService.getCoursesByTeacher(teacherEmail);
-        return ResponseEntity.ok(courses);
+
+        // Convertir a DTOs
+        List<CourseDTO> courseDTOs = courses.stream()
+                .map(CourseDTO::new)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(courseDTOs);
     }
 
-    // ✅ NUEVO: Endpoint para estudiantes - Obtener cursos inscritos
+    // Para estudiantes - Obtener cursos inscritos
     @GetMapping("/enrolled")
-    public ResponseEntity<List<Course>> getEnrolledCourses(Authentication auth) {
+    public ResponseEntity<List<CourseDTO>> getEnrolledCourses(Authentication auth) {
         String studentEmail = auth.getName();
         List<Course> courses = courseService.getEnrolledCourses(studentEmail);
-        return ResponseEntity.ok(courses);
+
+        // Convertir a DTOs
+        List<CourseDTO> courseDTOs = courses.stream()
+                .map(CourseDTO::new)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(courseDTOs);
     }
 
     @PostMapping
-    public ResponseEntity<Course> createCourse(@RequestBody Course course, Authentication auth) {
+    public ResponseEntity<CourseDTO> createCourse(@RequestBody Course course, Authentication auth) {
         User teacher = userRepository.findByEmail(auth.getName())
                 .orElseThrow(() -> new RuntimeException("Profesor no encontrado"));
 
         course.setTeacher(teacher);
         Course createdCourse = courseService.createCourse(course);
 
-        return ResponseEntity.ok(createdCourse);
+        return ResponseEntity.ok(new CourseDTO(createdCourse));
     }
 
     @PutMapping("/{id}")
@@ -59,7 +74,7 @@ public class CourseController {
             Authentication auth) {
         try {
             Course updatedCourse = courseService.updateCourse(id, course, auth.getName());
-            return ResponseEntity.ok(updatedCourse);
+            return ResponseEntity.ok(new CourseDTO(updatedCourse));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
@@ -82,9 +97,13 @@ public class CourseController {
         try {
             String inviteCode = request.get("inviteCode");
             Course course = courseService.joinCourse(inviteCode, auth.getName());
+
+            // Convertir a DTO para evitar problemas de serialización
+            CourseDTO courseDTO = new CourseDTO(course);
+
             return ResponseEntity.ok(Map.of(
                     "message", "Te has unido al curso exitosamente",
-                    "course", course));
+                    "course", courseDTO));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }

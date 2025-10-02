@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { CourseService, Course } from '../../services/course.service';
+import { CourseService, Course, JoinCourseResponse } from '../../services/course.service';
 import { AuthService } from '../../services/auth.service';
 import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-modal.component';
 
@@ -116,12 +116,58 @@ export class StudentDashboardComponent implements OnInit {
     this.isJoining = true;
 
     this.courseService.joinCourseByCode(code).subscribe({
-      next: (course) => {
-        console.log('✅ Unido al curso:', course);
+      next: (response: JoinCourseResponse) => {
+        console.log('✅ Respuesta completa del servidor:', response);
         
-        // Agregar el curso a la lista local con datos iniciales
+        // Extraer el curso de la respuesta
+        const course = response.course;
+        
+        console.log('✅ Curso extraído:', course);
+        
+        // Validar que el curso tenga los datos necesarios
+        if (!course || !course.id || !course.title || !course.description) {
+          console.error('❌ Curso sin datos completos:', course);
+          console.warn('⚠️ Recargando lista de cursos...');
+          
+          // Si los datos no están completos, recargar la lista
+          this.loadEnrolledCourses();
+          this.inviteCode = '';
+          this.isJoining = false;
+          
+          this.snackBar.open(
+            '¡Te has unido al curso exitosamente!',
+            'Cerrar',
+            { 
+              duration: 5000,
+              panelClass: ['success-snackbar']
+            }
+          );
+          return;
+        }
+        
+        // Verificar si el curso ya existe en la lista (por si acaso)
+        const courseExists = this.enrolledCourses.some(c => c.id === course.id);
+        
+        if (courseExists) {
+          console.warn('⚠️ El curso ya existe en la lista');
+          this.inviteCode = '';
+          this.isJoining = false;
+          
+          this.snackBar.open(
+            'Ya estás inscrito en este curso',
+            'Cerrar',
+            { duration: 3000 }
+          );
+          return;
+        }
+        
+        // Agregar el curso a la lista local con datos iniciales de progreso
         const enrolledCourse: EnrolledCourse = {
-          ...course,
+          id: course.id,
+          title: course.title,
+          description: course.description,
+          level: course.level,
+          inviteCode: course.inviteCode,
           progress: 0,
           completedActivities: 0,
           totalActivities: 20,
@@ -130,7 +176,10 @@ export class StudentDashboardComponent implements OnInit {
           earnedXP: 0
         };
         
-        this.enrolledCourses.push(enrolledCourse);
+        console.log('✅ Curso formateado para agregar:', enrolledCourse);
+        
+        // Agregar al inicio de la lista para que sea visible inmediatamente
+        this.enrolledCourses.unshift(enrolledCourse);
         this.updateStats();
         
         // Limpiar el input
@@ -139,7 +188,7 @@ export class StudentDashboardComponent implements OnInit {
         
         // Mostrar notificación de éxito
         this.snackBar.open(
-          `¡Bienvenido al curso "${course.title}"! 🎉`,
+          `¡Bienvenido al curso "${course.title}"!`,
           'Cerrar',
           { 
             duration: 5000,
@@ -148,13 +197,26 @@ export class StudentDashboardComponent implements OnInit {
         );
       },
       error: (error) => {
-        console.error('❌ Error al unirse al curso:', error);
+        console.error('❌ Error completo:', error);
+        console.error('❌ Error status:', error.status);
+        console.error('❌ Error body:', error.error);
+        
         this.isJoining = false;
         
         let errorMessage = 'No se pudo unir al curso';
         
         if (error.status === 404) {
           errorMessage = 'Código inválido. Verifica con tu profesor';
+        } else if (error.status === 400) {
+          // Extraer mensaje de error del backend
+          const backendError = error.error?.error || error.error?.message;
+          if (backendError?.includes('Ya estás inscrito')) {
+            errorMessage = 'Ya estás inscrito en este curso';
+          } else if (backendError?.includes('Solo los estudiantes')) {
+            errorMessage = 'Solo los estudiantes pueden unirse a cursos';
+          } else if (backendError) {
+            errorMessage = backendError;
+          }
         } else if (error.status === 409) {
           errorMessage = 'Ya estás inscrito en este curso';
         }

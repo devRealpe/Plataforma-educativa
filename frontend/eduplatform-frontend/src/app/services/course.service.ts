@@ -8,6 +8,14 @@ export interface Course {
   description: string;
   level: string;
   inviteCode?: string;
+  teacherName?: string;
+  teacherEmail?: string;
+  studentCount?: number;
+}
+
+export interface JoinCourseResponse {
+  message: string;
+  course: Course;
 }
 
 @Injectable({
@@ -26,41 +34,35 @@ export class CourseService {
     return this.http.post<Course>(this.apiUrl, course);
   }
 
-  // ✅ Nuevo: Actualizar curso
   updateCourse(id: number, course: Course): Observable<Course> {
     return this.http.put<Course>(`${this.apiUrl}/${id}`, course);
   }
 
-  // ✅ Nuevo: Eliminar curso
   deleteCourse(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
 
-  joinCourse(inviteCode: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/join`, { inviteCode });
+  /**
+   * Une a un estudiante a un curso usando el código de invitación
+   */
+  joinCourseByCode(inviteCode: string): Observable<JoinCourseResponse> {
+    return this.http.post<JoinCourseResponse>(
+      `${this.apiUrl}/join`,
+      { inviteCode }
+    );
   }
 
   /**
- * Une a un estudiante a un curso usando el código de invitación
- */
-joinCourseByCode(inviteCode: string): Observable<Course> {
-  return this.http.post<Course>(
-    `${this.apiUrl}/join`,
-    { inviteCode }
-  );
-}
+   * Obtiene todos los cursos en los que el estudiante está inscrito
+   */
+  getEnrolledCourses(): Observable<Course[]> {
+    return this.http.get<Course[]>(`${this.apiUrl}/enrolled`);
+  }
 
-/**
- * Obtiene todos los cursos en los que el estudiante está inscrito
- */
-getEnrolledCourses(): Observable<Course[]> {
-  return this.http.get<Course[]>(`${this.apiUrl}/enrolled`);
-}
-
-/**
- * Obtiene el progreso del estudiante en un curso específico
- */
-getCourseProgress(courseId: string): Observable<any> {
-  return this.http.get(`${this.apiUrl}/${courseId}/progress`);
-}
+  /**
+   * Obtiene el progreso del estudiante en un curso específico
+   */
+  getCourseProgress(courseId: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/${courseId}/progress`);
+  }
 }
