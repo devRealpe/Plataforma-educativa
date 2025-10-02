@@ -27,7 +27,7 @@ public class AuthController {
 
         System.out.println("✅ Usuario autenticado: " + user.getEmail());
 
-        String token = jwtUtil.generateToken(user.getEmail());
+        String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
         System.out.println("✅ Token generado correctamente");
 
         Map<String, String> response = new HashMap<>();

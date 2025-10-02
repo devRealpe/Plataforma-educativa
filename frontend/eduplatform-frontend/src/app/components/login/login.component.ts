@@ -37,57 +37,63 @@ export class LoginComponent {
     this.router.navigate(['/register']);
   }
 
-  onSubmit() {
-    if (!this.email || !this.password) {
-      this.snackBar.open('❌ Por favor ingrese email y contraseña', 'Cerrar', {
-        duration: 3000,
-        panelClass: ['snackbar-error'],
-      });
-      return;
-    }
+onSubmit() {
+  if (!this.email || !this.password) {
+    this.snackBar.open('❌ Por favor ingrese email y contraseña', 'Cerrar', {
+      duration: 3000,
+      panelClass: ['snackbar-error'],
+    });
+    return;
+  }
 
-    this.authService.login(this.email, this.password).subscribe({
-      next: (response: LoginResponse) => {
-        if (!response.token) {
-          this.snackBar.open('❌ Error al recibir token', 'Cerrar', {
-            duration: 3000,
-            panelClass: ['snackbar-error'],
-          });
-          return;
-        }
-
-        // Guardar token
-        this.authService.saveToken(response.token);
-
-        // Mostrar mensaje
-        this.snackBar.open('✅ Login exitoso', 'Cerrar', {
-          duration: 3000,
-          panelClass: ['snackbar-success'],
-        });
-
-        // Redirigir según rol
-        console.log('ROLE BACKEND:', response.role);
-
-        switch (response.role.toUpperCase()) {
-          case 'TEACHER':
-            this.router.navigate(['/teacher-dashboard']);
-            break;
-          case 'STUDENT':
-            this.router.navigate(['/student-dashboard']);
-            break;
-          default:
-            this.router.navigate(['/login']); // fallback
-            break;
-        }
-      },
-
-      error: (err) => {
-        console.error(err);
-        this.snackBar.open('❌ Credenciales incorrectas', 'Cerrar', {
+  this.authService.login(this.email, this.password).subscribe({
+    next: (response: LoginResponse) => {
+      console.log('🎯 Respuesta del login:', response);
+      
+      if (!response.token) {
+        this.snackBar.open('❌ Error al recibir token', 'Cerrar', {
           duration: 3000,
           panelClass: ['snackbar-error'],
         });
-      },
-    });
-  }
+        return;
+      }
+
+      // Guardar token
+      this.authService.saveToken(response.token);
+      
+      // 🔍 LOGS DE VERIFICACIÓN
+      console.log('✅ Token guardado:', response.token);
+      console.log('🔑 Token desde localStorage:', localStorage.getItem('token'));
+      console.log('👤 Rol del usuario:', response.role);
+      console.log('📧 Email:', response.email);
+
+      // Mostrar mensaje
+      this.snackBar.open('✅ Login exitoso', 'Cerrar', {
+        duration: 3000,
+        panelClass: ['snackbar-success'],
+      });
+
+      // Redirigir según rol
+      switch (response.role.toUpperCase()) {
+        case 'TEACHER':
+          this.router.navigate(['/teacher-dashboard']);
+          break;
+        case 'STUDENT':
+          this.router.navigate(['/student-dashboard']);
+          break;
+        default:
+          this.router.navigate(['/login']);
+          break;
+      }
+    },
+
+    error: (err) => {
+      console.error('❌ Error en login:', err);
+      this.snackBar.open('❌ Credenciales incorrectas', 'Cerrar', {
+        duration: 3000,
+        panelClass: ['snackbar-error'],
+      });
+    },
+  });
+}
 }

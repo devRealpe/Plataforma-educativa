@@ -7,22 +7,27 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.stereotype.Component;
 
 @Component
 public class JwtUtil {
 
-    // ⚠️ Debe tener al menos 32 caracteres para HS256
     private static final String SECRET_KEY = "mi_super_clave_secreta_de_32_caracteres_segura123";
 
     private Key getSigningKey() {
         return new SecretKeySpec(SECRET_KEY.getBytes(), SignatureAlgorithm.HS256.getJcaName());
     }
 
-    // Generar token
-    public String generateToken(String email) {
+    // ✅ Generar token CON EL ROL
+    public String generateToken(String email, String role) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("role", role); // ← Agregar el rol al token
+
         return Jwts.builder()
+                .setClaims(claims)
                 .setSubject(email)
                 .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + 86400000)) // 1 día
@@ -30,7 +35,6 @@ public class JwtUtil {
                 .compact();
     }
 
-    // Extraer claims
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
@@ -39,18 +43,20 @@ public class JwtUtil {
                 .getBody();
     }
 
-    // Extraer email del token
     public String extractEmail(String token) {
         return extractAllClaims(token).getSubject();
     }
 
-    // Validar token
+    // ✅ Extraer el rol del token
+    public String extractRole(String token) {
+        return extractAllClaims(token).get("role", String.class);
+    }
+
     public boolean validateToken(String token, String email) {
         final String extractedEmail = extractEmail(token);
         return (extractedEmail.equals(email) && !isTokenExpired(token));
     }
 
-    // Verificar expiración
     private boolean isTokenExpired(String token) {
         return extractAllClaims(token).getExpiration().before(new Date());
     }

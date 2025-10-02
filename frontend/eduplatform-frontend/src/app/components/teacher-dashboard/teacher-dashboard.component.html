@@ -54,7 +54,7 @@
             Gestiona tus cursos y contenido educativo
           </p>
         </div>
-        <button class="create-course-btn">
+        <button class="create-course-btn" (click)="openModal()">
           <svg
             width="20"
             height="20"
@@ -70,6 +70,13 @@
         </button>
       </div>
 
+      <app-create-course-modal
+        *ngIf="showModal"
+        (closeModal)="closeModal()"
+        (courseCreated)="handleCourseCreated($event)"
+      >
+      </app-create-course-modal>
+
       <!-- Course Card -->
       <div *ngFor="let course of courses" class="course-card">
         <div class="course-header">
@@ -77,69 +84,10 @@
           <div class="course-main-info">
             <div class="course-title-row">
               <h3 class="course-title">{{ course.title }}</h3>
-              <span
-                class="course-status"
-                [style.background-color]="course.statusColor"
-              >
-                {{ course.status }}
-              </span>
+              <!-- Ya no mostramos status ni color porque no existen -->
+              <span class="course-level">Nivel: {{ course.level }}</span>
             </div>
             <p class="course-description">{{ course.description }}</p>
-
-            <div class="course-stats">
-              <div class="course-stat">
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="#2563eb"
-                  stroke-width="2"
-                >
-                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                  <circle cx="9" cy="7" r="4" />
-                  <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-                  <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-                </svg>
-                <span>{{ course.students }} estudiantes</span>
-              </div>
-              <div class="course-stat">
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="#10b981"
-                  stroke-width="2"
-                >
-                  <circle cx="12" cy="12" r="10" />
-                  <path d="M12 6v6l4 2" />
-                </svg>
-                <span>{{ course.exercises }} ejercicios</span>
-              </div>
-              <div class="course-stat">
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="#f59e0b"
-                  stroke-width="2"
-                >
-                  <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
-                  <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
-                  <path d="M4 22h16" />
-                  <path
-                    d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"
-                  />
-                  <path
-                    d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"
-                  />
-                  <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
-                </svg>
-                <span>{{ course.challenges }} retos</span>
-              </div>
-            </div>
           </div>
         </div>
 
@@ -150,7 +98,7 @@
             <code class="invite-link">{{ course.inviteLink }}</code>
             <button
               class="copy-btn"
-              (click)="copyToClipboard(course.inviteLink)"
+              (click)="copyToClipboard(course.inviteLink || '')"
             >
               <svg
                 width="18"
@@ -169,7 +117,7 @@
           </div>
         </div>
 
-        <!-- Action Buttons -->
+        <!-- Action Buttons (pueden quedarse aunque aún no haya lógica) -->
         <div class="action-buttons">
           <button class="action-btn primary">
             <svg
@@ -207,57 +155,6 @@
             </svg>
             Agregar Reto
           </button>
-        </div>
-
-        <!-- Exercises List -->
-        <div class="content-section">
-          <h4 class="content-title">Ejercicios</h4>
-          <div
-            *ngFor="let exercise of course.exercisesList"
-            class="content-item"
-          >
-            <div class="content-item-info">
-              <span class="level-badge level-1">{{ exercise.level }}</span>
-              <span class="content-item-title">{{ exercise.title }}</span>
-            </div>
-            <span class="xp-badge">+{{ exercise.xp }} XP</span>
-          </div>
-        </div>
-
-        <!-- Challenges List -->
-        <div class="content-section">
-          <h4 class="content-title">Retos</h4>
-          <div
-            *ngFor="let challenge of course.challengesList"
-            class="content-item"
-          >
-            <div class="content-item-info">
-              <span class="level-badge difficulty">{{
-                challenge.difficulty
-              }}</span>
-              <span class="content-item-title">{{ challenge.title }}</span>
-            </div>
-            <span class="points-badge">
-              <svg
-                width="14"
-                height="14"
-                viewBox="0 0 24 24"
-                fill="currentColor"
-              >
-                <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
-                <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
-                <path d="M4 22h16" />
-                <path
-                  d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"
-                />
-                <path
-                  d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"
-                />
-                <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
-              </svg>
-              {{ challenge.points }}
-            </span>
-          </div>
         </div>
       </div>
     </div>

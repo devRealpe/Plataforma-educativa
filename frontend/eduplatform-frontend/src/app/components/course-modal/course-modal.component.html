@@ -1,0 +1,109 @@
+<div class="modal-backdrop" (click)="onBackdropClick($event)" *ngIf="isOpen">
+  <div class="modal-container">
+    <!-- Header -->
+    <div class="modal-header">
+      <div>
+        <h2 class="modal-title">Crear Nuevo Curso</h2>
+        <p class="modal-subtitle">
+          Configura tu nuevo curso educativo estilo videojuego
+        </p>
+      </div>
+      <button class="close-btn" (click)="close()">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Form -->
+    <form (ngSubmit)="onSubmit()" class="modal-form">
+      <!-- Título del Curso -->
+      <div class="form-group">
+        <label class="form-label" for="title">Título del Curso</label>
+        <input
+          type="text"
+          id="title"
+          class="form-input"
+          [(ngModel)]="courseForm.title"
+          name="title"
+          placeholder="Ej: Matemáticas Avanzadas"
+          required
+        />
+      </div>
+
+      <!-- Descripción -->
+      <div class="form-group">
+        <label class="form-label" for="description">Descripción</label>
+        <textarea
+          id="description"
+          class="form-textarea"
+          [(ngModel)]="courseForm.description"
+          name="description"
+          placeholder="Describe el contenido del curso..."
+          rows="4"
+          required
+        ></textarea>
+        <div class="char-count">
+          {{ courseForm.description.length }} caracteres
+        </div>
+      </div>
+
+      <!-- Nivel -->
+      <div class="form-group">
+        <label class="form-label" for="level">Nivel</label>
+        <div class="select-wrapper">
+          <select
+            id="level"
+            class="form-select"
+            [(ngModel)]="courseForm.level"
+            name="level"
+          >
+            <option *ngFor="let level of levels" [value]="level.value">
+              {{ level.label }}
+            </option>
+          </select>
+          <svg
+            class="select-icon"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <polyline points="6 9 12 15 18 9" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <button
+        type="submit"
+        class="submit-btn"
+        [disabled]="!courseForm.title || !courseForm.description"
+      >
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <polygon
+            points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+          />
+        </svg>
+        Crear Curso
+      </button>
+    </form>
+  </div>
+</div>

@@ -1,3 +1,4 @@
+// auth.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
@@ -26,34 +27,37 @@ export class AuthService {
 
   constructor(private http: HttpClient) {}
 
-  // Login
   login(email: string, password: string): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { email, password });
   }
 
-    // 👉 Nuevo método para obtener perfil
   getProfile(): Observable<LoginResponse> {
     return this.http.get<LoginResponse>(`${this.apiUrl}/me`);
   }
 
-  // Guardar token
   saveToken(token: string): void {
-    localStorage.setItem('token', token);
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.setItem('token', token);
+    }
   }
 
   getToken(): string | null {
-    return localStorage.getItem('token');
+    if (typeof window !== 'undefined' && window.localStorage) {
+      return localStorage.getItem('token');
+    }
+    return null;
   }
 
   logout(): void {
-    localStorage.removeItem('token');
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.removeItem('token');
+    }
   }
 
   isLoggedIn(): boolean {
     return !!this.getToken();
   }
 
-  // Registro (opcional)
   register(userData: { nombre: string; email: string; password: string; role: string }): Observable<any> {
     return this.http.post(`${this.apiUrl}/register`, userData);
   }
