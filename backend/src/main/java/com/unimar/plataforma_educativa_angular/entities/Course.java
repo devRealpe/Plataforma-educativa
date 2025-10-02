@@ -1,9 +1,14 @@
 package com.unimar.plataforma_educativa_angular.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
+@Table(name = "courses")
 public class Course {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -11,13 +16,21 @@ public class Course {
     private String title;
     private String description;
     private String level;
-    private String inviteLink;
+
+    @Column(unique = true, nullable = false)
+    private String inviteCode;
 
     @ManyToOne
     @JoinColumn(name = "teacher_id")
+    @JsonIgnoreProperties({ "password", "courses" }) // ✅ Evita serialización circular
     private User teacher;
 
-    // getters y setters
+    @ManyToMany
+    @JoinTable(name = "course_students", joinColumns = @JoinColumn(name = "course_id"), inverseJoinColumns = @JoinColumn(name = "student_id"))
+    @JsonIgnoreProperties({ "password", "enrolledCourses" }) // ✅ Evita serialización circular
+    private Set<User> students = new HashSet<>(); // ✅ Inicializar para evitar NullPointerException
+
+    // Getters y Setters
     public Long getId() {
         return id;
     }
@@ -50,12 +63,12 @@ public class Course {
         this.level = level;
     }
 
-    public String getInviteLink() {
-        return inviteLink;
+    public String getInviteCode() {
+        return inviteCode;
     }
 
-    public void setInviteLink(String inviteLink) {
-        this.inviteLink = inviteLink;
+    public void setInviteCode(String inviteCode) {
+        this.inviteCode = inviteCode;
     }
 
     public User getTeacher() {
@@ -66,4 +79,11 @@ public class Course {
         this.teacher = teacher;
     }
 
+    public Set<User> getStudents() {
+        return students;
+    }
+
+    public void setStudents(Set<User> students) {
+        this.students = students;
+    }
 }

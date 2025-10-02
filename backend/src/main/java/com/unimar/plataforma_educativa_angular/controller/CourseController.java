@@ -10,6 +10,7 @@ import com.unimar.plataforma_educativa_angular.repositories.UserRepository;
 import org.springframework.security.core.Authentication;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/courses")
@@ -25,22 +26,67 @@ public class CourseController {
         this.userRepository = userRepository;
     }
 
-    // 🔹 Obtener todos los cursos
     @GetMapping
-    public ResponseEntity<List<Course>> getAllCourses() {
-        return ResponseEntity.ok(courseService.getAllCourses());
+    public ResponseEntity<List<Course>> getMyCourses(Authentication auth) {
+        String teacherEmail = auth.getName();
+        List<Course> courses = courseService.getCoursesByTeacher(teacherEmail);
+        return ResponseEntity.ok(courses);
     }
 
-    // 🔹 Crear curso nuevo
+    // ✅ NUEVO: Endpoint para estudiantes - Obtener cursos inscritos
+    @GetMapping("/enrolled")
+    public ResponseEntity<List<Course>> getEnrolledCourses(Authentication auth) {
+        String studentEmail = auth.getName();
+        List<Course> courses = courseService.getEnrolledCourses(studentEmail);
+        return ResponseEntity.ok(courses);
+    }
+
     @PostMapping
     public ResponseEntity<Course> createCourse(@RequestBody Course course, Authentication auth) {
-        // ✅ Buscar por EMAIL (que es lo que está en auth.getName())
         User teacher = userRepository.findByEmail(auth.getName())
                 .orElseThrow(() -> new RuntimeException("Profesor no encontrado"));
 
         course.setTeacher(teacher);
-        course.setInviteLink("http://localhost:4200/join/" + course.getTitle().replace(" ", "-"));
+        Course createdCourse = courseService.createCourse(course);
 
-        return ResponseEntity.ok(courseService.createCourse(course));
+        return ResponseEntity.ok(createdCourse);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateCourse(
+            @PathVariable Long id,
+            @RequestBody Course course,
+            Authentication auth) {
+        try {
+            Course updatedCourse = courseService.updateCourse(id, course, auth.getName());
+            return ResponseEntity.ok(updatedCourse);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteCourse(@PathVariable Long id, Authentication auth) {
+        try {
+            courseService.deleteCourse(id, auth.getName());
+            return ResponseEntity.ok(Map.of("message", "Curso eliminado exitosamente"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    @PostMapping("/join")
+    public ResponseEntity<?> joinCourse(
+            @RequestBody Map<String, String> request,
+            Authentication auth) {
+        try {
+            String inviteCode = request.get("inviteCode");
+            Course course = courseService.joinCourse(inviteCode, auth.getName());
+            return ResponseEntity.ok(Map.of(
+                    "message", "Te has unido al curso exitosamente",
+                    "course", course));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
     }
 }
