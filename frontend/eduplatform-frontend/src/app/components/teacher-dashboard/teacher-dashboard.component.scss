@@ -438,6 +438,29 @@ $transition: all 0.2s ease;
   white-space: nowrap;
 }
 
+.students-count {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: white;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+.course-meta-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 // ===========================
 // ACTION BUTTONS
 // ===========================

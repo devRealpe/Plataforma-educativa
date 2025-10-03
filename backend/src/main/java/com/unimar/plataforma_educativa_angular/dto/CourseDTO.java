@@ -12,11 +12,9 @@ public class CourseDTO {
     private String teacherEmail;
     private int studentCount;
 
-    // Constructor vacío
     public CourseDTO() {
     }
 
-    // Constructor que convierte Course a DTO
     public CourseDTO(Course course) {
         this.id = course.getId();
         this.title = course.getTitle();
@@ -29,12 +27,13 @@ public class CourseDTO {
             this.teacherEmail = course.getTeacher().getEmail();
         }
 
+        // ✅ Contar estudiantes en el curso
         if (course.getStudents() != null) {
             this.studentCount = course.getStudents().size();
         }
     }
 
-    // Getters y Setters
+    // Getters y Setters (asegúrate de tener todos)
     public Long getId() {
         return id;
     }

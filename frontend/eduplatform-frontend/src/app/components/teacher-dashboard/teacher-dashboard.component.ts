@@ -74,10 +74,23 @@ export class TeacherDashboardComponent implements OnInit {
    * Actualiza las estadísticas del dashboard
    */
   updateStats() {
+    // Total de cursos
     this.stats[0].value = this.courses.length.toString();
-    
-    // Aquí puedes agregar más lógica para actualizar otras estadísticas
-    // Por ejemplo, contar estudiantes totales, ejercicios, etc.
+
+    // ✅ Total de estudiantes únicos (suma de studentCount de cada curso)
+    const totalStudents = this.courses.reduce(
+      (sum, course) => sum + (course.studentCount || 0),
+      0
+    );
+    this.stats[1].value = totalStudents.toString();
+
+    // Ejercicios totales (simulado por ahora)
+    const totalExercises = 0;
+    this.stats[2].value = totalExercises.toString();
+
+    // Retos activos (simulado por ahora)
+    const totalChallenges = 0;
+    this.stats[3].value = totalChallenges.toString();
   }
 
   /**

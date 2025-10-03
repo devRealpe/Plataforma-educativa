@@ -131,6 +131,23 @@
               <h3 class="course-title">{{ course.title }}</h3>
               <div class="course-meta-actions">
                 <span class="course-level">Nivel: {{ course.level }}</span>
+                <!-- ✅ Mostrar número de estudiantes -->
+                <span class="students-count" title="Estudiantes inscritos">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                    <circle cx="9" cy="7" r="4" />
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                  </svg>
+                  {{ course.studentCount || 0 }}
+                </span>
                 <div class="course-actions-mini">
                   <button
                     class="mini-btn edit-btn"
