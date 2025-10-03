@@ -28,13 +28,11 @@ public class CourseService {
         return courseRepository.findByTeacher(teacher);
     }
 
-    // ✅ NUEVO: Obtener cursos en los que el estudiante está inscrito
     @Transactional
     public List<Course> getEnrolledCourses(String studentEmail) {
         User student = userRepository.findByEmail(studentEmail)
                 .orElseThrow(() -> new RuntimeException("Estudiante no encontrado"));
 
-        // Obtener todos los cursos donde el estudiante está en la lista de estudiantes
         return courseRepository.findAll().stream()
                 .filter(course -> course.getStudents().contains(student))
                 .collect(Collectors.toList());
@@ -103,13 +101,36 @@ public class CourseService {
             throw new RuntimeException("Solo los estudiantes pueden unirse a cursos");
         }
 
-        // ✅ Verificar si ya está inscrito
         if (course.getStudents().contains(student)) {
             throw new RuntimeException("Ya estás inscrito en este curso");
         }
 
         course.getStudents().add(student);
         return courseRepository.save(course);
+    }
+
+    // ✅ NUEVO: Método para que el estudiante abandone un curso
+    @Transactional
+    public void leaveCourse(Long courseId, String studentEmail) {
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new RuntimeException("Curso no encontrado"));
+
+        User student = userRepository.findByEmail(studentEmail)
+                .orElseThrow(() -> new RuntimeException("Estudiante no encontrado"));
+
+        // Verificar que el usuario sea estudiante
+        if (!student.getRole().name().equals("STUDENT")) {
+            throw new RuntimeException("Solo los estudiantes pueden abandonar cursos");
+        }
+
+        // Verificar que el estudiante esté inscrito en el curso
+        if (!course.getStudents().contains(student)) {
+            throw new RuntimeException("No estás inscrito en este curso");
+        }
+
+        // Remover al estudiante del curso
+        course.getStudents().remove(student);
+        courseRepository.save(course);
     }
 
     public Course getCourseById(Long id) {

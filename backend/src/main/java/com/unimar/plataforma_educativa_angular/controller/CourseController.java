@@ -34,7 +34,6 @@ public class CourseController {
         String teacherEmail = auth.getName();
         List<Course> courses = courseService.getCoursesByTeacher(teacherEmail);
 
-        // Convertir a DTOs
         List<CourseDTO> courseDTOs = courses.stream()
                 .map(CourseDTO::new)
                 .collect(Collectors.toList());
@@ -48,7 +47,6 @@ public class CourseController {
         String studentEmail = auth.getName();
         List<Course> courses = courseService.getEnrolledCourses(studentEmail);
 
-        // Convertir a DTOs
         List<CourseDTO> courseDTOs = courses.stream()
                 .map(CourseDTO::new)
                 .collect(Collectors.toList());
@@ -98,12 +96,25 @@ public class CourseController {
             String inviteCode = request.get("inviteCode");
             Course course = courseService.joinCourse(inviteCode, auth.getName());
 
-            // Convertir a DTO para evitar problemas de serialización
             CourseDTO courseDTO = new CourseDTO(course);
 
             return ResponseEntity.ok(Map.of(
                     "message", "Te has unido al curso exitosamente",
                     "course", courseDTO));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    // ✅ NUEVO: Endpoint para que el estudiante abandone un curso
+    @DeleteMapping("/{id}/leave")
+    public ResponseEntity<?> leaveCourse(
+            @PathVariable Long id,
+            Authentication auth) {
+        try {
+            courseService.leaveCourse(id, auth.getName());
+            return ResponseEntity.ok(Map.of(
+                    "message", "Has abandonado el curso exitosamente"));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }

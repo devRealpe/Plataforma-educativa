@@ -30,6 +30,8 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/auth/login", "/api/auth/register").permitAll()
+                        .requestMatchers("/api/courses/**").authenticated() // ✅ Permitir todas las rutas de courses
+                                                                            // para usuarios autenticados
                         .anyRequest().authenticated());
         return http.build();
     }

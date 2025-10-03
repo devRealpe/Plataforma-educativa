@@ -65,4 +65,11 @@ export class CourseService {
   getCourseProgress(courseId: string): Observable<any> {
     return this.http.get(`${this.apiUrl}/${courseId}/progress`);
   }
+
+  /**
+   * Permite al estudiante abandonar un curso
+   */
+  leaveCourse(courseId: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${courseId}/leave`);
+  }
 }

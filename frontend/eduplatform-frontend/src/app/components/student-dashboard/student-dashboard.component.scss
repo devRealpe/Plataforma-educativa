@@ -596,6 +596,75 @@ $transition: all 0.2s ease;
   }
 }
 
+.course-card {
+  position: relative;
+
+  .leave-course-btn {
+    position: absolute;
+    top: 21px;
+    right: 12px;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: none;
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 10;
+    padding: 0;
+    
+    &:hover {
+      background: #ef4444;
+      color: white;
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+
+    svg {
+      transition: transform 0.2s ease;
+    }
+
+    &:hover svg {
+      transform: rotate(90deg);
+    }
+  }
+
+  .course-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    padding-right: 40px; // ✅ Dar espacio al botón de cerrar
+    margin-bottom: 12px;
+
+    .course-title {
+      flex: 1;
+      margin: 0;
+    }
+
+    .course-badges {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+      align-items: center;
+    }
+  }
+}
+
+// Si necesitas ajustar el header completo
+.course-header {
+  position: relative;
+  padding: 20px;
+}
+
 // ===========================
 // SNACKBAR PERSONALIZADO
 // ===========================

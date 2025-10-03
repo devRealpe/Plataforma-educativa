@@ -32,6 +32,8 @@ export class StudentDashboardComponent implements OnInit {
 
   // Datos
   enrolledCourses: EnrolledCourse[] = [];
+  courseToLeave: Course | null = null;
+  showLeaveConfirmModal = false;
   
   stats = [
     { title: 'Cursos Activos', value: '0', icon: '📚', bgColor: '#3b82f6' },
@@ -266,6 +268,61 @@ export class StudentDashboardComponent implements OnInit {
     );
   }
 
+   /**
+   * Mostrar modal de confirmación para abandonar curso
+   */
+  leaveCourse(course: Course) {
+    this.courseToLeave = course;
+    this.showLeaveConfirmModal = true;
+  }
+
+  /**
+   * Confirmar abandono del curso
+   */
+  confirmLeaveCourse() {
+    if (!this.courseToLeave?.id) return;
+
+    const courseId = this.courseToLeave.id;
+    const courseTitle = this.courseToLeave.title;
+
+    this.showLeaveConfirmModal = false;
+
+    this.snackBar.open('⏳ Saliendo del curso...', '', { duration: 2000 });
+
+    this.courseService.leaveCourse(courseId).subscribe({
+      next: () => {
+        this.enrolledCourses = this.enrolledCourses.filter(c => c.id !== courseId);
+
+        this.snackBar.open(
+          `✅ Has abandonado el curso "${courseTitle}"`,
+          'Cerrar',
+          { duration: 3000, panelClass: ['success-snackbar'] }
+        );
+
+        this.courseToLeave = null;
+      },
+      error: (err) => {
+        console.error('❌ Error al salir del curso:', err);
+
+        this.snackBar.open(
+          '❌ Error al abandonar el curso. Intenta nuevamente.',
+          'Cerrar',
+          { duration: 3000, panelClass: ['error-snackbar'] }
+        );
+
+        this.courseToLeave = null;
+      }
+    });
+  }
+
+  /**
+   * Cancelar el abandono del curso
+   */
+  cancelLeaveCourse() {
+    this.showLeaveConfirmModal = false;
+    this.courseToLeave = null;
+  }
+
   /**
    * Muestra el modal de confirmación para cerrar sesión
    */
@@ -301,4 +358,11 @@ export class StudentDashboardComponent implements OnInit {
   goToProfile() {
     this.router.navigate(['/profile']);
   }
+
+  /**
+ * Mensaje dinámico para el modal de abandonar curso
+ */
+get leaveConfirmMessage(): string {
+  return `¿Estás seguro de que deseas abandonar el curso "${this.courseToLeave?.title || ''}"? Perderás todo tu progreso.`;
+}
 }

@@ -155,6 +155,25 @@
         class="course-card student-course"
       >
         <div class="course-header">
+          <!-- ✅ Botón de abandonar curso en la esquina superior derecha -->
+          <button
+            class="leave-course-btn"
+            (click)="leaveCourse(course)"
+            title="Abandonar curso"
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+
           <div
             class="course-progress"
             [style.background]="getProgressColor(course.progress)"
@@ -243,7 +262,7 @@
           </div>
         </div>
 
-        <!-- Action Buttons -->
+        <!-- Action Buttons - Solo 2 botones ahora -->
         <div class="action-buttons">
           <button class="action-btn primary" (click)="enterCourse(course)">
             <svg
@@ -289,5 +308,18 @@
   type="info"
   (confirm)="confirmLogout()"
   (cancel)="cancelLogout()"
+>
+</app-confirmation-modal>
+
+<!-- Modal Confirmación Abandonar Curso -->
+<app-confirmation-modal
+  *ngIf="showLeaveConfirmModal"
+  title="¿Abandonar curso?"
+  [message]="leaveConfirmMessage"
+  confirmText="Sí, abandonar"
+  cancelText="Cancelar"
+  type="warning"
+  (confirm)="confirmLeaveCourse()"
+  (cancel)="cancelLeaveCourse()"
 >
 </app-confirmation-modal>
