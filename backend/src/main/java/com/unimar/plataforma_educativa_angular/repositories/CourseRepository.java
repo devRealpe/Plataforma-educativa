@@ -15,6 +15,5 @@ public interface CourseRepository extends JpaRepository<Course, Long> {
 
     Optional<Course> findByInviteCode(String inviteCode);
 
-    // ✅ Nuevo: Buscar cursos por profesor
     List<Course> findByTeacher(User teacher);
 }
