@@ -7,6 +7,7 @@ import { AuthService } from '../../services/auth.service';
 import { CourseModalComponent } from '../course-modal/course-modal.component';
 import { EditCourseModalComponent } from '../edit-course-modal/edit-course-modal.component';
 import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-modal.component';
+import { ManageStudentsModalComponent } from '../manage-students-modal/manage-students-modal.component';
 
 @Component({
   selector: 'app-teacher-dashboard',
@@ -15,7 +16,8 @@ import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-m
     CommonModule, 
     CourseModalComponent, 
     EditCourseModalComponent,
-    ConfirmationModalComponent
+    ConfirmationModalComponent,
+    ManageStudentsModalComponent
   ],
   templateUrl: './teacher-dashboard.component.html',
   styleUrls: ['./teacher-dashboard.component.scss'],
@@ -26,8 +28,11 @@ export class TeacherDashboardComponent implements OnInit {
   showEditModal = false;
   showDeleteConfirmModal = false;
   showLogoutConfirmModal = false;
+  showStudentsModal = false;
+  
   courseToEdit: Course | null = null;
   courseToDelete: Course | null = null;
+  selectedCourse: Course | null = null;
 
   // Datos
   courses: Course[] = [];
@@ -38,6 +43,8 @@ export class TeacherDashboardComponent implements OnInit {
     { title: 'Ejercicios', value: '0', icon: '✏️', bgColor: '#f59e0b' },
     { title: 'Retos', value: '0', icon: '🏆', bgColor: '#8b5cf6' },
   ];
+
+  deleteMessage = '';
 
   constructor(
     private courseService: CourseService,
@@ -50,9 +57,6 @@ export class TeacherDashboardComponent implements OnInit {
     this.loadCourses();
   }
 
-  /**
-   * Carga todos los cursos del profesor
-   */
   loadCourses() {
     this.courseService.getMyCourses().subscribe({
       next: (courses) => {
@@ -70,57 +74,38 @@ export class TeacherDashboardComponent implements OnInit {
     });
   }
 
-  /**
-   * Actualiza las estadísticas del dashboard
-   */
   updateStats() {
-    // Total de cursos
     this.stats[0].value = this.courses.length.toString();
 
-    // ✅ Total de estudiantes únicos (suma de studentCount de cada curso)
     const totalStudents = this.courses.reduce(
       (sum, course) => sum + (course.studentCount || 0),
       0
     );
     this.stats[1].value = totalStudents.toString();
 
-    // Ejercicios totales (simulado por ahora)
     const totalExercises = 0;
     this.stats[2].value = totalExercises.toString();
 
-    // Retos activos (simulado por ahora)
     const totalChallenges = 0;
     this.stats[3].value = totalChallenges.toString();
   }
 
-  /**
-   * Abre el modal para CREAR un nuevo curso
-   */
   openModal() {
     this.showCreateModal = true;
   }
 
-  /**
-   * Cierra el modal de crear
-   */
   closeModal() {
     this.showCreateModal = false;
   }
 
-  /**
-   * Maneja la creación exitosa de un curso
-   */
   handleCourseCreated(course: Course) {
     console.log('✅ Curso creado exitosamente:', course);
     
-    // Agregar el curso a la lista local
     this.courses.push(course);
     this.updateStats();
     
-    // Cerrar el modal
     this.closeModal();
     
-    // Mostrar notificación de éxito
     this.snackBar.open(
       `✅ Curso "${course.title}" creado exitosamente. Código: ${course.inviteCode}`,
       'Cerrar',
@@ -131,9 +116,6 @@ export class TeacherDashboardComponent implements OnInit {
     );
   }
 
-  /**
-   * Abre el modal para EDITAR un curso existente
-   */
   editCourse(course: Course) {
     if (!course.id) {
       this.snackBar.open('❌ Error: el curso no tiene ID', 'Cerrar', { 
@@ -148,30 +130,21 @@ export class TeacherDashboardComponent implements OnInit {
     console.log('📝 Editando curso:', course);
   }
 
-  /**
-   * Cierra el modal de editar
-   */
   closeEditModal() {
     this.showEditModal = false;
     this.courseToEdit = null;
   }
 
-  /**
-   * Maneja la actualización exitosa de un curso
-   */
   handleCourseUpdated(updatedCourse: Course) {
     console.log('✅ Curso actualizado:', updatedCourse);
     
-    // Actualizar el curso en la lista local
     const index = this.courses.findIndex(c => c.id === updatedCourse.id);
     if (index !== -1) {
       this.courses[index] = updatedCourse;
     }
     
-    // Cerrar el modal
     this.closeEditModal();
     
-    // Mostrar notificación de éxito
     this.snackBar.open(
       `✅ Curso "${updatedCourse.title}" actualizado exitosamente`,
       'Cerrar',
@@ -181,10 +154,7 @@ export class TeacherDashboardComponent implements OnInit {
       }
     );
   }
-deleteMessage: string = '';
-  /**
-   * Muestra el modal de confirmación para eliminar curso
-   */
+
   deleteCourse(course: Course) {
     if (!course.id) {
       this.snackBar.open('❌ Error: el curso no tiene ID', 'Cerrar', { 
@@ -194,36 +164,29 @@ deleteMessage: string = '';
     }
 
     this.courseToDelete = course;
+    this.deleteMessage = `¿Estás seguro de que deseas eliminar el curso "${course.title}"?\n\nEsta acción eliminará:\n• El curso y toda su información\n• Todos los ejercicios asociados\n• Todas las entregas de estudiantes\n\nEsta acción no se puede deshacer.`;
     this.showDeleteConfirmModal = true;
   }
 
-  /**
-   * Confirma y ejecuta la eliminación del curso
-   */
   confirmDeleteCourse() {
     if (!this.courseToDelete?.id) return;
 
     const courseTitle = this.courseToDelete.title;
     const courseId = this.courseToDelete.id;
 
-    // Cerrar modal
     this.showDeleteConfirmModal = false;
 
-    // Mostrar mensaje de carga
     this.snackBar.open('🗑️ Eliminando curso...', '', { duration: 2000 });
 
     this.courseService.deleteCourse(courseId).subscribe({
       next: () => {
         console.log('✅ Curso eliminado:', courseTitle);
         
-        // Remover el curso de la lista local
         this.courses = this.courses.filter(c => c.id !== courseId);
         this.updateStats();
         
-        // Limpiar referencia
         this.courseToDelete = null;
         
-        // Mostrar notificación de éxito
         this.snackBar.open(
           `✅ Curso "${courseTitle}" eliminado exitosamente`,
           'Cerrar',
@@ -249,17 +212,34 @@ deleteMessage: string = '';
     });
   }
 
-  /**
-   * Cancela la eliminación del curso
-   */
   cancelDeleteCourse() {
     this.showDeleteConfirmModal = false;
     this.courseToDelete = null;
   }
 
-  /**
-   * Copia el código de invitación al portapapeles
-   */
+  enterCourse(course: Course) {
+    if (!course.id) {
+      this.snackBar.open('❌ Error: el curso no tiene ID', 'Cerrar', { 
+        duration: 3000 
+      });
+      return;
+    }
+
+    this.router.navigate(['/course', course.id]);
+  }
+
+  manageStudents(course: Course) {
+    this.selectedCourse = course;
+    this.showStudentsModal = true;
+  }
+
+  closeStudentsModal() {
+    this.showStudentsModal = false;
+    this.selectedCourse = null;
+    // Recargar cursos para actualizar el contador de estudiantes
+    this.loadCourses();
+  }
+
   copyToClipboard(code: string) {
     if (!code) {
       this.snackBar.open('❌ Código no disponible', 'Cerrar', { 
@@ -291,16 +271,10 @@ deleteMessage: string = '';
     );
   }
 
-  /**
-   * Muestra el modal de confirmación para cerrar sesión
-   */
   logout() {
     this.showLogoutConfirmModal = true;
   }
 
-  /**
-   * Confirma y ejecuta el cierre de sesión
-   */
   confirmLogout() {
     this.showLogoutConfirmModal = false;
     
@@ -313,16 +287,10 @@ deleteMessage: string = '';
     this.router.navigate(['/login']);
   }
 
-  /**
-   * Cancela el cierre de sesión
-   */
   cancelLogout() {
     this.showLogoutConfirmModal = false;
   }
 
-  /**
-   * Navega a la vista de perfil
-   */
   goToProfile() {
     this.router.navigate(['/profile']);
   }

@@ -8,6 +8,7 @@ import { ExerciseModalComponent } from '../exercise-modal/exercise-modal.compone
 import { HintModalComponent } from '../hint-modal/hint-modal.component';
 import { ManageStudentsModalComponent } from '../manage-students-modal/manage-students-modal.component';
 import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-modal.component';
+import { SubmissionsModalComponent } from '../submissions-modal/submissions-modal.component';
 
 @Component({
   selector: 'app-course-detail',
@@ -17,7 +18,8 @@ import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-m
     ExerciseModalComponent,
     HintModalComponent,
     ManageStudentsModalComponent,
-    ConfirmationModalComponent
+    ConfirmationModalComponent,
+    SubmissionsModalComponent
   ],
   templateUrl: './course-detail.component.html',
   styleUrls: ['./course-detail.component.scss']
@@ -33,6 +35,7 @@ export class CourseDetailComponent implements OnInit {
   showHintModal = false;
   showStudentsModal = false;
   showDeleteConfirmModal = false;
+  showSubmissionsModal = false;
   
   editingExercise: Exercise | null = null;
   selectedExercise: Exercise | null = null;
@@ -54,7 +57,6 @@ export class CourseDetailComponent implements OnInit {
   loadCourseData() {
     this.isLoading = true;
     
-    // Cargar información del curso
     this.courseService.getMyCourses().subscribe({
       next: (courses) => {
         this.course = courses.find(c => c.id === this.courseId) || null;
@@ -103,16 +105,27 @@ export class CourseDetailComponent implements OnInit {
   }
 
   handleExerciseCreated(exercise: Exercise) {
-    this.exercises.push(exercise);
+    // Si es edición, actualizar en la lista
+    if (this.editingExercise) {
+      const index = this.exercises.findIndex(e => e.id === exercise.id);
+      if (index !== -1) {
+        this.exercises[index] = exercise;
+      }
+    } else {
+      // Si es nuevo, agregar a la lista
+      this.exercises.push(exercise);
+    }
+    
+    const action = this.editingExercise ? 'actualizado' : 'creado';
     this.snackBar.open(
-      `✅ Ejercicio "${exercise.title}" creado exitosamente`,
+      `✅ Ejercicio "${exercise.title}" ${action} exitosamente`,
       'Cerrar',
       { duration: 3000, panelClass: ['success-snackbar'] }
     );
   }
 
   editExercise(exercise: Exercise) {
-    this.editingExercise = exercise;
+    this.editingExercise = { ...exercise };
     this.showExerciseModal = true;
   }
 
@@ -198,15 +211,19 @@ export class CourseDetailComponent implements OnInit {
 
   closeStudentsModal() {
     this.showStudentsModal = false;
-    // Recargar datos del curso para actualizar el contador
     this.loadCourseData();
   }
 
   // ========== ENTREGAS ==========
 
   viewSubmissions(exercise: Exercise) {
-    if (!exercise.id) return;
-    this.router.navigate(['/submissions', exercise.id]);
+    this.selectedExercise = exercise;
+    this.showSubmissionsModal = true;
+  }
+
+  closeSubmissionsModal() {
+    this.showSubmissionsModal = false;
+    this.selectedExercise = null;
   }
 
   // ========== UTILIDADES ==========
@@ -226,6 +243,6 @@ export class CourseDetailComponent implements OnInit {
   }
 
   getDeleteMessage(): string {
-    return `¿Estás seguro de que deseas eliminar el ejercicio "${this.exerciseToDelete?.title || ''}"? Esta acción no se puede deshacer.`;
+    return `¿Estás seguro de que deseas eliminar el ejercicio "${this.exerciseToDelete?.title || ''}"?\n\nEsta acción eliminará:\n• El ejercicio y sus archivos\n• Todas las pistas asociadas\n• Todas las entregas de estudiantes\n\nEsta acción no se puede deshacer.`;
   }
 }
