@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -17,21 +16,19 @@ public class SubmissionService {
     private final SubmissionRepository submissionRepository;
     private final ExerciseRepository exerciseRepository;
     private final UserRepository userRepository;
-    private final FileStorageService fileStorageService;
 
     public SubmissionService(
             SubmissionRepository submissionRepository,
             ExerciseRepository exerciseRepository,
-            UserRepository userRepository,
-            FileStorageService fileStorageService) {
+            UserRepository userRepository) {
         this.submissionRepository = submissionRepository;
         this.exerciseRepository = exerciseRepository;
         this.userRepository = userRepository;
-        this.fileStorageService = fileStorageService;
     }
 
     /**
      * Subir entrega (Estudiante)
+     * 🔥 Ahora guarda el archivo en la base de datos como BLOB
      */
     @Transactional
     public Submission submitExercise(Long exerciseId, String studentEmail, MultipartFile file) {
@@ -56,19 +53,19 @@ public class SubmissionService {
             throw new RuntimeException("La fecha límite de entrega ha pasado");
         }
 
-        // Guardar archivo
-        String filePath;
-        try {
-            filePath = fileStorageService.storeFile(file, "submissions");
-        } catch (IOException e) {
-            throw new RuntimeException("Error al guardar el archivo: " + e.getMessage());
-        }
-
+        // 🔥 Guardar archivo en base de datos
         Submission submission = new Submission();
         submission.setExercise(exercise);
         submission.setStudent(student);
-        submission.setFilePath(filePath);
-        submission.setFileName(file.getOriginalFilename());
+
+        try {
+            submission.setFileData(file.getBytes());
+            submission.setFileName(file.getOriginalFilename());
+            submission.setFileType(file.getContentType());
+        } catch (IOException e) {
+            throw new RuntimeException("Error al procesar el archivo: " + e.getMessage());
+        }
+
         submission.setStatus(Submission.SubmissionStatus.PENDING);
 
         return submissionRepository.save(submission);
@@ -153,22 +150,16 @@ public class SubmissionService {
     }
 
     /**
-     * Obtener archivo de entrega para descarga
+     * 🔥 NUEVO: Obtener archivo de entrega desde la base de datos
      */
-    public Path getSubmissionFile(Long id, String userEmail) {
+    public byte[] getSubmissionFile(Long id, String userEmail) {
         Submission submission = getSubmissionById(id, userEmail);
 
-        if (submission.getFilePath() == null) {
+        if (!submission.hasFile()) {
             throw new RuntimeException("Esta entrega no tiene archivo adjunto");
         }
 
-        Path filePath = fileStorageService.getFilePath(submission.getFilePath());
-
-        if (!fileStorageService.fileExists(submission.getFilePath())) {
-            throw new RuntimeException("Archivo no encontrado");
-        }
-
-        return filePath;
+        return submission.getFileData();
     }
 
     /**
@@ -190,15 +181,6 @@ public class SubmissionService {
         // No permitir eliminar si ya fue calificada
         if (submission.getStatus() == Submission.SubmissionStatus.GRADED) {
             throw new RuntimeException("No puedes eliminar una entrega que ya fue calificada");
-        }
-
-        // Eliminar archivo
-        if (submission.getFilePath() != null) {
-            try {
-                fileStorageService.deleteFile(submission.getFilePath());
-            } catch (IOException e) {
-                System.err.println("Error al eliminar archivo: " + e.getMessage());
-            }
         }
 
         submissionRepository.delete(submission);

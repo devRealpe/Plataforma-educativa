@@ -28,35 +28,47 @@ public class Exercise {
     private String description;
 
     @Column(nullable = false)
-    private String difficulty; // Principiante, Intermedio, Avanzado, Experto
+    private String difficulty;
 
     @Column(nullable = false)
-    private Integer points; // Puntos XP que otorga
+    private Integer points;
 
-    private String filePath; // Ruta del archivo en el servidor
+    // 🔥 CAMBIO: Guardar archivo como BLOB en lugar de ruta
+    @Lob
+    @Column(name = "file_data", columnDefinition = "LONGBLOB")
+    private byte[] fileData;
 
-    private String fileName; // Nombre original del archivo
+    @Column(name = "file_name")
+    private String fileName;
 
-    private LocalDateTime deadline; // Fecha límite de entrega
+    @Column(name = "file_type")
+    private String fileType;
+
+    private LocalDateTime deadline;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id", nullable = false)
-    @JsonIgnoreProperties({ "exercises", "students", "teacher" })
+    @JsonIgnoreProperties({ "exercises", "students", "teacher", "hibernateLazyInitializer" })
     private Course course;
 
-    @OneToMany(mappedBy = "exercise", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnoreProperties("exercise")
+    @OneToMany(mappedBy = "exercise", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({ "exercise", "hibernateLazyInitializer" })
     private List<Hint> hints = new ArrayList<>();
 
-    @OneToMany(mappedBy = "exercise", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnoreProperties("exercise")
+    @OneToMany(mappedBy = "exercise", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnoreProperties({ "exercise", "hibernateLazyInitializer" })
     private List<Submission> submissions = new ArrayList<>();
 
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
+    }
+
+    // 🔥 NUEVO: Método helper para verificar si tiene archivo
+    public boolean hasFile() {
+        return fileData != null && fileData.length > 0;
     }
 }

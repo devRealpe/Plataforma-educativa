@@ -243,16 +243,19 @@ export class StudentDashboardComponent implements OnInit {
   /**
    * Navega al contenido del curso
    */
-  enterCourse(course: EnrolledCourse) {
-    console.log('📖 Entrando al curso:', course.title);
-    // Aquí navegarías a la vista del curso
-    // this.router.navigate(['/course', course.id]);
-    this.snackBar.open(
-      `Entrando a ${course.title}...`,
-      'Cerrar',
-      { duration: 2000 }
-    );
+enterCourse(course: EnrolledCourse) {
+  if (!course.id) {
+    this.snackBar.open('❌ Error: el curso no tiene ID', 'Cerrar', { 
+      duration: 3000 
+    });
+    return;
   }
+
+  console.log('📖 Entrando al curso:', course.title);
+  
+  // 🔥 ARREGLADO: Ahora sí navega
+  this.router.navigate(['/student/course', course.id]);
+}
 
   /**
    * Muestra el progreso detallado del curso

@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.List;
 
 @Service
@@ -16,29 +15,21 @@ public class ExerciseService {
     private final ExerciseRepository exerciseRepository;
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
-    private final FileStorageService fileStorageService;
 
     public ExerciseService(
             ExerciseRepository exerciseRepository,
             CourseRepository courseRepository,
-            UserRepository userRepository,
-            FileStorageService fileStorageService) {
+            UserRepository userRepository) {
         this.exerciseRepository = exerciseRepository;
         this.courseRepository = courseRepository;
         this.userRepository = userRepository;
-        this.fileStorageService = fileStorageService;
     }
 
-    /**
-     * Crear ejercicio (Profesor)
-     */
     @Transactional
     public Exercise createExercise(Exercise exercise, Long courseId, String teacherEmail, MultipartFile file) {
-        // Verificar que el curso existe
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new RuntimeException("Curso no encontrado"));
 
-        // Verificar que el usuario es el profesor del curso
         User teacher = userRepository.findByEmail(teacherEmail)
                 .orElseThrow(() -> new RuntimeException("Profesor no encontrado"));
 
@@ -46,14 +37,14 @@ public class ExerciseService {
             throw new RuntimeException("No tienes permiso para agregar ejercicios a este curso");
         }
 
-        // Guardar archivo si existe
+        // 🔥 Guardar archivo como bytes en la base de datos
         if (file != null && !file.isEmpty()) {
             try {
-                String filePath = fileStorageService.storeFile(file, "exercises");
-                exercise.setFilePath(filePath);
+                exercise.setFileData(file.getBytes());
                 exercise.setFileName(file.getOriginalFilename());
+                exercise.setFileType(file.getContentType());
             } catch (IOException e) {
-                throw new RuntimeException("Error al guardar el archivo: " + e.getMessage());
+                throw new RuntimeException("Error al procesar el archivo: " + e.getMessage());
             }
         }
 
@@ -61,9 +52,6 @@ public class ExerciseService {
         return exerciseRepository.save(exercise);
     }
 
-    /**
-     * Obtener ejercicios de un curso
-     */
     public List<Exercise> getExercisesByCourse(Long courseId, String userEmail) {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new RuntimeException("Curso no encontrado"));
@@ -71,7 +59,6 @@ public class ExerciseService {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        // Verificar que el usuario es profesor del curso o estudiante inscrito
         boolean isTeacher = course.getTeacher().getId().equals(user.getId());
         boolean isStudent = course.getStudents().contains(user);
 
@@ -82,9 +69,6 @@ public class ExerciseService {
         return exerciseRepository.findByCourseId(courseId);
     }
 
-    /**
-     * Obtener un ejercicio por ID
-     */
     public Exercise getExerciseById(Long id, String userEmail) {
         Exercise exercise = exerciseRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Ejercicio no encontrado"));
@@ -103,9 +87,6 @@ public class ExerciseService {
         return exercise;
     }
 
-    /**
-     * Actualizar ejercicio
-     */
     @Transactional
     public Exercise updateExercise(Long id, Exercise exerciseData, String teacherEmail, MultipartFile file) {
         Exercise exercise = exerciseRepository.findById(id)
@@ -118,24 +99,18 @@ public class ExerciseService {
             throw new RuntimeException("No tienes permiso para editar este ejercicio");
         }
 
-        // Actualizar datos
         exercise.setTitle(exerciseData.getTitle());
         exercise.setDescription(exerciseData.getDescription());
         exercise.setDifficulty(exerciseData.getDifficulty());
         exercise.setPoints(exerciseData.getPoints());
         exercise.setDeadline(exerciseData.getDeadline());
 
-        // Actualizar archivo si se proporciona uno nuevo
+        // 🔥 Actualizar archivo si se proporciona
         if (file != null && !file.isEmpty()) {
             try {
-                // Eliminar archivo anterior si existe
-                if (exercise.getFilePath() != null) {
-                    fileStorageService.deleteFile(exercise.getFilePath());
-                }
-
-                String filePath = fileStorageService.storeFile(file, "exercises");
-                exercise.setFilePath(filePath);
+                exercise.setFileData(file.getBytes());
                 exercise.setFileName(file.getOriginalFilename());
+                exercise.setFileType(file.getContentType());
             } catch (IOException e) {
                 throw new RuntimeException("Error al actualizar el archivo: " + e.getMessage());
             }
@@ -144,9 +119,6 @@ public class ExerciseService {
         return exerciseRepository.save(exercise);
     }
 
-    /**
-     * Eliminar ejercicio
-     */
     @Transactional
     public void deleteExercise(Long id, String teacherEmail) {
         Exercise exercise = exerciseRepository.findById(id)
@@ -159,35 +131,17 @@ public class ExerciseService {
             throw new RuntimeException("No tienes permiso para eliminar este ejercicio");
         }
 
-        // Eliminar archivo asociado
-        if (exercise.getFilePath() != null) {
-            try {
-                fileStorageService.deleteFile(exercise.getFilePath());
-            } catch (IOException e) {
-                // Log error pero continuar con la eliminación
-                System.err.println("Error al eliminar archivo: " + e.getMessage());
-            }
-        }
-
         exerciseRepository.delete(exercise);
     }
 
-    /**
-     * Obtener archivo del ejercicio para descarga
-     */
-    public Path getExerciseFile(Long id, String userEmail) {
+    // 🔥 NUEVO: Obtener archivo del ejercicio
+    public byte[] getExerciseFile(Long id, String userEmail) {
         Exercise exercise = getExerciseById(id, userEmail);
 
-        if (exercise.getFilePath() == null) {
+        if (!exercise.hasFile()) {
             throw new RuntimeException("Este ejercicio no tiene archivo adjunto");
         }
 
-        Path filePath = fileStorageService.getFilePath(exercise.getFilePath());
-
-        if (!fileStorageService.fileExists(exercise.getFilePath())) {
-            throw new RuntimeException("Archivo no encontrado");
-        }
-
-        return filePath;
+        return exercise.getFileData();
     }
 }

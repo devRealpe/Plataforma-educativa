@@ -19,19 +19,26 @@ public class Submission {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "exercise_id", nullable = false)
-    @JsonIgnoreProperties({ "hints", "submissions", "course" })
+    @JsonIgnoreProperties({ "hints", "submissions", "course", "hibernateLazyInitializer" })
     private Exercise exercise;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "student_id", nullable = false)
-    @JsonIgnoreProperties({ "password", "enrolledCourses" })
+    @JsonIgnoreProperties({ "password", "enrolledCourses", "hibernateLazyInitializer" })
     private User student;
 
-    private String filePath; // Ruta del archivo subido
+    // 🔥 CAMBIO: Guardar archivo como BLOB
+    @Lob
+    @Column(name = "file_data", columnDefinition = "LONGBLOB")
+    private byte[] fileData;
 
-    private String fileName; // Nombre original del archivo
+    @Column(name = "file_name")
+    private String fileName;
+
+    @Column(name = "file_type")
+    private String fileType;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime submittedAt;
@@ -40,10 +47,10 @@ public class Submission {
     @Column(nullable = false)
     private SubmissionStatus status = SubmissionStatus.PENDING;
 
-    private Integer grade; // Calificación de 0 a 100
+    private Integer grade;
 
     @Column(length = 1000)
-    private String feedback; // Retroalimentación del profesor
+    private String feedback;
 
     private LocalDateTime gradedAt;
 
@@ -53,8 +60,13 @@ public class Submission {
     }
 
     public enum SubmissionStatus {
-        PENDING, // Pendiente de revisión
-        GRADED, // Calificado
-        REJECTED // Rechazado
+        PENDING,
+        GRADED,
+        REJECTED
+    }
+
+    // 🔥 NUEVO: Método helper
+    public boolean hasFile() {
+        return fileData != null && fileData.length > 0;
     }
 }

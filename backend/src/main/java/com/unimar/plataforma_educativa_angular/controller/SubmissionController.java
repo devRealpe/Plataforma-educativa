@@ -1,5 +1,6 @@
 package com.unimar.plataforma_educativa_angular.controller;
 
+import com.unimar.plataforma_educativa_angular.dto.SubmissionDTO;
 import com.unimar.plataforma_educativa_angular.entities.Submission;
 import com.unimar.plataforma_educativa_angular.service.SubmissionService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/submissions")
@@ -50,7 +52,13 @@ public class SubmissionController {
             Authentication auth) {
         try {
             List<Submission> submissions = submissionService.getSubmissionsByExercise(exerciseId, auth.getName());
-            return ResponseEntity.ok(submissions);
+
+            // 🔥 Convertir a DTOs
+            List<SubmissionDTO> submissionDTOs = submissions.stream()
+                    .map(SubmissionDTO::new)
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.ok(submissionDTOs);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
@@ -106,11 +114,13 @@ public class SubmissionController {
     /**
      * Descargar archivo de entrega
      */
+
     @GetMapping("/{id}/download")
     public ResponseEntity<Resource> downloadSubmission(
             @PathVariable Long id,
             Authentication auth) {
         try {
+
             Path filePath = submissionService.getSubmissionFile(id, auth.getName());
             Resource resource = new UrlResource(filePath.toUri());
 

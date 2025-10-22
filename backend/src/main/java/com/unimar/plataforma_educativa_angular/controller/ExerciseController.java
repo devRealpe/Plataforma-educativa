@@ -1,10 +1,9 @@
 package com.unimar.plataforma_educativa_angular.controller;
 
+import com.unimar.plataforma_educativa_angular.dto.ExerciseDTO;
 import com.unimar.plataforma_educativa_angular.entities.Exercise;
 import com.unimar.plataforma_educativa_angular.service.ExerciseService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -12,10 +11,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.net.MalformedURLException;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/exercises")
@@ -25,9 +23,6 @@ public class ExerciseController {
     @Autowired
     private ExerciseService exerciseService;
 
-    /**
-     * Crear ejercicio (Profesor)
-     */
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createExercise(
             @RequestParam("title") String title,
@@ -51,45 +46,43 @@ public class ExerciseController {
 
             Exercise created = exerciseService.createExercise(exercise, courseId, auth.getName(), file);
 
-            return ResponseEntity.ok(created);
+            // 🔥 Devolver DTO en lugar de entidad completa
+            return ResponseEntity.ok(new ExerciseDTO(created));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
 
-    /**
-     * Obtener ejercicios de un curso
-     */
     @GetMapping("/course/{courseId}")
     public ResponseEntity<?> getExercisesByCourse(
             @PathVariable Long courseId,
             Authentication auth) {
         try {
             List<Exercise> exercises = exerciseService.getExercisesByCourse(courseId, auth.getName());
-            return ResponseEntity.ok(exercises);
+
+            // 🔥 Convertir a DTOs para evitar problemas de serialización
+            List<ExerciseDTO> exerciseDTOs = exercises.stream()
+                    .map(ExerciseDTO::new)
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.ok(exerciseDTOs);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
 
-    /**
-     * Obtener un ejercicio por ID
-     */
     @GetMapping("/{id}")
     public ResponseEntity<?> getExerciseById(
             @PathVariable Long id,
             Authentication auth) {
         try {
             Exercise exercise = exerciseService.getExerciseById(id, auth.getName());
-            return ResponseEntity.ok(exercise);
+            return ResponseEntity.ok(new ExerciseDTO(exercise));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
 
-    /**
-     * Actualizar ejercicio
-     */
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updateExercise(
             @PathVariable Long id,
@@ -113,15 +106,12 @@ public class ExerciseController {
 
             Exercise updated = exerciseService.updateExercise(id, exercise, auth.getName(), file);
 
-            return ResponseEntity.ok(updated);
+            return ResponseEntity.ok(new ExerciseDTO(updated));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
 
-    /**
-     * Eliminar ejercicio
-     */
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteExercise(
             @PathVariable Long id,
@@ -134,27 +124,22 @@ public class ExerciseController {
         }
     }
 
-    /**
-     * Descargar archivo del ejercicio
-     */
+    // 🔥 NUEVO: Descargar archivo desde la base de datos
     @GetMapping("/{id}/download")
-    public ResponseEntity<Resource> downloadExercise(
+    public ResponseEntity<byte[]> downloadExercise(
             @PathVariable Long id,
             Authentication auth) {
         try {
-            Path filePath = exerciseService.getExerciseFile(id, auth.getName());
-            Resource resource = new UrlResource(filePath.toUri());
+            Exercise exercise = exerciseService.getExerciseById(id, auth.getName());
+            byte[] fileData = exerciseService.getExerciseFile(id, auth.getName());
 
-            if (resource.exists() && resource.isReadable()) {
-                return ResponseEntity.ok()
-                        .header(HttpHeaders.CONTENT_DISPOSITION,
-                                "attachment; filename=\"" + resource.getFilename() + "\"")
-                        .body(resource);
-            } else {
-                return ResponseEntity.notFound().build();
-            }
-        } catch (MalformedURLException e) {
-            return ResponseEntity.badRequest().build();
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.parseMediaType(exercise.getFileType()));
+            headers.setContentDispositionFormData("attachment", exercise.getFileName());
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(fileData);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().build();
         }
