@@ -1,0 +1,43 @@
+package com.unimar.plataforma_educativa_angular.entities;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "hints")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Hint {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false, length = 500)
+    private String content; // Contenido de la pista
+
+    @Column(nullable = false)
+    private Integer order; // Orden de la pista (1, 2, 3...)
+
+    @Column(nullable = false)
+    private Integer cost; // Costo en XP para desbloquear
+
+    @ManyToOne
+    @JoinColumn(name = "exercise_id", nullable = false)
+    @JsonIgnoreProperties({ "hints", "submissions", "course" })
+    private Exercise exercise;
+
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
+}

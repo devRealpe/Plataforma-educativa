@@ -29,9 +29,22 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // Endpoints públicos
                         .requestMatchers("/api/auth/login", "/api/auth/register").permitAll()
-                        .requestMatchers("/api/courses/**").authenticated() // ✅ Permitir todas las rutas de courses
-                                                                            // para usuarios autenticados
+
+                        // Endpoints de cursos (autenticados)
+                        .requestMatchers("/api/courses/**").authenticated()
+
+                        // Endpoints de ejercicios (autenticados)
+                        .requestMatchers("/api/exercises/**").authenticated()
+
+                        // Endpoints de pistas (autenticados)
+                        .requestMatchers("/api/hints/**").authenticated()
+
+                        // Endpoints de entregas (autenticados)
+                        .requestMatchers("/api/submissions/**").authenticated()
+
+                        // Cualquier otra petición requiere autenticación
                         .anyRequest().authenticated());
         return http.build();
     }

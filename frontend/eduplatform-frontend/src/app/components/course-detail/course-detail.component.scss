@@ -1,0 +1,409 @@
+$primary-blue: #2563eb;
+$success-green: #10b981;
+$warning-orange: #f59e0b;
+$danger-red: #dc2626;
+$gray-50: #f9fafb;
+$gray-100: #f3f4f6;
+$gray-200: #e5e7eb;
+$gray-300: #d1d5db;
+$gray-600: #6b7280;
+$gray-700: #374151;
+$gray-900: #111827;
+
+.course-detail-container {
+  min-height: 100vh;
+  background: linear-gradient(
+    135deg,
+    oklch(0.95 0.05 280) 0%,
+    oklch(0.98 0.02 120) 50%,
+    oklch(0.92 0.08 320) 100%
+  );
+}
+
+.header {
+  background: white;
+  border-bottom: 1px solid $gray-200;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.header-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: $gray-100;
+  color: $gray-700;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 1.5rem;
+
+  &:hover {
+    background: $gray-200;
+  }
+}
+
+.course-info {
+  margin-bottom: 1.5rem;
+}
+
+.course-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: $gray-900;
+  margin: 0 0 0.5rem 0;
+}
+
+.course-description {
+  font-size: 1rem;
+  color: $gray-600;
+  margin: 0 0 1rem 0;
+  line-height: 1.6;
+}
+
+.course-meta {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: $gray-700;
+  font-weight: 500;
+
+  svg {
+    color: $primary-blue;
+  }
+}
+
+.header-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.95rem;
+
+  &.primary {
+    background: $primary-blue;
+    color: white;
+
+    &:hover {
+      background: #1d4ed8;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+  }
+
+  &.secondary {
+    background: $gray-100;
+    color: $gray-700;
+    border: 1px solid $gray-200;
+
+    &:hover {
+      background: $gray-200;
+    }
+  }
+}
+
+.main-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.loading, .empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  background: white;
+  border-radius: 16px;
+  border: 1px solid $gray-200;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid $gray-200;
+  border-top-color: $primary-blue;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.empty-icon {
+  width: 120px;
+  height: 120px;
+  background: linear-gradient(135deg, #eff6ff 0%, #ede9fe 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+
+  svg {
+    color: $primary-blue;
+  }
+}
+
+.empty-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: $gray-900;
+  margin: 0 0 0.5rem 0;
+}
+
+.empty-description {
+  font-size: 1rem;
+  color: $gray-600;
+  margin: 0 0 2rem 0;
+}
+
+.empty-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.875rem 1.75rem;
+  background: linear-gradient(135deg, $primary-blue 0%, #8b5cf6 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
+  }
+}
+
+.exercises-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+}
+
+.exercise-card {
+  background: white;
+  border-radius: 16px;
+  border: 1px solid $gray-200;
+  overflow: hidden;
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  }
+}
+
+.card-header {
+  padding: 1.5rem;
+  background: $gray-50;
+  border-bottom: 1px solid $gray-200;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.header-left {
+  flex: 1;
+}
+
+.exercise-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: $gray-900;
+  margin: 0 0 0.75rem 0;
+}
+
+.exercise-badges {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+
+  &.difficulty {
+    color: white;
+  }
+
+  &.points {
+    background: #fef3c7;
+    color: #92400e;
+
+    svg {
+      fill: #f59e0b;
+    }
+  }
+}
+
+.card-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.icon-btn {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &.edit {
+    background: rgba(37, 99, 235, 0.1);
+    color: $primary-blue;
+
+    &:hover {
+      background: $primary-blue;
+      color: white;
+    }
+  }
+
+  &.delete {
+    background: rgba(220, 38, 38, 0.1);
+    color: $danger-red;
+
+    &:hover {
+      background: $danger-red;
+      color: white;
+    }
+  }
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+.exercise-description {
+  color: $gray-700;
+  line-height: 1.6;
+  margin: 0 0 1rem 0;
+}
+
+.exercise-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: $gray-600;
+
+  svg {
+    color: $primary-blue;
+    flex-shrink: 0;
+  }
+}
+
+.card-footer {
+  padding: 1rem 1.5rem;
+  background: $gray-50;
+  border-top: 1px solid $gray-200;
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.footer-btn {
+  flex: 1;
+  min-width: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1rem;
+  background: white;
+  color: $gray-700;
+  border: 1px solid $gray-200;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: $gray-100;
+    border-color: $gray-300;
+  }
+
+  &.primary {
+    background: $primary-blue;
+    color: white;
+    border-color: $primary-blue;
+
+    &:hover {
+      background: #1d4ed8;
+      border-color: #1d4ed8;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .exercises-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .header-content {
+    padding: 1.5rem;
+  }
+
+  .main-content {
+    padding: 1.5rem;
+  }
+
+  .card-footer {
+    flex-direction: column;
+
+    .footer-btn {
+      width: 100%;
+    }
+  }
+}

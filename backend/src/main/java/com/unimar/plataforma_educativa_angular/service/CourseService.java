@@ -109,7 +109,6 @@ public class CourseService {
         return courseRepository.save(course);
     }
 
-    // ✅ NUEVO: Método para que el estudiante abandone un curso
     @Transactional
     public void leaveCourse(Long courseId, String studentEmail) {
         Course course = courseRepository.findById(courseId)
@@ -118,17 +117,14 @@ public class CourseService {
         User student = userRepository.findByEmail(studentEmail)
                 .orElseThrow(() -> new RuntimeException("Estudiante no encontrado"));
 
-        // Verificar que el usuario sea estudiante
         if (!student.getRole().name().equals("STUDENT")) {
             throw new RuntimeException("Solo los estudiantes pueden abandonar cursos");
         }
 
-        // Verificar que el estudiante esté inscrito en el curso
         if (!course.getStudents().contains(student)) {
             throw new RuntimeException("No estás inscrito en este curso");
         }
 
-        // Remover al estudiante del curso
         course.getStudents().remove(student);
         courseRepository.save(course);
     }
@@ -136,5 +132,49 @@ public class CourseService {
     public Course getCourseById(Long id) {
         return courseRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Curso no encontrado con id: " + id));
+    }
+
+    /**
+     * Obtener lista de estudiantes inscritos en un curso (Profesor)
+     */
+    @Transactional
+    public List<User> getStudentsByCourse(Long courseId, String teacherEmail) {
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new RuntimeException("Curso no encontrado"));
+
+        User teacher = userRepository.findByEmail(teacherEmail)
+                .orElseThrow(() -> new RuntimeException("Profesor no encontrado"));
+
+        if (!course.getTeacher().getId().equals(teacher.getId())) {
+            throw new RuntimeException("No tienes permiso para ver los estudiantes de este curso");
+        }
+
+        return course.getStudents().stream().collect(Collectors.toList());
+    }
+
+    /**
+     * Eliminar estudiante de un curso (Profesor)
+     */
+    @Transactional
+    public void removeStudentFromCourse(Long courseId, Long studentId, String teacherEmail) {
+        Course course = courseRepository.findById(courseId)
+                .orElseThrow(() -> new RuntimeException("Curso no encontrado"));
+
+        User teacher = userRepository.findByEmail(teacherEmail)
+                .orElseThrow(() -> new RuntimeException("Profesor no encontrado"));
+
+        if (!course.getTeacher().getId().equals(teacher.getId())) {
+            throw new RuntimeException("No tienes permiso para eliminar estudiantes de este curso");
+        }
+
+        User student = userRepository.findById(studentId)
+                .orElseThrow(() -> new RuntimeException("Estudiante no encontrado"));
+
+        if (!course.getStudents().contains(student)) {
+            throw new RuntimeException("El estudiante no está inscrito en este curso");
+        }
+
+        course.getStudents().remove(student);
+        courseRepository.save(course);
     }
 }

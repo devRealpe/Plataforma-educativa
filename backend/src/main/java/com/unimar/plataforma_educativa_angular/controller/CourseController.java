@@ -2,11 +2,11 @@ package com.unimar.plataforma_educativa_angular.controller;
 
 import com.unimar.plataforma_educativa_angular.dto.CourseDTO;
 import com.unimar.plataforma_educativa_angular.entities.Course;
+import com.unimar.plataforma_educativa_angular.entities.User;
 import com.unimar.plataforma_educativa_angular.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import com.unimar.plataforma_educativa_angular.entities.User;
 import com.unimar.plataforma_educativa_angular.repositories.UserRepository;
 import org.springframework.security.core.Authentication;
 
@@ -106,7 +106,6 @@ public class CourseController {
         }
     }
 
-    // ✅ NUEVO: Endpoint para que el estudiante abandone un curso
     @DeleteMapping("/{id}/leave")
     public ResponseEntity<?> leaveCourse(
             @PathVariable Long id,
@@ -115,6 +114,50 @@ public class CourseController {
             courseService.leaveCourse(id, auth.getName());
             return ResponseEntity.ok(Map.of(
                     "message", "Has abandonado el curso exitosamente"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    /**
+     * Obtener estudiantes de un curso (Profesor)
+     */
+    @GetMapping("/{id}/students")
+    public ResponseEntity<?> getStudentsByCourse(
+            @PathVariable Long id,
+            Authentication auth) {
+        try {
+            List<User> students = courseService.getStudentsByCourse(id, auth.getName());
+
+            // Mapear a un DTO sin información sensible
+            List<Map<String, Object>> studentDTOs = students.stream()
+                    .map(student -> {
+                        Map<String, Object> dto = new java.util.HashMap<>();
+                        dto.put("id", student.getId());
+                        dto.put("nombre", student.getNombre());
+                        dto.put("email", student.getEmail());
+                        return dto;
+                    })
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.ok(studentDTOs);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    /**
+     * Eliminar estudiante de un curso (Profesor)
+     */
+    @DeleteMapping("/{courseId}/students/{studentId}")
+    public ResponseEntity<?> removeStudentFromCourse(
+            @PathVariable Long courseId,
+            @PathVariable Long studentId,
+            Authentication auth) {
+        try {
+            courseService.removeStudentFromCourse(courseId, studentId, auth.getName());
+            return ResponseEntity.ok(Map.of(
+                    "message", "Estudiante eliminado del curso exitosamente"));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }

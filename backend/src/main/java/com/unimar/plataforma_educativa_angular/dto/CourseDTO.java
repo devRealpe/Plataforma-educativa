@@ -27,7 +27,7 @@ public class CourseDTO {
             this.teacherEmail = course.getTeacher().getEmail();
         }
 
-        // ✅ Contar estudiantes en el curso
+        // Contar estudiantes en el curso
         if (course.getStudents() != null) {
             this.studentCount = course.getStudents().size();
         }
