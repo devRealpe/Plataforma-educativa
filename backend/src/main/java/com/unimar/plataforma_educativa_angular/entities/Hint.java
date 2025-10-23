@@ -20,13 +20,13 @@ public class Hint {
     private Long id;
 
     @Column(nullable = false, length = 500)
-    private String content; // Contenido de la pista
+    private String content;
+
+    @Column(name = "hint_order", nullable = false)
+    private Integer order;
 
     @Column(nullable = false)
-    private Integer order; // Orden de la pista (1, 2, 3...)
-
-    @Column(nullable = false)
-    private Integer cost; // Costo en XP para desbloquear
+    private Integer cost;
 
     @ManyToOne
     @JoinColumn(name = "exercise_id", nullable = false)
