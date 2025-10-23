@@ -4,8 +4,6 @@ import com.unimar.plataforma_educativa_angular.dto.SubmissionDTO;
 import com.unimar.plataforma_educativa_angular.entities.Submission;
 import com.unimar.plataforma_educativa_angular.service.SubmissionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,8 +11,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.net.MalformedURLException;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -112,29 +108,32 @@ public class SubmissionController {
     }
 
     /**
-     * Descargar archivo de entrega
+     * 🔥 CORREGIDO: Descargar archivo de entrega desde la base de datos
      */
-
     @GetMapping("/{id}/download")
-    public ResponseEntity<Resource> downloadSubmission(
+    public ResponseEntity<byte[]> downloadSubmission(
             @PathVariable Long id,
             Authentication auth) {
         try {
+            // Obtener la entrega para acceder a sus metadatos
+            Submission submission = submissionService.getSubmissionById(id, auth.getName());
 
-            Path filePath = submissionService.getSubmissionFile(id, auth.getName());
-            Resource resource = new UrlResource(filePath.toUri());
+            // Obtener el archivo como bytes desde la base de datos
+            byte[] fileData = submissionService.getSubmissionFile(id, auth.getName());
 
-            if (resource.exists() && resource.isReadable()) {
-                return ResponseEntity.ok()
-                        .header(HttpHeaders.CONTENT_DISPOSITION,
-                                "attachment; filename=\"" + resource.getFilename() + "\"")
-                        .body(resource);
-            } else {
-                return ResponseEntity.notFound().build();
-            }
-        } catch (MalformedURLException e) {
-            return ResponseEntity.badRequest().build();
+            // Configurar headers para la descarga
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.parseMediaType(submission.getFileType()));
+            headers.setContentDispositionFormData("attachment", submission.getFileName());
+            headers.setContentLength(fileData.length);
+
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(fileData);
+
         } catch (RuntimeException e) {
+            // Log del error para debugging
+            System.err.println("❌ Error al descargar entrega: " + e.getMessage());
             return ResponseEntity.badRequest().build();
         }
     }
