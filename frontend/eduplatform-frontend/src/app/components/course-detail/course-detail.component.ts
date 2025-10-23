@@ -105,14 +105,12 @@ export class CourseDetailComponent implements OnInit {
   }
 
   handleExerciseCreated(exercise: Exercise) {
-    // Si es edición, actualizar en la lista
     if (this.editingExercise) {
       const index = this.exercises.findIndex(e => e.id === exercise.id);
       if (index !== -1) {
         this.exercises[index] = exercise;
       }
     } else {
-      // Si es nuevo, agregar a la lista
       this.exercises.push(exercise);
     }
     
@@ -217,6 +215,7 @@ export class CourseDetailComponent implements OnInit {
   // ========== ENTREGAS ==========
 
   viewSubmissions(exercise: Exercise) {
+    console.log('🔍 Viendo entregas del ejercicio:', exercise.title);
     this.selectedExercise = exercise;
     this.showSubmissionsModal = true;
   }

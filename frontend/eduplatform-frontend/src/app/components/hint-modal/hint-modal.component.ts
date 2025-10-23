@@ -9,143 +9,7 @@ import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-m
   selector: 'app-hint-modal',
   standalone: true,
   imports: [CommonModule, FormsModule, ConfirmationModalComponent],
-  template: `
-    <div class="modal-overlay" (click)="onBackdropClick($event)">
-      <div class="modal-container">
-        <!-- Header -->
-        <div class="modal-header">
-          <div class="header-content">
-            <div class="header-icon">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
-              </svg>
-            </div>
-            <div>
-              <h2 class="modal-title">💡 Gestionar Pistas</h2>
-              <p class="modal-subtitle">{{ exerciseTitle }}</p>
-            </div>
-          </div>
-          <button class="close-btn" (click)="close()">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="18" y1="6" x2="6" y2="18"/>
-              <line x1="6" y1="6" x2="18" y2="18"/>
-            </svg>
-          </button>
-        </div>
-
-        <!-- Content -->
-        <div class="modal-content">
-          <!-- Add Hint Form -->
-          <div class="add-hint-section">
-            <h3 class="section-title">Agregar Nueva Pista</h3>
-            <form (ngSubmit)="addHint()" class="hint-form">
-              <div class="form-row">
-                <div class="form-group flex-1">
-                  <label>Contenido de la Pista *</label>
-                  <textarea
-                    [(ngModel)]="newHint.content"
-                    name="content"
-                    placeholder="Escribe una pista útil para los estudiantes..."
-                    rows="3"
-                    required
-                    class="form-input"
-                  ></textarea>
-                </div>
-              </div>
-              <div class="form-row">
-                <div class="form-group">
-                  <label>Orden</label>
-                  <input
-                    type="number"
-                    [(ngModel)]="newHint.order"
-                    name="order"
-                    min="1"
-                    class="form-input"
-                    required
-                  />
-                </div>
-                <div class="form-group">
-                  <label>Costo (XP)</label>
-                  <input
-                    type="number"
-                    [(ngModel)]="newHint.cost"
-                    name="cost"
-                    min="0"
-                    class="form-input"
-                    required
-                  />
-                </div>
-                <button type="submit" class="add-btn" [disabled]="isSubmitting">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="12" y1="5" x2="12" y2="19"/>
-                    <line x1="5" y1="12" x2="19" y2="12"/>
-                  </svg>
-                  Agregar
-                </button>
-              </div>
-            </form>
-          </div>
-
-          <!-- Hints List -->
-          <div class="hints-section">
-            <h3 class="section-title">Pistas Existentes ({{ hints.length }})</h3>
-            
-            <div *ngIf="isLoading" class="loading">
-              <div class="spinner"></div>
-              <p>Cargando pistas...</p>
-            </div>
-
-            <div *ngIf="!isLoading && hints.length === 0" class="empty-state">
-              <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-                <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
-              </svg>
-              <h4>No hay pistas agregadas</h4>
-              <p>Agrega pistas para ayudar a los estudiantes con este ejercicio</p>
-            </div>
-
-            <div *ngIf="!isLoading && hints.length > 0" class="hints-list">
-              <div *ngFor="let hint of hints; let i = index" class="hint-card">
-                <div class="hint-header">
-                  <div class="hint-badge">Pista {{ hint.order }}</div>
-                  <div class="hint-cost">-{{ hint.cost }} XP</div>
-                </div>
-                <p class="hint-content">{{ hint.content }}</p>
-                <div class="hint-actions">
-                  <button class="edit-btn" (click)="editHint(hint)">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                    </svg>
-                    Editar
-                  </button>
-                  <button class="delete-btn" (click)="deleteHint(hint)">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <polyline points="3 6 5 6 21 6"/>
-                      <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                    </svg>
-                    Eliminar
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Confirmation Modal -->
-    <app-confirmation-modal
-      *ngIf="showDeleteConfirmModal && hintToDelete"
-      title="¿Eliminar pista?"
-      message="¿Estás seguro de que deseas eliminar esta pista? Esta acción no se puede deshacer."
-      confirmText="Eliminar"
-      cancelText="Cancelar"
-      type="danger"
-      (confirm)="confirmDelete()"
-      (cancel)="cancelDelete()"
-    >
-    </app-confirmation-modal>
-  `,
+  templateUrl: './hint-modal.component.html',
   styleUrls: ['./hint-modal.component.scss']
 })
 export class HintModalComponent implements OnInit {
@@ -158,11 +22,19 @@ export class HintModalComponent implements OnInit {
   isSubmitting = false;
   showDeleteConfirmModal = false;
   hintToDelete: Hint | null = null;
+  
+  // Edición de pistas
+  editingHint: Hint | null = null;
+  editForm: Hint = {
+    content: '',
+    order: 1,
+    cost: 0
+  };
 
   newHint: Hint = {
     content: '',
     order: 1,
-    cost: 10
+    cost: 0
   };
 
   constructor(
@@ -180,7 +52,6 @@ export class HintModalComponent implements OnInit {
       next: (hints) => {
         this.hints = hints;
         this.isLoading = false;
-        // Ajustar el orden de la nueva pista
         if (hints.length > 0) {
           this.newHint.order = Math.max(...hints.map(h => h.order)) + 1;
         }
@@ -193,9 +64,8 @@ export class HintModalComponent implements OnInit {
     });
   }
 
-addHint() {
-    // Validar que todos los campos requeridos estén completos
-    if (!this.newHint.content || !this.newHint.order || !this.newHint.cost) {
+  addHint() {
+    if (!this.newHint.content || !this.newHint.order) {
       this.snackBar.open('⚠️ Por favor completa todos los campos', 'Cerrar', { 
         duration: 2000 
       });
@@ -203,18 +73,10 @@ addHint() {
     }
 
     if (this.isSubmitting) return;
-
     this.isSubmitting = true;
-
-    console.log('📤 Enviando pista:', {
-      exerciseId: this.exerciseId,
-      hint: this.newHint
-    });
 
     this.exerciseService.createHint(this.newHint, this.exerciseId).subscribe({
       next: (hint) => {
-        console.log('✅ Pista creada exitosamente:', hint);
-        
         this.hints.push(hint);
         this.hints.sort((a, b) => a.order - b.order);
         
@@ -223,7 +85,6 @@ addHint() {
           panelClass: ['success-snackbar']
         });
         
-        // Reset form con el siguiente número de orden
         const nextOrder = this.hints.length > 0 
           ? Math.max(...this.hints.map(h => h.order)) + 1 
           : 1;
@@ -231,38 +92,67 @@ addHint() {
         this.newHint = {
           content: '',
           order: nextOrder,
-          cost: 10
+          cost: 0
         };
         
         this.isSubmitting = false;
       },
       error: (error) => {
-        console.error('❌ Error completo al agregar pista:', error);
-        console.error('❌ Status:', error.status);
-        console.error('❌ Message:', error.message);
-        console.error('❌ Error body:', error.error);
-        
-        let errorMessage = 'Error al agregar pista';
-        
-        if (error.error?.error) {
-          errorMessage = error.error.error;
-        } else if (error.error?.message) {
-          errorMessage = error.error.message;
-        }
-        
-        this.snackBar.open(`❌ ${errorMessage}`, 'Cerrar', { 
+        console.error('❌ Error al agregar pista:', error);
+        this.snackBar.open('Error al agregar pista', 'Cerrar', { 
           duration: 3000,
           panelClass: ['error-snackbar']
         });
-        
         this.isSubmitting = false;
       }
     });
   }
 
-  editHint(hint: Hint) {
-    // TODO: Implementar edición
-    this.snackBar.open('Función de edición próximamente', 'Cerrar', { duration: 2000 });
+  startEdit(hint: Hint) {
+    this.editingHint = hint;
+    this.editForm = { ...hint };
+  }
+
+  cancelEdit() {
+    this.editingHint = null;
+    this.editForm = {
+      content: '',
+      order: 1,
+      cost: 0
+    };
+  }
+
+  saveEdit() {
+    if (!this.editingHint?.id || !this.editForm.content || !this.editForm.order) {
+      this.snackBar.open('⚠️ Por favor completa todos los campos', 'Cerrar', { 
+        duration: 2000 
+      });
+      return;
+    }
+
+    this.exerciseService.updateHint(this.editingHint.id, this.editForm).subscribe({
+      next: (updatedHint) => {
+        const index = this.hints.findIndex(h => h.id === updatedHint.id);
+        if (index !== -1) {
+          this.hints[index] = updatedHint;
+          this.hints.sort((a, b) => a.order - b.order);
+        }
+        
+        this.snackBar.open('✅ Pista actualizada exitosamente', 'Cerrar', {
+          duration: 2000,
+          panelClass: ['success-snackbar']
+        });
+        
+        this.cancelEdit();
+      },
+      error: (error) => {
+        console.error('❌ Error al actualizar pista:', error);
+        this.snackBar.open('Error al actualizar pista', 'Cerrar', {
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
+      }
+    });
   }
 
   deleteHint(hint: Hint) {
