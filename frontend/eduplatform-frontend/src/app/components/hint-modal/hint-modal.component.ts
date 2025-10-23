@@ -193,32 +193,68 @@ export class HintModalComponent implements OnInit {
     });
   }
 
-  addHint() {
-    if (!this.newHint.content || this.isSubmitting) return;
+addHint() {
+    // Validar que todos los campos requeridos estén completos
+    if (!this.newHint.content || !this.newHint.order || !this.newHint.cost) {
+      this.snackBar.open('⚠️ Por favor completa todos los campos', 'Cerrar', { 
+        duration: 2000 
+      });
+      return;
+    }
+
+    if (this.isSubmitting) return;
 
     this.isSubmitting = true;
+
+    console.log('📤 Enviando pista:', {
+      exerciseId: this.exerciseId,
+      hint: this.newHint
+    });
+
     this.exerciseService.createHint(this.newHint, this.exerciseId).subscribe({
       next: (hint) => {
+        console.log('✅ Pista creada exitosamente:', hint);
+        
         this.hints.push(hint);
         this.hints.sort((a, b) => a.order - b.order);
+        
         this.snackBar.open('✅ Pista agregada exitosamente', 'Cerrar', {
           duration: 2000,
           panelClass: ['success-snackbar']
         });
-        // Reset form
+        
+        // Reset form con el siguiente número de orden
+        const nextOrder = this.hints.length > 0 
+          ? Math.max(...this.hints.map(h => h.order)) + 1 
+          : 1;
+        
         this.newHint = {
           content: '',
-          order: this.newHint.order + 1,
+          order: nextOrder,
           cost: 10
         };
+        
         this.isSubmitting = false;
       },
       error: (error) => {
-        console.error('❌ Error al agregar pista:', error);
-        this.snackBar.open('Error al agregar pista', 'Cerrar', { 
+        console.error('❌ Error completo al agregar pista:', error);
+        console.error('❌ Status:', error.status);
+        console.error('❌ Message:', error.message);
+        console.error('❌ Error body:', error.error);
+        
+        let errorMessage = 'Error al agregar pista';
+        
+        if (error.error?.error) {
+          errorMessage = error.error.error;
+        } else if (error.error?.message) {
+          errorMessage = error.error.message;
+        }
+        
+        this.snackBar.open(`❌ ${errorMessage}`, 'Cerrar', { 
           duration: 3000,
           panelClass: ['error-snackbar']
         });
+        
         this.isSubmitting = false;
       }
     });
