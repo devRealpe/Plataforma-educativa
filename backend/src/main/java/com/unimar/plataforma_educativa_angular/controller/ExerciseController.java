@@ -28,7 +28,6 @@ public class ExerciseController {
             @RequestParam("title") String title,
             @RequestParam("description") String description,
             @RequestParam("difficulty") String difficulty,
-            @RequestParam("points") Integer points,
             @RequestParam("courseId") Long courseId,
             @RequestParam(value = "deadline", required = false) String deadline,
             @RequestParam(value = "file", required = false) MultipartFile file,
@@ -38,7 +37,6 @@ public class ExerciseController {
             exercise.setTitle(title);
             exercise.setDescription(description);
             exercise.setDifficulty(difficulty);
-            exercise.setPoints(points);
 
             if (deadline != null && !deadline.isEmpty()) {
                 exercise.setDeadline(java.time.LocalDateTime.parse(deadline));
@@ -46,7 +44,6 @@ public class ExerciseController {
 
             Exercise created = exerciseService.createExercise(exercise, courseId, auth.getName(), file);
 
-            // 🔥 Devolver DTO en lugar de entidad completa
             return ResponseEntity.ok(new ExerciseDTO(created));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
@@ -60,7 +57,6 @@ public class ExerciseController {
         try {
             List<Exercise> exercises = exerciseService.getExercisesByCourse(courseId, auth.getName());
 
-            // 🔥 Convertir a DTOs para evitar problemas de serialización
             List<ExerciseDTO> exerciseDTOs = exercises.stream()
                     .map(ExerciseDTO::new)
                     .collect(Collectors.toList());
@@ -89,7 +85,6 @@ public class ExerciseController {
             @RequestParam("title") String title,
             @RequestParam("description") String description,
             @RequestParam("difficulty") String difficulty,
-            @RequestParam("points") Integer points,
             @RequestParam(value = "deadline", required = false) String deadline,
             @RequestParam(value = "file", required = false) MultipartFile file,
             Authentication auth) {
@@ -98,7 +93,6 @@ public class ExerciseController {
             exercise.setTitle(title);
             exercise.setDescription(description);
             exercise.setDifficulty(difficulty);
-            exercise.setPoints(points);
 
             if (deadline != null && !deadline.isEmpty()) {
                 exercise.setDeadline(java.time.LocalDateTime.parse(deadline));
@@ -124,7 +118,6 @@ public class ExerciseController {
         }
     }
 
-    // 🔥 NUEVO: Descargar archivo desde la base de datos
     @GetMapping("/{id}/download")
     public ResponseEntity<byte[]> downloadExercise(
             @PathVariable Long id,

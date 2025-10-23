@@ -37,7 +37,7 @@ public class ExerciseService {
             throw new RuntimeException("No tienes permiso para agregar ejercicios a este curso");
         }
 
-        // 🔥 Guardar archivo como bytes en la base de datos
+        // Guardar archivo como bytes en la base de datos
         if (file != null && !file.isEmpty()) {
             try {
                 exercise.setFileData(file.getBytes());
@@ -102,10 +102,9 @@ public class ExerciseService {
         exercise.setTitle(exerciseData.getTitle());
         exercise.setDescription(exerciseData.getDescription());
         exercise.setDifficulty(exerciseData.getDifficulty());
-        exercise.setPoints(exerciseData.getPoints());
         exercise.setDeadline(exerciseData.getDeadline());
 
-        // 🔥 Actualizar archivo si se proporciona
+        // Actualizar archivo si se proporciona
         if (file != null && !file.isEmpty()) {
             try {
                 exercise.setFileData(file.getBytes());
@@ -134,10 +133,11 @@ public class ExerciseService {
         exerciseRepository.delete(exercise);
     }
 
-    // 🔥 NUEVO: Obtener archivo del ejercicio
+    // Obtener archivo del ejercicio
     public byte[] getExerciseFile(Long id, String userEmail) {
         Exercise exercise = getExerciseById(id, userEmail);
 
+        // ✅ CORRECCIÓN: Usar el método hasFile() en lugar de acceder directamente
         if (!exercise.hasFile()) {
             throw new RuntimeException("Este ejercicio no tiene archivo adjunto");
         }

@@ -13,7 +13,8 @@ public class ExerciseDTO {
     private String title;
     private String description;
     private String difficulty;
-    private Integer points;
+    // ✅ Campo eliminado: Ya no usamos puntos
+    // private Integer points;
     private String fileName;
     private String fileType;
     private LocalDateTime deadline;
@@ -26,7 +27,7 @@ public class ExerciseDTO {
         this.title = exercise.getTitle();
         this.description = exercise.getDescription();
         this.difficulty = exercise.getDifficulty();
-        this.points = exercise.getPoints();
+        // this.points = exercise.getPoints(); // Eliminado
         this.fileName = exercise.getFileName();
         this.fileType = exercise.getFileType();
         this.deadline = exercise.getDeadline();

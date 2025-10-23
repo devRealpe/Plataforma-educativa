@@ -83,7 +83,6 @@ public class HintService {
 
         hint.setContent(hintData.getContent());
         hint.setOrder(hintData.getOrder());
-        hint.setCost(hintData.getCost());
 
         return hintRepository.save(hint);
     }
