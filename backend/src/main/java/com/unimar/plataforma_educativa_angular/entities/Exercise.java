@@ -30,10 +30,6 @@ public class Exercise {
     @Column(nullable = false)
     private String difficulty;
 
-    @Column(nullable = false)
-    private Integer points;
-
-    // 🔥 CAMBIO: Guardar archivo como BLOB en lugar de ruta
     @Lob
     @Column(name = "file_data", columnDefinition = "LONGBLOB")
     private byte[] fileData;
@@ -67,7 +63,6 @@ public class Exercise {
         createdAt = LocalDateTime.now();
     }
 
-    // 🔥 NUEVO: Método helper para verificar si tiene archivo
     public boolean hasFile() {
         return fileData != null && fileData.length > 0;
     }
