@@ -679,7 +679,7 @@ export class ExerciseModalComponent implements OnInit {
       this.exerciseForm.title &&
       this.exerciseForm.description &&
       this.exerciseForm.difficulty &&
-      this.exerciseForm.points > 0
+      this.exerciseForm.points && this.exerciseForm.points > 0
     );
   }
 

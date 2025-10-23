@@ -19,6 +19,4 @@ public interface HintRepository extends JpaRepository<Hint, Long> {
     // Contar pistas por ejercicio
     long countByExerciseId(Long exerciseId);
 
-    // Buscar pistas por ejercicio y costo menor o igual
-    List<Hint> findByExerciseAndCostLessThanEqual(Exercise exercise, Integer maxCost);
 }

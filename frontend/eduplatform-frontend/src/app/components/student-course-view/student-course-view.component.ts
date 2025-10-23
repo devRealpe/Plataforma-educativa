@@ -4,12 +4,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CourseService, Course } from '../../services/course.service';
 import { ExerciseService, Exercise, Hint, Submission } from '../../services/exercise.service';
-import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-modal.component';
 
 @Component({
   selector: 'app-student-course-view',
   standalone: true,
-  imports: [CommonModule, ConfirmationModalComponent],
+  imports: [CommonModule],
   template: `
     <div class="course-container">
       <!-- Header -->

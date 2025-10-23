@@ -351,3 +351,12 @@
   (cancel)="cancelDeleteExercise()"
 >
 </app-confirmation-modal>
+
+<!-- Modal Ver Entregas -->
+<app-submissions-modal
+  *ngIf="showSubmissionsModal && selectedExercise"
+  [exerciseId]="selectedExercise.id!"
+  [exerciseTitle]="selectedExercise.title"
+  (closeModal)="closeSubmissionsModal()"
+>
+</app-submissions-modal>

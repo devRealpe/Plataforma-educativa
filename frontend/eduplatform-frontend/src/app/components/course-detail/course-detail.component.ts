@@ -1,3 +1,4 @@
+
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -19,7 +20,7 @@ import { SubmissionsModalComponent } from '../submissions-modal/submissions-moda
     HintModalComponent,
     ManageStudentsModalComponent,
     ConfirmationModalComponent,
-    SubmissionsModalComponent
+    SubmissionsModalComponent  // ✅ Mantener porque SÍ se usa en el HTML
   ],
   templateUrl: './course-detail.component.html',
   styleUrls: ['./course-detail.component.scss']
@@ -35,7 +36,7 @@ export class CourseDetailComponent implements OnInit {
   showHintModal = false;
   showStudentsModal = false;
   showDeleteConfirmModal = false;
-  showSubmissionsModal = false;
+  showSubmissionsModal = false; // ✅ Este estado SÍ se usa
   
   editingExercise: Exercise | null = null;
   selectedExercise: Exercise | null = null;

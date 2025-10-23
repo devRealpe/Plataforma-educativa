@@ -23,13 +23,59 @@ export class HintModalComponent implements OnInit {
   showDeleteConfirmModal = false;
   hintToDelete: Hint | null = null;
   
-  // Edición de pistas
   editingHint: Hint | null = null;
-  editForm: Hint = {
+editForm: Hint = {
+  content: '',
+  order: 1,
+  cost: 0
+};
+
+editHint(hint: Hint) {
+  this.editingHint = hint;
+  this.editForm = { ...hint };
+}
+
+cancelEdit() {
+  this.editingHint = null;
+  this.editForm = {
     content: '',
     order: 1,
     cost: 0
   };
+}
+
+saveEdit() {
+  if (!this.editingHint?.id || !this.editForm.content || !this.editForm.order) {
+    this.snackBar.open('⚠️ Por favor completa todos los campos', 'Cerrar', { 
+      duration: 2000 
+    });
+    return;
+  }
+
+  this.exerciseService.updateHint(this.editingHint.id, this.editForm).subscribe({
+    next: (updatedHint) => {
+      const index = this.hints.findIndex(h => h.id === updatedHint.id);
+      if (index !== -1) {
+        this.hints[index] = updatedHint;
+        this.hints.sort((a, b) => a.order - b.order);
+      }
+      
+      this.snackBar.open('✅ Pista actualizada exitosamente', 'Cerrar', {
+        duration: 2000,
+        panelClass: ['success-snackbar']
+      });
+      
+      this.cancelEdit();
+    },
+    error: (error) => {
+      console.error('❌ Error al actualizar pista:', error);
+      this.snackBar.open('Error al actualizar pista', 'Cerrar', {
+        duration: 3000,
+        panelClass: ['error-snackbar']
+      });
+    }
+  });
+}
 
   newHint: Hint = {
     content: '',
@@ -113,47 +159,7 @@ export class HintModalComponent implements OnInit {
     this.editForm = { ...hint };
   }
 
-  cancelEdit() {
-    this.editingHint = null;
-    this.editForm = {
-      content: '',
-      order: 1,
-      cost: 0
-    };
-  }
 
-  saveEdit() {
-    if (!this.editingHint?.id || !this.editForm.content || !this.editForm.order) {
-      this.snackBar.open('⚠️ Por favor completa todos los campos', 'Cerrar', { 
-        duration: 2000 
-      });
-      return;
-    }
-
-    this.exerciseService.updateHint(this.editingHint.id, this.editForm).subscribe({
-      next: (updatedHint) => {
-        const index = this.hints.findIndex(h => h.id === updatedHint.id);
-        if (index !== -1) {
-          this.hints[index] = updatedHint;
-          this.hints.sort((a, b) => a.order - b.order);
-        }
-        
-        this.snackBar.open('✅ Pista actualizada exitosamente', 'Cerrar', {
-          duration: 2000,
-          panelClass: ['success-snackbar']
-        });
-        
-        this.cancelEdit();
-      },
-      error: (error) => {
-        console.error('❌ Error al actualizar pista:', error);
-        this.snackBar.open('Error al actualizar pista', 'Cerrar', {
-          duration: 3000,
-          panelClass: ['error-snackbar']
-        });
-      }
-    });
-  }
 
   deleteHint(hint: Hint) {
     this.hintToDelete = hint;
