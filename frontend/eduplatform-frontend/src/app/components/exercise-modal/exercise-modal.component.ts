@@ -87,53 +87,24 @@ import { MatSnackBar } from '@angular/material/snack-bar';
             </div>
           </div>
 
-          <!-- Dificultad y Puntos -->
-          <div class="form-row">
-            <div class="form-group">
-              <label for="difficulty">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polygon points="12 2 2 7 12 12 22 7 12 2"/>
-                  <polyline points="2 17 12 22 22 17"/>
-                  <polyline points="2 12 12 17 22 12"/>
-                </svg>
-                Dificultad
-                <span class="required">*</span>
-              </label>
-              <select
-                id="difficulty"
-                class="form-select"
-                [(ngModel)]="exerciseForm.difficulty"
-                name="difficulty"
-                required
-              >
-                <option value="">Seleccionar</option>
-                <option value="Principiante">🌱 Principiante</option>
-                <option value="Intermedio">🎯 Intermedio</option>
-                <option value="Avanzado">🚀 Avanzado</option>
-                <option value="Experto">⭐ Experto</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label for="points">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-                </svg>
-                Puntos XP
-                <span class="required">*</span>
-              </label>
-              <input
-                type="number"
-                id="points"
-                class="form-input"
-                [(ngModel)]="exerciseForm.points"
-                name="points"
-                placeholder="100"
-                required
-                min="1"
-                max="1000"
-              />
-            </div>
+                  <!-- Dificultad -->
+          <div class="form-group">
+            <label for="difficulty">
+              Dificultad <span class="required">*</span>
+            </label>
+            <select
+              id="difficulty"
+              class="form-select"
+              [(ngModel)]="exerciseForm.difficulty"
+              name="difficulty"
+              required
+            >
+              <option value="">Seleccionar</option>
+              <option value="Principiante">🌱 Principiante</option>
+              <option value="Intermedio">🎯 Intermedio</option>
+              <option value="Avanzado">🚀 Avanzado</option>
+              <option value="Experto">⭐ Experto</option>
+            </select>
           </div>
 
           <!-- Fecha Límite -->
@@ -636,7 +607,6 @@ export class ExerciseModalComponent implements OnInit {
     title: '',
     description: '',
     difficulty: '',
-    points: 100,
     deadline: ''
   };
 
@@ -648,7 +618,6 @@ export class ExerciseModalComponent implements OnInit {
   ngOnInit() {
     if (this.editingExercise) {
       this.exerciseForm = { ...this.editingExercise };
-      // Formatear fecha para datetime-local
       if (this.exerciseForm.deadline) {
         const date = new Date(this.exerciseForm.deadline);
         this.exerciseForm.deadline = date.toISOString().slice(0, 16);
@@ -678,8 +647,7 @@ export class ExerciseModalComponent implements OnInit {
     return !!(
       this.exerciseForm.title &&
       this.exerciseForm.description &&
-      this.exerciseForm.difficulty &&
-      this.exerciseForm.points && this.exerciseForm.points > 0
+      this.exerciseForm.difficulty
     );
   }
 
@@ -689,51 +657,28 @@ export class ExerciseModalComponent implements OnInit {
     this.isSubmitting = true;
     this.exerciseForm.courseId = this.courseId;
 
-    if (this.editingExercise?.id) {
-      // Actualizar ejercicio
-      this.exerciseService.updateExercise(
-        this.editingExercise.id,
-        this.exerciseForm,
-        this.selectedFile || undefined
-      ).subscribe({
-        next: (exercise) => {
-          this.snackBar.open('✅ Ejercicio actualizado', 'Cerrar', {
-            duration: 3000,
-            panelClass: ['success-snackbar']
-          });
-          this.exerciseCreated.emit(exercise);
-          this.close();
-        },
-        error: (error) => {
-          console.error('❌ Error:', error);
-          this.snackBar.open('Error al actualizar ejercicio', 'Cerrar', {
-            duration: 3000,
-            panelClass: ['error-snackbar']
-          });
-          this.isSubmitting = false;
-        }
-      });
-    } else {
-      // Crear ejercicio
-      this.exerciseService.createExercise(this.exerciseForm, this.selectedFile || undefined).subscribe({
-        next: (exercise) => {
-          this.snackBar.open('✅ Ejercicio creado', 'Cerrar', {
-            duration: 3000,
-            panelClass: ['success-snackbar']
-          });
-          this.exerciseCreated.emit(exercise);
-          this.close();
-        },
-        error: (error) => {
-          console.error('❌ Error:', error);
-          this.snackBar.open('Error al crear ejercicio', 'Cerrar', {
-            duration: 3000,
-            panelClass: ['error-snackbar']
-          });
-          this.isSubmitting = false;
-        }
-      });
-    }
+    const request$ = this.editingExercise?.id
+      ? this.exerciseService.updateExercise(this.editingExercise.id, this.exerciseForm, this.selectedFile || undefined)
+      : this.exerciseService.createExercise(this.exerciseForm, this.selectedFile || undefined);
+
+    request$.subscribe({
+      next: (exercise) => {
+        this.snackBar.open(this.editingExercise ? '✅ Ejercicio actualizado' : '✅ Ejercicio creado', 'Cerrar', {
+          duration: 3000,
+          panelClass: ['success-snackbar']
+        });
+        this.exerciseCreated.emit(exercise);
+        this.close();
+      },
+      error: (error) => {
+        console.error('❌ Error:', error);
+        this.snackBar.open('Error al guardar el ejercicio', 'Cerrar', {
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
+        this.isSubmitting = false;
+      }
+    });
   }
 
   close() {
@@ -741,8 +686,7 @@ export class ExerciseModalComponent implements OnInit {
   }
 
   onBackdropClick(event: MouseEvent) {
-    const target = event.target as HTMLElement;
-    if (target.classList.contains('modal-overlay')) {
+    if ((event.target as HTMLElement).classList.contains('modal-overlay')) {
       this.close();
     }
   }

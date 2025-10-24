@@ -34,6 +34,7 @@ import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-m
       <!-- Exercises List -->
       <div *ngIf="!isLoading && exercises.length > 0" class="exercises-list">
         <div *ngFor="let exercise of exercises" class="exercise-card">
+          
           <!-- Header -->
           <div class="exercise-header">
             <div class="header-info">
@@ -44,9 +45,10 @@ import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-m
                 </span>
                 <span class="badge points">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 
+                    5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
                   </svg>
-                  {{ exercise.points }} XP
+                  {{ exercise.points }}
                 </span>
                 <span class="badge status" [ngClass]="getSubmissionStatus(exercise)">
                   {{ getSubmissionStatusText(exercise) }}
@@ -84,7 +86,7 @@ import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-m
               <div *ngFor="let hint of exercise.hints" class="hint-card">
                 <div class="hint-header">
                   <span class="hint-order">Pista {{ hint.order }}</span>
-                  <span class="hint-cost">Costo: {{ hint.cost }} XP</span>
+                  <span class="hint-cost">Costo: {{ hint.cost }}</span>
                 </div>
                 <p class="hint-content">{{ hint.content }}</p>
               </div>
@@ -146,70 +148,6 @@ import { ConfirmationModalComponent } from '../confirmation-modal/confirmation-m
         </div>
       </div>
     </div>
-
-    <!-- Upload Modal -->
-    <div *ngIf="showUploadModal" class="modal-overlay" (click)="closeUploadModal()">
-      <div class="modal-container" (click)="$event.stopPropagation()">
-        <div class="modal-header">
-          <h3>Subir Entrega</h3>
-          <button class="close-btn" (click)="closeUploadModal()">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="18" y1="6" x2="6" y2="18"/>
-              <line x1="6" y1="6" x2="18" y2="18"/>
-            </svg>
-          </button>
-        </div>
-        <div class="modal-content">
-          <p class="modal-description">
-            Selecciona el archivo con tu solución del ejercicio: <strong>{{ selectedExercise?.title }}</strong>
-          </p>
-          
-          <div class="file-upload-area" *ngIf="!selectedFile">
-            <input
-              type="file"
-              id="submission-file"
-              class="file-input"
-              (change)="onFileSelected($event)"
-              accept=".pdf,.zip,.rar,.txt,.doc,.docx,.java,.py,.cpp,.c,.js,.ts"
-            />
-            <label for="submission-file" class="file-label">
-              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                <polyline points="17 8 12 3 7 8"/>
-                <line x1="12" y1="3" x2="12" y2="15"/>
-              </svg>
-              <span>Haz clic para seleccionar archivo</span>
-              <span class="file-hint">PDF, ZIP, código fuente (máx. 10MB)</span>
-            </label>
-          </div>
-
-          <div class="file-selected" *ngIf="selectedFile">
-            <div class="file-info">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
-                <polyline points="13 2 13 9 20 9"/>
-              </svg>
-              <span>{{ selectedFile.name }}</span>
-            </div>
-            <button type="button" class="remove-file-btn" (click)="removeFile()">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="18" y1="6" x2="6" y2="18"/>
-                <line x1="6" y1="6" x2="18" y2="18"/>
-              </svg>
-            </button>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button class="btn-cancel" (click)="closeUploadModal()">Cancelar</button>
-          <button 
-            class="btn-submit" 
-            (click)="submitExercise()"
-            [disabled]="!selectedFile || isSubmitting">
-            {{ isSubmitting ? 'Subiendo...' : 'Subir Entrega' }}
-          </button>
-        </div>
-      </div>
-    </div>
   `,
   styleUrls: ['./student-exercises.component.scss']
 })
@@ -221,7 +159,6 @@ export class StudentExercisesComponent implements OnInit {
   isLoading = true;
   showHints: { [key: number]: boolean } = {};
   
-  // Upload modal
   showUploadModal = false;
   selectedExercise: Exercise | null = null;
   selectedFile: File | null = null;
@@ -242,13 +179,7 @@ export class StudentExercisesComponent implements OnInit {
       next: (exercises) => {
         this.exercises = exercises;
         this.isLoading = false;
-        
-        // Cargar pistas para cada ejercicio
-        exercises.forEach(exercise => {
-          if (exercise.id) {
-            this.loadHints(exercise.id);
-          }
-        });
+        exercises.forEach(ex => ex.id && this.loadHints(ex.id));
       },
       error: (error) => {
         console.error('❌ Error al cargar ejercicios:', error);
@@ -258,34 +189,24 @@ export class StudentExercisesComponent implements OnInit {
     });
   }
 
-  loadHints(exerciseId: number) {
-    this.exerciseService.getHintsByExercise(exerciseId).subscribe({
+  loadHints(id: number) {
+    this.exerciseService.getHintsByExercise(id).subscribe({
       next: (hints) => {
-        const exercise = this.exercises.find(e => e.id === exerciseId);
-        if (exercise) {
-          exercise.hints = hints;
-        }
-      },
-      error: (error) => {
-        console.error('❌ Error al cargar pistas:', error);
+        const exercise = this.exercises.find(e => e.id === id);
+        if (exercise) exercise.hints = hints;
       }
     });
   }
 
   loadMySubmissions() {
     this.exerciseService.getMySubmissions().subscribe({
-      next: (submissions) => {
-        this.submissions = submissions;
-      },
-      error: (error) => {
-        console.error('❌ Error al cargar entregas:', error);
-      }
+      next: (subs) => (this.submissions = subs),
+      error: (e) => console.error('❌ Error al cargar entregas:', e)
     });
   }
 
   downloadExercise(exercise: Exercise) {
     if (!exercise.id) return;
-
     this.exerciseService.downloadExercise(exercise.id).subscribe({
       next: (blob) => {
         const url = window.URL.createObjectURL(blob);
@@ -296,18 +217,17 @@ export class StudentExercisesComponent implements OnInit {
         a.click();
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
-        
         this.snackBar.open('✅ Archivo descargado', 'Cerrar', { duration: 2000 });
       },
-      error: (error) => {
-        console.error('❌ Error al descargar:', error);
+      error: (e) => {
+        console.error('❌ Error al descargar:', e);
         this.snackBar.open('Error al descargar archivo', 'Cerrar', { duration: 3000 });
       }
     });
   }
 
-  toggleHints(exerciseId: number) {
-    this.showHints[exerciseId] = !this.showHints[exerciseId];
+  toggleHints(id: number) {
+    this.showHints[id] = !this.showHints[id];
   }
 
   openUploadModal(exercise: Exercise) {
@@ -323,12 +243,10 @@ export class StudentExercisesComponent implements OnInit {
 
   onFileSelected(event: any) {
     const file = event.target.files[0];
-    if (file) {
-      if (file.size > 10 * 1024 * 1024) {
-        this.snackBar.open('El archivo no debe superar 10MB', 'Cerrar', { duration: 3000 });
-        return;
-      }
+    if (file && file.size <= 10 * 1024 * 1024) {
       this.selectedFile = file;
+    } else {
+      this.snackBar.open('El archivo no debe superar 10MB', 'Cerrar', { duration: 3000 });
     }
   }
 
@@ -338,12 +256,11 @@ export class StudentExercisesComponent implements OnInit {
 
   submitExercise() {
     if (!this.selectedFile || !this.selectedExercise?.id || this.isSubmitting) return;
-
     this.isSubmitting = true;
 
     this.exerciseService.submitExercise(this.selectedExercise.id, this.selectedFile).subscribe({
-      next: (submission) => {
-        this.submissions.push(submission);
+      next: (sub) => {
+        this.submissions.push(sub);
         this.snackBar.open('✅ Entrega subida exitosamente', 'Cerrar', {
           duration: 3000,
           panelClass: ['success-snackbar']
@@ -351,13 +268,12 @@ export class StudentExercisesComponent implements OnInit {
         this.closeUploadModal();
         this.isSubmitting = false;
       },
-      error: (error) => {
-        console.error('❌ Error al subir entrega:', error);
-        this.snackBar.open(
-          error.error?.error || 'Error al subir entrega',
-          'Cerrar',
-          { duration: 3000, panelClass: ['error-snackbar'] }
-        );
+      error: (e) => {
+        console.error('❌ Error al subir entrega:', e);
+        this.snackBar.open(e.error?.error || 'Error al subir entrega', 'Cerrar', {
+          duration: 3000,
+          panelClass: ['error-snackbar']
+        });
         this.isSubmitting = false;
       }
     });
@@ -372,26 +288,24 @@ export class StudentExercisesComponent implements OnInit {
   }
 
   getSubmissionStatus(exercise: Exercise): string {
-    const submission = this.getSubmission(exercise);
-    if (!submission) return 'pending';
-    if (submission.status === 'GRADED') return 'graded';
-    return 'submitted';
+    const s = this.getSubmission(exercise);
+    if (!s) return 'pending';
+    return s.status === 'GRADED' ? 'graded' : 'submitted';
   }
 
   getSubmissionStatusText(exercise: Exercise): string {
-    const submission = this.getSubmission(exercise);
-    if (!submission) return 'Pendiente';
-    if (submission.status === 'GRADED') return 'Calificado';
-    return 'Entregado';
+    const s = this.getSubmission(exercise);
+    if (!s) return 'Pendiente';
+    return s.status === 'GRADED' ? 'Calificado' : 'Entregado';
   }
 
-  getDifficultyColor(difficulty: string): string {
-    const colors: { [key: string]: string } = {
-      'Principiante': '#10b981',
-      'Intermedio': '#f59e0b',
-      'Avanzado': '#ef4444',
-      'Experto': '#8b5cf6'
+  getDifficultyColor(diff: string): string {
+    const colors: Record<string, string> = {
+      Principiante: '#10b981',
+      Intermedio: '#f59e0b',
+      Avanzado: '#ef4444',
+      Experto: '#8b5cf6'
     };
-    return colors[difficulty] || '#6b7280';
+    return colors[diff] || '#6b7280';
   }
 }

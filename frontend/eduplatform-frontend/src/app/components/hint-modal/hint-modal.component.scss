@@ -1,3 +1,6 @@
+// ===========================
+// VARIABLES
+// ===========================
 $primary-blue: #2563eb;
 $success-green: #10b981;
 $danger-red: #dc2626;
@@ -171,6 +174,8 @@ $gray-900: #111827;
   margin: 0 0 1rem 0;
 }
 
+
+
 .hint-form {
   display: flex;
   flex-direction: column;
@@ -178,12 +183,49 @@ $gray-900: #111827;
 }
 
 .form-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr auto;
+  display: flex;
   gap: 0.75rem;
   align-items: flex-end;
-}
 
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    &.flex-1 {
+      flex: 1;
+    }
+
+    &.small {
+      width: 100px;
+      flex-shrink: 0;
+    }
+
+    label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: $gray-700;
+    }
+  }
+
+  textarea.form-input {
+    resize: vertical;
+    min-height: 80px;
+  }
+
+  .add-btn {
+    height: 42px;
+    padding: 0.75rem 1.5rem;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+  }
+}
+// ===========================
+// INPUTS
+// ===========================
 .form-group {
   display: flex;
   flex-direction: column;
@@ -222,17 +264,10 @@ $gray-900: #111827;
   }
 }
 
-textarea.form-input {
-  resize: vertical;
-  min-height: 80px;
-  line-height: 1.5;
-}
-
+// ===========================
+// BOTÓN
+// ===========================
 .add-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
   padding: 0.75rem 1.25rem;
   background: $warning-orange;
   color: white;

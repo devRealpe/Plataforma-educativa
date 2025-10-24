@@ -236,8 +236,7 @@ export class TeacherDashboardComponent implements OnInit {
   closeStudentsModal() {
     this.showStudentsModal = false;
     this.selectedCourse = null;
-    // Recargar cursos para actualizar el contador de estudiantes
-    this.loadCourses();
+    this.loadCourses(); // Refrescar lista tras gestionar estudiantes
   }
 
   copyToClipboard(code: string) {

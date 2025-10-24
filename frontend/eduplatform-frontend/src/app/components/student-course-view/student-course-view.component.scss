@@ -455,6 +455,17 @@ $gray-900: #111827;
     }
   }
 
+  &.edit-btn {
+    background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%);
+    color: #92400e;
+    border-color: #f59e0b;
+
+    &:hover:not(:disabled) {
+      background: linear-gradient(135deg, #fed7aa 0%, #fbbf24 100%);
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+    }
+  }
+
   &.hints-btn {
     background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%);
     color: #92400e;

@@ -53,9 +53,6 @@
           <p class="stat-title">{{ stat.title }}</p>
           <h2 class="stat-value">{{ stat.value }}</h2>
         </div>
-        <div class="stat-icon" [style.background-color]="stat.bgColor">
-          <span>{{ stat.icon }}</span>
-        </div>
       </div>
     </div>
 
@@ -270,8 +267,7 @@
   *ngIf="showCreateModal"
   (closeModal)="closeModal()"
   (courseCreated)="handleCourseCreated($event)"
->
-</app-create-course-modal>
+></app-create-course-modal>
 
 <!-- Modal Editar Curso -->
 <app-edit-course-modal
@@ -279,8 +275,7 @@
   [course]="courseToEdit"
   (closeModal)="closeEditModal()"
   (courseUpdated)="handleCourseUpdated($event)"
->
-</app-edit-course-modal>
+></app-edit-course-modal>
 
 <!-- Modal Gestionar Estudiantes -->
 <app-manage-students-modal
@@ -288,8 +283,7 @@
   [courseId]="selectedCourse.id!"
   [courseTitle]="selectedCourse.title"
   (closeModal)="closeStudentsModal()"
->
-</app-manage-students-modal>
+></app-manage-students-modal>
 
 <!-- Modal Confirmación Eliminar Curso -->
 <app-confirmation-modal
@@ -301,8 +295,7 @@
   type="danger"
   (confirm)="confirmDeleteCourse()"
   (cancel)="cancelDeleteCourse()"
->
-</app-confirmation-modal>
+></app-confirmation-modal>
 
 <!-- Modal Confirmación Cerrar Sesión -->
 <app-confirmation-modal
@@ -314,5 +307,4 @@
   type="info"
   (confirm)="confirmLogout()"
   (cancel)="cancelLogout()"
->
-</app-confirmation-modal>
+></app-confirmation-modal>
