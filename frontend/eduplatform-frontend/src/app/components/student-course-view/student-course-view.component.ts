@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms'; // ✅ AGREGADO
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { CourseService, Course } from '../../services/course.service';
@@ -8,192 +9,8 @@ import { ExerciseService, Exercise, Hint, Submission } from '../../services/exer
 @Component({
   selector: 'app-student-course-view',
   standalone: true,
-  imports: [CommonModule],
-  template: `
-    <div class="course-container">
-      <!-- Header -->
-      <header class="header">
-        <div class="header-content">
-          <button class="back-btn" (click)="goBack()">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="19" y1="12" x2="5" y2="12"/>
-              <polyline points="12 19 5 12 12 5"/>
-            </svg>
-            Volver
-          </button>
-
-          <div class="course-info" *ngIf="course">
-            <h1 class="course-title">{{ course.title }}</h1>
-            <p class="course-description">{{ course.description }}</p>
-            <div class="course-meta">
-              <span class="meta-item">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polygon points="12 2 2 7 12 12 22 7 12 2"/>
-                  <polyline points="2 17 12 22 22 17"/>
-                  <polyline points="2 12 12 17 22 12"/>
-                </svg>
-                {{ course.level }}
-              </span>
-              <span class="meta-item">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                  <circle cx="12" cy="7" r="4"/>
-                </svg>
-                Profesor: {{ course.teacherName }}
-              </span>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <!-- Main Content -->
-      <main class="main-content">
-        <div *ngIf="isLoading" class="loading">
-          <div class="spinner"></div>
-          <p>Cargando ejercicios...</p>
-        </div>
-
-        <div *ngIf="!isLoading && exercises.length === 0" class="empty-state">
-          <div class="empty-icon">
-            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-              <polyline points="14 2 14 8 20 8"/>
-            </svg>
-          </div>
-          <h3 class="empty-title">No hay ejercicios disponibles</h3>
-          <p class="empty-description">El profesor aún no ha agregado ejercicios a este curso</p>
-        </div>
-
-        <!-- Exercises Grid -->
-        <div *ngIf="!isLoading && exercises.length > 0" class="exercises-grid">
-          <div *ngFor="let exercise of exercises" class="exercise-card" [class.completed]="hasSubmission(exercise)">
-            <div class="status-badge" *ngIf="hasSubmission(exercise)">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="20 6 9 17 4 12"/>
-              </svg>
-              {{ getSubmissionStatusText(exercise) }}
-            </div>
-
-            <div class="card-header">
-              <h3 class="exercise-title">{{ exercise.title }}</h3>
-              <div class="exercise-badges">
-                <span class="badge difficulty" [style.background-color]="getDifficultyColor(exercise.difficulty)">
-                  {{ exercise.difficulty }}
-                </span>
-              </div>
-            </div>
-
-            <div class="card-body">
-              <p class="exercise-description">{{ exercise.description }}</p>
-
-              <div class="exercise-info">
-                <div class="info-item" *ngIf="exercise.deadline">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-                    <line x1="16" y1="2" x2="16" y2="6"/>
-                    <line x1="8" y1="2" x2="8" y2="6"/>
-                    <line x1="3" y1="10" x2="21" y2="10"/>
-                  </svg>
-                  <span>Fecha límite: {{ exercise.deadline | date:'short' }}</span>
-                </div>
-                <div class="info-item" *ngIf="exercise.fileName">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
-                    <polyline points="13 2 13 9 20 9"/>
-                  </svg>
-                  <span>{{ exercise.fileName }}</span>
-                </div>
-              </div>
-
-              <!-- Hints Section -->
-              <div class="hints-section" *ngIf="showHints[exercise.id!] && getHints(exercise).length > 0">
-                <h4 class="hints-title">💡 Pistas Disponibles</h4>
-                <div *ngFor="let hint of getHints(exercise)" class="hint-card">
-                  <div class="hint-header">
-                    <span class="hint-order">Pista {{ hint.order }}</span>
-                  </div>
-                  <p class="hint-content">{{ hint.content }}</p>
-                </div>
-              </div>
-
-              <!-- Submission Info -->
-              <div class="submission-info" *ngIf="hasSubmission(exercise)">
-                <div class="submission-header">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <polyline points="20 6 9 17 4 12"/>
-                  </svg>
-                  <span>Ejercicio entregado</span>
-                </div>
-                <div class="submission-details" *ngIf="getSubmission(exercise) as submission">
-                  <p><strong>Fecha de entrega:</strong> {{ submission.submittedAt | date:'short' }}</p>
-                  <p><strong>Archivo:</strong> {{ submission.fileName }}</p>
-                  
-                  <div class="grade-status">
-                    <p *ngIf="submission.status === 'PENDING'" class="status-pending">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"/>
-                        <polyline points="12 6 12 12 16 14"/>
-                      </svg>
-                      Estado: Pendiente de calificación
-                    </p>
-                    
-                    <div *ngIf="submission.status === 'GRADED'" class="grade-display">
-                      <p class="status-graded">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                          <polyline points="22 4 12 14.01 9 11.01"/>
-                        </svg>
-                        Estado: Calificado
-                      </p>
-                      <div class="grade-box">
-                        <span class="grade-label">Calificación:</span>
-                        <span class="grade-value" [class.high]="submission.grade! >= 3.0" [class.low]="submission.grade! < 3.0">
-                          {{ submission.grade }}/5.0
-                        </span>
-                      </div>
-                      <p class="graded-date">Calificado: {{ submission.gradedAt | date:'short' }}</p>
-                    </div>
-                  </div>
-
-                  <div *ngIf="submission.feedback" class="feedback-box">
-                    <strong>📝 Retroalimentación del profesor:</strong>
-                    <p>{{ submission.feedback }}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div class="card-footer">
-                <button class="footer-btn" (click)="downloadExercise(exercise)" *ngIf="exercise.fileName">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                    <polyline points="7 10 12 15 17 10"/>
-                    <line x1="12" y1="15" x2="12" y2="3"/>
-                  </svg>
-                  Descargar Ejercicio
-                </button>
-                
-                <button class="footer-btn hints-btn" (click)="toggleHints(exercise.id!)" *ngIf="getHints(exercise).length > 0">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
-                  </svg>
-                  {{ showHints[exercise.id!] ? 'Ocultar' : 'Ver' }} Pistas
-                </button>
-
-                <button class="footer-btn primary" (click)="openUploadModal(exercise)" [disabled]="hasSubmission(exercise)">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-                    <polyline points="17 8 12 3 7 8"/>
-                    <line x1="12" y1="3" x2="12" y2="15"/>
-                  </svg>
-                  {{ hasSubmission(exercise) ? 'Ya Entregado' : 'Subir Entrega' }}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </main>
-    </div>
-  `,
+  imports: [CommonModule, FormsModule], // ✅ AGREGADO FormsModule
+  templateUrl: './student-course-view.component.html',
   styleUrls: ['./student-course-view.component.scss']
 })
 export class StudentCourseViewComponent implements OnInit {
@@ -211,7 +28,6 @@ export class StudentCourseViewComponent implements OnInit {
   selectedExercise: Exercise | null = null;
   selectedFile: File | null = null;
   isSubmitting = false;
-  isEditMode = false; // Para saber si estamos editando una entrega existente
 
   constructor(
     private route: ActivatedRoute,
@@ -256,7 +72,6 @@ export class StudentCourseViewComponent implements OnInit {
         this.exercises = exercises;
         this.isLoading = false;
         
-        // Cargar pistas para cada ejercicio
         exercises.forEach(exercise => {
           if (exercise.id) {
             this.loadHints(exercise.id);
@@ -286,6 +101,7 @@ export class StudentCourseViewComponent implements OnInit {
     this.exerciseService.getMySubmissions().subscribe({
       next: (submissions) => {
         this.submissions = submissions;
+        console.log('✅ Mis entregas cargadas:', submissions);
       },
       error: (error) => {
         console.error('❌ Error al cargar entregas:', error);
@@ -325,7 +141,9 @@ export class StudentCourseViewComponent implements OnInit {
   }
 
   openUploadModal(exercise: Exercise) {
+    console.log('📤 Abriendo modal para subir entrega:', exercise.title);
     this.selectedExercise = exercise;
+    this.selectedFile = null; // Reset file
     this.showUploadModal = true;
   }
 
@@ -343,6 +161,7 @@ export class StudentCourseViewComponent implements OnInit {
         return;
       }
       this.selectedFile = file;
+      console.log('📁 Archivo seleccionado:', file.name);
     }
   }
 
@@ -351,12 +170,21 @@ export class StudentCourseViewComponent implements OnInit {
   }
 
   submitExercise() {
-    if (!this.selectedFile || !this.selectedExercise?.id || this.isSubmitting) return;
+    if (!this.selectedFile || !this.selectedExercise?.id || this.isSubmitting) {
+      console.warn('⚠️ No se puede enviar:', { 
+        hasFile: !!this.selectedFile, 
+        hasExercise: !!this.selectedExercise?.id,
+        isSubmitting: this.isSubmitting 
+      });
+      return;
+    }
 
     this.isSubmitting = true;
+    console.log('📤 Enviando entrega...');
 
     this.exerciseService.submitExercise(this.selectedExercise.id, this.selectedFile).subscribe({
       next: (submission) => {
+        console.log('✅ Entrega enviada exitosamente:', submission);
         this.submissions.push(submission);
         this.snackBar.open('✅ Entrega subida exitosamente', 'Cerrar', {
           duration: 3000,
