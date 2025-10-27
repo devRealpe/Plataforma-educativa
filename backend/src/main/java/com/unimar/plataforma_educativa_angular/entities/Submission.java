@@ -29,7 +29,6 @@ public class Submission {
     @JsonIgnoreProperties({ "password", "enrolledCourses", "hibernateLazyInitializer" })
     private User student;
 
-    // 🔥 CAMBIO: Guardar archivo como BLOB
     @Lob
     @Column(name = "file_data", columnDefinition = "LONGBLOB")
     private byte[] fileData;
@@ -65,7 +64,6 @@ public class Submission {
         REJECTED
     }
 
-    // 🔥 NUEVO: Método helper
     public boolean hasFile() {
         return fileData != null && fileData.length > 0;
     }

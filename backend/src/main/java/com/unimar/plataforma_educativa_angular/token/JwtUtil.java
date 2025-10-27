@@ -21,7 +21,7 @@ public class JwtUtil {
         return new SecretKeySpec(SECRET_KEY.getBytes(), SignatureAlgorithm.HS256.getJcaName());
     }
 
-    // ✅ Generar token CON EL ROL
+    // Generar token CON EL ROL
     public String generateToken(String email, String role) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", role); // ← Agregar el rol al token
@@ -47,7 +47,7 @@ public class JwtUtil {
         return extractAllClaims(token).getSubject();
     }
 
-    // ✅ Extraer el rol del token
+    // Extraer el rol del token
     public String extractRole(String token) {
         return extractAllClaims(token).get("role", String.class);
     }

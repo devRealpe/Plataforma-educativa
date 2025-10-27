@@ -99,7 +99,7 @@ class CourseServiceTest {
         verify(courseRepository, times(1)).save(any(Course.class));
         verify(courseRepository, atLeastOnce()).existsByInviteCode(anyString());
 
-        System.out.println("✅ CP005 PASÓ: Curso creado exitosamente con código: " + result.getInviteCode());
+        System.out.println("CP005 PASÓ: Curso creado exitosamente con código: " + result.getInviteCode());
     }
 
     @Test
@@ -128,7 +128,7 @@ class CourseServiceTest {
         assertNotNull(result.getInviteCode());
         verify(courseRepository, atLeast(2)).existsByInviteCode(anyString());
 
-        System.out.println("✅ Código único generado: " + result.getInviteCode());
+        System.out.println("Código único generado: " + result.getInviteCode());
     }
 
     // ========================================
@@ -162,7 +162,7 @@ class CourseServiceTest {
         verify(userRepository, times(1)).findByEmail(studentEmail);
         verify(courseRepository, times(1)).save(testCourse);
 
-        System.out.println("✅ CP006-01 PASÓ: Estudiante inscrito exitosamente al curso");
+        System.out.println("CP006-01 PASÓ: Estudiante inscrito exitosamente al curso");
     }
 
     @Test
@@ -190,7 +190,7 @@ class CourseServiceTest {
         // Verificar que NO se guardó el curso
         verify(courseRepository, never()).save(any(Course.class));
 
-        System.out.println("✅ CP006-02 PASÓ: Sistema previene inscripción duplicada");
+        System.out.println("CP006-02 PASÓ: Sistema previene inscripción duplicada");
         System.out.println("   Mensaje: " + exception.getMessage());
     }
 
@@ -212,7 +212,7 @@ class CourseServiceTest {
         verify(courseRepository, times(1)).findByInviteCode(invalidCode);
         verify(userRepository, never()).findByEmail(anyString());
 
-        System.out.println("✅ Código inválido manejado correctamente");
+        System.out.println("Código inválido manejado correctamente");
     }
 
     @Test
@@ -233,7 +233,7 @@ class CourseServiceTest {
         assertEquals("Solo los estudiantes pueden unirse a cursos", exception.getMessage());
         verify(courseRepository, never()).save(any(Course.class));
 
-        System.out.println("✅ Sistema valida que solo estudiantes pueden inscribirse");
+        System.out.println("Sistema valida que solo estudiantes pueden inscribirse");
     }
 
     @Test
@@ -254,6 +254,6 @@ class CourseServiceTest {
 
         assertEquals("Estudiante no encontrado", exception.getMessage());
 
-        System.out.println("✅ Sistema maneja usuario no encontrado correctamente");
+        System.out.println("Sistema maneja usuario no encontrado correctamente");
     }
 }

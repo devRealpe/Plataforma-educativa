@@ -25,9 +25,6 @@ public class Hint {
     @Column(name = "hint_order", nullable = false)
     private Integer order;
 
-    // ✅ Campo eliminado: Ya no usamos costo de XP
-    // private Integer cost;
-
     @ManyToOne
     @JoinColumn(name = "exercise_id", nullable = false)
     @JsonIgnoreProperties({ "hints", "submissions", "course" })

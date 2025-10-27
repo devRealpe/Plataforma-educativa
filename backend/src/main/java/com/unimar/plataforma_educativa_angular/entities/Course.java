@@ -22,13 +22,13 @@ public class Course {
 
     @ManyToOne
     @JoinColumn(name = "teacher_id")
-    @JsonIgnoreProperties({ "password", "courses" }) // ✅ Evita serialización circular
+    @JsonIgnoreProperties({ "password", "courses" })
     private User teacher;
 
     @ManyToMany
     @JoinTable(name = "course_students", joinColumns = @JoinColumn(name = "course_id"), inverseJoinColumns = @JoinColumn(name = "student_id"))
-    @JsonIgnoreProperties({ "password", "enrolledCourses" }) // ✅ Evita serialización circular
-    private Set<User> students = new HashSet<>(); // ✅ Inicializar para evitar NullPointerException
+    @JsonIgnoreProperties({ "password", "enrolledCourses" })
+    private Set<User> students = new HashSet<>();
 
     // Getters y Setters
     public Long getId() {

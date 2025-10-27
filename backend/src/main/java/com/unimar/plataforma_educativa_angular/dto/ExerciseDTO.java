@@ -13,8 +13,6 @@ public class ExerciseDTO {
     private String title;
     private String description;
     private String difficulty;
-    // ✅ Campo eliminado: Ya no usamos puntos
-    // private Integer points;
     private String fileName;
     private String fileType;
     private LocalDateTime deadline;

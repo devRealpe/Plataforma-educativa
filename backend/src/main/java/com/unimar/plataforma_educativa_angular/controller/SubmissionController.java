@@ -108,7 +108,7 @@ public class SubmissionController {
     }
 
     /**
-     * 🔥 CORREGIDO: Descargar archivo de entrega desde la base de datos
+     * Descargar archivo de entrega desde la base de datos
      */
     @GetMapping("/{id}/download")
     public ResponseEntity<byte[]> downloadSubmission(

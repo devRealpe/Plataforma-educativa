@@ -25,10 +25,10 @@ public class AuthController {
     public Map<String, String> login(@RequestBody User loginRequest) throws Exception {
         User user = userService.loginUser(loginRequest.getEmail(), loginRequest.getPassword());
 
-        System.out.println("✅ Usuario autenticado: " + user.getEmail());
+        System.out.println("Usuario autenticado: " + user.getEmail());
 
         String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
-        System.out.println("✅ Token generado correctamente");
+        System.out.println("Token generado correctamente");
 
         Map<String, String> response = new HashMap<>();
         response.put("token", token);
