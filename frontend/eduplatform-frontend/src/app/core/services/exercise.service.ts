@@ -41,6 +41,12 @@ export interface Submission {
   feedback?: string;
   gradedAt?: Date;
   hasFile?: boolean;
+  published?: boolean;
+  lastModifiedAt?: string;
+  editCount?: number;
+  canBeEdited?: boolean;
+  daysUntilDeadline?: number;
+  exerciseDeadline?: string;
 }
 
 @Injectable({
@@ -128,14 +134,37 @@ export class ExerciseService {
     return this.http.delete(`${this.hintsUrl}/${id}`);
   }
 
-  // ========== SUBMISSIONS ==========
-
+    // ==================== ENTREGAS (ESTUDIANTE) ====================
+  
+  /**
+   * Subir nueva entrega
+   */
   submitExercise(exerciseId: number, file: File): Observable<Submission> {
     const formData = new FormData();
     formData.append('exerciseId', exerciseId.toString());
     formData.append('file', file);
 
-    return this.http.post<Submission>(this.submissionsUrl, formData);
+    return this.http.post<Submission>(`${this.apiUrl}/submissions`, formData);
+  }
+
+  /**
+   * 🆕 Editar entrega existente
+   */
+  updateSubmission(submissionId: number, file: File): Observable<Submission> {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    return this.http.put<Submission>(`${this.apiUrl}/submissions/${submissionId}`, formData);
+  }
+
+  /**
+   * 🆕 Publicar/Despublicar entrega
+   */
+  togglePublishSubmission(submissionId: number): Observable<Submission> {
+    return this.http.patch<Submission>(
+      `${this.apiUrl}/submissions/${submissionId}/publish`,
+      {}
+    );
   }
 
   getSubmissionsByExercise(exerciseId: number): Observable<Submission[]> {
