@@ -124,7 +124,7 @@ public class SubmissionService {
      * Calificar entrega (Profesor)
      */
     @Transactional
-    public Submission gradeSubmission(Long id, Integer grade, String feedback, String teacherEmail) {
+    public Submission gradeSubmission(Long id, Double grade, String feedback, String teacherEmail) {
         Submission submission = submissionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Entrega no encontrada"));
 

@@ -97,7 +97,7 @@ public class SubmissionController {
             @RequestBody Map<String, Object> gradeData,
             Authentication auth) {
         try {
-            Integer grade = (Integer) gradeData.get("grade");
+            Double grade = (Double) gradeData.get("grade");
             String feedback = (String) gradeData.get("feedback");
 
             Submission submission = submissionService.gradeSubmission(id, grade, feedback, auth.getName());

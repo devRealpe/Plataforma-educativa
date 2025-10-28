@@ -18,7 +18,7 @@ public class SubmissionDTO {
     private String fileType;
     private LocalDateTime submittedAt;
     private String status;
-    private Integer grade;
+    private Double grade;
     private String feedback;
     private LocalDateTime gradedAt;
     private boolean hasFile;

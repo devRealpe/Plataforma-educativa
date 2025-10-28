@@ -46,7 +46,7 @@ public class Submission {
     @Column(nullable = false)
     private SubmissionStatus status = SubmissionStatus.PENDING;
 
-    private Integer grade;
+    private Double grade;
 
     @Column(length = 1000)
     private String feedback;

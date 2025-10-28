@@ -84,8 +84,9 @@ export class SubmissionsModalComponent implements OnInit {
   }
 
   isGradeValid(): boolean {
-    // Validar que la nota esté en el rango 0.0 - 5.0
-    return this.gradeForm.grade >= 0 && this.gradeForm.grade <= 5.0;
+    // Convertir a número y validar que esté en el rango 0.0 - 5.0
+    const grade = Number(this.gradeForm.grade);
+    return !isNaN(grade) && grade >= 0 && grade <= 5.0;
   }
 
   submitGrade() {
@@ -96,8 +97,15 @@ export class SubmissionsModalComponent implements OnInit {
       return;
     }
 
-    // Redondear a 1 decimal
-    const roundedGrade = Math.round(this.gradeForm.grade * 10) / 10;
+    // Convertir a número y redondear a 1 decimal
+    const gradeValue = Number(this.gradeForm.grade);
+    const roundedGrade = Math.round(gradeValue * 10) / 10;
+
+    console.log('📊 Enviando calificación:', {
+      original: this.gradeForm.grade,
+      converted: gradeValue,
+      rounded: roundedGrade
+    });
 
     this.exerciseService.gradeSubmission(
       this.gradingSubmission.id,
@@ -110,7 +118,7 @@ export class SubmissionsModalComponent implements OnInit {
           this.submissions[index] = updatedSubmission;
         }
         
-        this.snackBar.open('✅ Calificación guardada exitosamente', 'Cerrar', {
+        this.snackBar.open(`✅ Calificación guardada: ${roundedGrade}/5.0`, 'Cerrar', {
           duration: 3000,
           panelClass: ['success-snackbar']
         });
@@ -119,8 +127,21 @@ export class SubmissionsModalComponent implements OnInit {
       },
       error: (error) => {
         console.error('❌ Error al calificar:', error);
-        this.snackBar.open('Error al guardar calificación', 'Cerrar', {
-          duration: 3000,
+        console.error('Detalles del error:', {
+          message: error.message,
+          status: error.status,
+          error: error.error
+        });
+        
+        let errorMessage = 'Error al guardar calificación';
+        if (error.error?.message) {
+          errorMessage = error.error.message;
+        } else if (error.error?.error) {
+          errorMessage = error.error.error;
+        }
+        
+        this.snackBar.open(`❌ ${errorMessage}`, 'Cerrar', {
+          duration: 5000,
           panelClass: ['error-snackbar']
         });
       }
