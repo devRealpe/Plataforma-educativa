@@ -1,13 +1,13 @@
 import { Routes } from '@angular/router';
-import { LoginComponent } from './components/login/login.component';
-import { RegisterComponent } from './components/register/register.component';
-import { ProfileComponent } from './components/profile/profile.component';
-import { LandingComponent } from './components/landing/landing.component';
-import { AuthGuard } from './services/auth.guard';
-import { TeacherDashboardComponent } from './components/teacher-dashboard/teacher-dashboard.component'; 
-import { StudentDashboardComponent } from './components/student-dashboard/student-dashboard.component';
-import { CourseDetailComponent } from './components/course-detail/course-detail.component';
-import { StudentCourseViewComponent } from './components/student-course-view/student-course-view.component';
+import { LoginComponent } from './features/auth/components/login/login.component';
+import { RegisterComponent } from './features/auth/components/register/register.component';
+import { ProfileComponent } from './common/components/profile/profile.component';
+import { LandingComponent } from './common/components/landing/landing.component';
+import { AuthGuard } from './core/guards/auth.guard';
+import { TeacherDashboardComponent } from './features/teacher/components/teacher-dashboard/teacher-dashboard.component';
+import { StudentDashboardComponent } from './features/student/components/student-dashboard/student-dashboard.component';
+import { CourseDetailComponent } from './features/teacher/components/course-detail/course-detail.component';
+import { StudentCourseViewComponent } from './features/student/components/student-course-view/student-course-view.component';
 
 export const routes: Routes = [
   { path: 'landing', component: LandingComponent },
