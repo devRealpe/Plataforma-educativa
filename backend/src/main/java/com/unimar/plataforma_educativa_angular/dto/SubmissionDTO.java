@@ -22,6 +22,12 @@ public class SubmissionDTO {
     private String feedback;
     private LocalDateTime gradedAt;
     private boolean hasFile;
+    private Boolean published;
+    private LocalDateTime lastModifiedAt;
+    private Integer editCount;
+    private Boolean canBeEdited;
+    private Long daysUntilDeadline;
+    private LocalDateTime exerciseDeadline;
 
     public SubmissionDTO(Submission submission) {
         this.id = submission.getId();
@@ -37,5 +43,11 @@ public class SubmissionDTO {
         this.feedback = submission.getFeedback();
         this.gradedAt = submission.getGradedAt();
         this.hasFile = submission.hasFile();
+        this.published = submission.getPublished();
+        this.lastModifiedAt = submission.getLastModifiedAt();
+        this.editCount = submission.getEditCount();
+        this.canBeEdited = submission.canBeEdited();
+        this.daysUntilDeadline = submission.getDaysUntilDeadline();
+        this.exerciseDeadline = submission.getExercise() != null ? submission.getExercise().getDeadline() : null;
     }
 }

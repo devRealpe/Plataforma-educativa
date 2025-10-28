@@ -33,7 +33,48 @@ public class SubmissionController {
             Authentication auth) {
         try {
             Submission submission = submissionService.submitExercise(exerciseId, auth.getName(), file);
-            return ResponseEntity.ok(submission);
+            return ResponseEntity.ok(new SubmissionDTO(submission));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    /**
+     * Editar entrega (Estudiante)
+     */
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> updateSubmission(
+            @PathVariable Long id,
+            @RequestParam("file") MultipartFile file,
+            Authentication auth) {
+        try {
+            Submission submission = submissionService.updateSubmission(id, auth.getName(), file);
+            return ResponseEntity.ok(Map.of(
+                    "message", "Entrega actualizada exitosamente",
+                    "submission", new SubmissionDTO(submission)));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    /**
+     * Publicar/Despublicar entrega (Estudiante)
+     */
+    @PatchMapping("/{id}/publish")
+    public ResponseEntity<?> togglePublishSubmission(
+            @PathVariable Long id,
+            Authentication auth) {
+        try {
+            Submission submission = submissionService.togglePublishSubmission(id, auth.getName());
+
+            String message = submission.getPublished()
+                    ? "Entrega publicada exitosamente. El profesor ahora puede calificarla."
+                    : "Entrega despublicada. El profesor ya no puede verla hasta que la publiques nuevamente.";
+
+            return ResponseEntity.ok(Map.of(
+                    "message", message,
+                    "published", submission.getPublished(),
+                    "submission", new SubmissionDTO(submission)));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
@@ -49,7 +90,7 @@ public class SubmissionController {
         try {
             List<Submission> submissions = submissionService.getSubmissionsByExercise(exerciseId, auth.getName());
 
-            // 🔥 Convertir a DTOs
+            // Convertir a DTOs con información completa
             List<SubmissionDTO> submissionDTOs = submissions.stream()
                     .map(SubmissionDTO::new)
                     .collect(Collectors.toList());
@@ -67,7 +108,13 @@ public class SubmissionController {
     public ResponseEntity<?> getMySubmissions(Authentication auth) {
         try {
             List<Submission> submissions = submissionService.getMySubmissions(auth.getName());
-            return ResponseEntity.ok(submissions);
+
+            // Convertir a DTOs con información completa
+            List<SubmissionDTO> submissionDTOs = submissions.stream()
+                    .map(SubmissionDTO::new)
+                    .collect(Collectors.toList());
+
+            return ResponseEntity.ok(submissionDTOs);
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
@@ -82,7 +129,7 @@ public class SubmissionController {
             Authentication auth) {
         try {
             Submission submission = submissionService.getSubmissionById(id, auth.getName());
-            return ResponseEntity.ok(submission);
+            return ResponseEntity.ok(new SubmissionDTO(submission));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
@@ -97,11 +144,11 @@ public class SubmissionController {
             @RequestBody Map<String, Object> gradeData,
             Authentication auth) {
         try {
-            Double grade = (Double) gradeData.get("grade");
+            Double grade = ((Number) gradeData.get("grade")).doubleValue();
             String feedback = (String) gradeData.get("feedback");
 
             Submission submission = submissionService.gradeSubmission(id, grade, feedback, auth.getName());
-            return ResponseEntity.ok(submission);
+            return ResponseEntity.ok(new SubmissionDTO(submission));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
@@ -115,13 +162,9 @@ public class SubmissionController {
             @PathVariable Long id,
             Authentication auth) {
         try {
-            // Obtener la entrega para acceder a sus metadatos
             Submission submission = submissionService.getSubmissionById(id, auth.getName());
-
-            // Obtener el archivo como bytes desde la base de datos
             byte[] fileData = submissionService.getSubmissionFile(id, auth.getName());
 
-            // Configurar headers para la descarga
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.parseMediaType(submission.getFileType()));
             headers.setContentDispositionFormData("attachment", submission.getFileName());
@@ -132,7 +175,6 @@ public class SubmissionController {
                     .body(fileData);
 
         } catch (RuntimeException e) {
-            // Log del error para debugging
             System.err.println("❌ Error al descargar entrega: " + e.getMessage());
             return ResponseEntity.badRequest().build();
         }

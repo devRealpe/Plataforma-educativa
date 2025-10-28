@@ -46,6 +46,10 @@ public class Submission {
     @Column(nullable = false)
     private SubmissionStatus status = SubmissionStatus.PENDING;
 
+    // Estado de publicación
+    @Column(nullable = false)
+    private Boolean published = false;
+
     private Double grade;
 
     @Column(length = 1000)
@@ -53,18 +57,61 @@ public class Submission {
 
     private LocalDateTime gradedAt;
 
+    // Fecha de última modificación
+    private LocalDateTime lastModifiedAt;
+
+    // Contador de modificaciones
+    @Column(nullable = false)
+    private Integer editCount = 0;
+
     @PrePersist
     protected void onCreate() {
         submittedAt = LocalDateTime.now();
+        lastModifiedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        lastModifiedAt = LocalDateTime.now();
     }
 
     public enum SubmissionStatus {
-        PENDING,
-        GRADED,
-        REJECTED
+        PENDING, // Sin calificar
+        GRADED, // Calificado
+        REJECTED // Rechazado (opcional)
     }
 
     public boolean hasFile() {
         return fileData != null && fileData.length > 0;
+    }
+
+    // Método para verificar si puede ser editado
+    public boolean canBeEdited() {
+        // No puede ser editado si ya fue calificado
+        if (status == SubmissionStatus.GRADED) {
+            return false;
+        }
+
+        // Verificar si aún está dentro del plazo
+        if (exercise != null && exercise.getDeadline() != null) {
+            return LocalDateTime.now().isBefore(exercise.getDeadline());
+        }
+
+        // Si no hay deadline, puede ser editado siempre que no esté calificado
+        return true;
+    }
+
+    // Método para obtener días restantes
+    public Long getDaysUntilDeadline() {
+        if (exercise == null || exercise.getDeadline() == null) {
+            return null;
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        if (now.isAfter(exercise.getDeadline())) {
+            return 0L;
+        }
+
+        return java.time.Duration.between(now, exercise.getDeadline()).toDays();
     }
 }
