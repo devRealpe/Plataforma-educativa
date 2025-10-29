@@ -126,4 +126,27 @@ export class ChallengeSubmissionModalComponent implements OnInit {
     if (days <= 3) return `⚠️ Quedan ${days} días`;
     return `📅 ${days} días restantes`;
   }
+
+  downloadChallenge() {
+    if (!this.challenge.id) return;
+
+    this.challengeService.downloadChallenge(this.challenge.id).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = this.challenge.fileName || 'reto.pdf';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        
+        this.snackBar.open('📥 Archivo descargado', 'Cerrar', { duration: 2000 });
+      },
+      error: (error) => {
+        console.error('❌ Error al descargar:', error);
+        this.snackBar.open('Error al descargar el archivo', 'Cerrar', { duration: 3000 });
+      }
+    });
+  }
 }

@@ -116,16 +116,7 @@
         <button
           type="button"
           class="download-btn"
-          (click)="challengeService.downloadChallenge(challenge.id!).subscribe(blob => {
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = challenge.fileName || 'reto.pdf';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);
-          })"
+          (click)="downloadChallenge()"
         >
           <svg
             width="18"
