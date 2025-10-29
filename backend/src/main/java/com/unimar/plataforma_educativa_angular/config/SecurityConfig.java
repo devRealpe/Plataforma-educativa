@@ -58,6 +58,10 @@ public class SecurityConfig {
                         // ========================================
                         .requestMatchers("/api/submissions/**").authenticated()
 
+                        .requestMatchers("/api/challenges/**").authenticated()
+                        .requestMatchers("/api/challenge-submissions/**").authenticated()
+                        .requestMatchers("/api/podium/**").authenticated()
+
                         // ========================================
                         // Cualquier otra petición requiere autenticación
                         // ========================================
