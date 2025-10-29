@@ -10,6 +10,9 @@ import { HintModalComponent } from '../hint-modal/hint-modal.component';
 import { ManageStudentsModalComponent } from '../manage-students-modal/manage-students-modal.component';
 import { ConfirmationModalComponent } from '../../../../shared/components/confirmation-modal/confirmation-modal.component';
 import { SubmissionsModalComponent } from '../submissions-modal/submissions-modal.component';
+import { PodiumComponent } from '../../../../shared/components/podium/podium.component';
+import { ChallengeService, Challenge } from '../../../../core/services/challenge.service';
+import { ReviewChallengeSubmissionModalComponent } from '../../modals/review-challenge-submission-modal/review-challenge-submission-modal.component';
 
 @Component({
   selector: 'app-course-detail',
@@ -20,7 +23,9 @@ import { SubmissionsModalComponent } from '../submissions-modal/submissions-moda
     HintModalComponent,
     ManageStudentsModalComponent,
     ConfirmationModalComponent,
-    SubmissionsModalComponent 
+    SubmissionsModalComponent,
+    PodiumComponent, // ← AGREGAR
+    ReviewChallengeSubmissionModalComponent // ← AGREGAR
   ],
   templateUrl: './course-detail.component.html',
   styleUrls: ['./course-detail.component.scss']
@@ -29,30 +34,72 @@ export class CourseDetailComponent implements OnInit {
   courseId!: number;
   course: Course | null = null;
   exercises: Exercise[] = [];
+  challenges: Challenge[] = []; // ← AGREGAR
   isLoading = true;
+  isLoadingChallenges = false; // ← AGREGAR
 
   // Modal states
   showExerciseModal = false;
   showHintModal = false;
   showStudentsModal = false;
   showDeleteConfirmModal = false;
-  showSubmissionsModal = false; 
+  showSubmissionsModal = false;
+  showChallengeSubmissionsModal = false; // ← AGREGAR
+  showPodium = true; // ← AGREGAR
   
   editingExercise: Exercise | null = null;
   selectedExercise: Exercise | null = null;
   exerciseToDelete: Exercise | null = null;
+  selectedChallenge: Challenge | null = null; // ← AGREGAR
+
+  // Tab Navigation
+  activeTab: 'exercises' | 'challenges' | 'podium' = 'exercises'; // ← AGREGAR
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private courseService: CourseService,
     private exerciseService: ExerciseService,
+    private challengeService: ChallengeService, // ← AGREGAR
     private snackBar: MatSnackBar
   ) {}
 
   ngOnInit() {
     this.courseId = Number(this.route.snapshot.paramMap.get('id'));
     this.loadCourseData();
+    this.loadChallenges(); // ← AGREGAR
+  }
+
+  // ========== AGREGAR ESTOS MÉTODOS ==========
+
+  setActiveTab(tab: 'exercises' | 'challenges' | 'podium') {
+    this.activeTab = tab;
+  }
+
+  loadChallenges() {
+    this.isLoadingChallenges = true;
+    this.challengeService.getChallengesByCourse(this.courseId).subscribe({
+      next: (challenges) => {
+        this.challenges = challenges;
+        this.isLoadingChallenges = false;
+        console.log('✅ Retos cargados:', challenges);
+      },
+      error: (error) => {
+        console.error('❌ Error al cargar retos:', error);
+        this.isLoadingChallenges = false;
+      }
+    });
+  }
+
+  viewChallengeSubmissions(challenge: Challenge) {
+    console.log('🔍 Viendo soluciones del reto:', challenge.title);
+    this.selectedChallenge = challenge;
+    this.showChallengeSubmissionsModal = true;
+  }
+
+  closeChallengeSubmissionsModal() {
+    this.showChallengeSubmissionsModal = false;
+    this.selectedChallenge = null;
   }
 
   loadCourseData() {

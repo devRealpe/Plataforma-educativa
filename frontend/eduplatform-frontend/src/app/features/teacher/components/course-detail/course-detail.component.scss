@@ -386,6 +386,67 @@ $gray-900: #111827;
   }
 }
 
+// AGREGAR AL FINAL DEL ARCHIVO
+.tabs-navigation {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0 2rem 0 2rem;
+  background: white;
+  border-bottom: 2px solid $gray-200;
+  margin-top: 1rem;
+}
+
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  background: transparent;
+  color: $gray-600;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.95rem;
+
+  svg {
+    transition: all 0.2s ease;
+  }
+
+  &:hover {
+    color: $primary-blue;
+    background: rgba(37, 99, 235, 0.05);
+
+    svg {
+      transform: translateY(-2px);
+    }
+  }
+
+  &.active {
+    color: $primary-blue;
+    border-bottom-color: $primary-blue;
+    background: rgba(37, 99, 235, 0.05);
+  }
+}
+
+.challenge-card {
+  border-left: 4px solid #fbbf24;
+}
+
+@media (max-width: 768px) {
+  .tabs-navigation {
+    padding: 0 1rem;
+    overflow-x: auto;
+  }
+
+  .tab-btn {
+    white-space: nowrap;
+    font-size: 0.875rem;
+    padding: 0.875rem 1.25rem;
+  }
+}
+
 @media (max-width: 768px) {
   .exercises-grid {
     grid-template-columns: 1fr;

@@ -6,11 +6,13 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { CourseService, Course } from '../../../../core/services/course.service';
 import { ExerciseService, Exercise, Hint, Submission } from '../../../../core/services/exercise.service';
 import { ConfirmationModalComponent } from '../../../../shared/components/confirmation-modal/confirmation-modal.component';
+import { PodiumComponent } from '../../../../shared/components/podium/podium.component';
+import { ChallengesViewComponent } from '../challenges-view/challenges-view.component';
 
 @Component({
   selector: 'app-student-course-view',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, PodiumComponent, ChallengesViewComponent],
   templateUrl: './student-course-view.component.html',
   styleUrls: ['./student-course-view.component.scss']
 })
@@ -38,6 +40,9 @@ export class StudentCourseViewComponent implements OnInit {
     private exerciseService: ExerciseService,
     private snackBar: MatSnackBar
   ) {}
+
+    // Tab Navigation
+  activeTab: 'exercises' | 'challenges' | 'podium' = 'exercises'; // ← AGREGAR
 
   ngOnInit() {
     this.courseId = Number(this.route.snapshot.paramMap.get('id'));
@@ -396,5 +401,9 @@ export class StudentCourseViewComponent implements OnInit {
 
   goBack() {
     this.router.navigate(['/student-dashboard']);
+  }
+
+  setActiveTab(tab: 'exercises' | 'challenges' | 'podium') {
+    this.activeTab = tab;
   }
 }
