@@ -389,8 +389,8 @@
               <div
                 class="deadline-info"
                 *ngIf="
-                  submission.daysUntilDeadline !== null &&
-                  submission.status !== 'GRADED'
+                  submission?.daysUntilDeadline !== null &&
+                  submission?.status !== 'GRADED'
                 "
               >
                 <svg
@@ -404,21 +404,15 @@
                   <circle cx="12" cy="12" r="10" />
                   <polyline points="12 6 12 12 16 14" />
                 </svg>
-                <span
-                  *ngIf="
-                    submission.daysUntilDeadline !== null &&
-                    submission.daysUntilDeadline > 0
-                  "
-                >
-                  ⏰ {{ submission.daysUntilDeadline }}
-                  {{ submission.daysUntilDeadline === 1 ? "día" : "días" }}
+
+                <span *ngIf="submission?.daysUntilDeadline! > 0">
+                  ⏰ {{ submission?.daysUntilDeadline }}
+                  {{ submission?.daysUntilDeadline === 1 ? "día" : "días" }}
                   restante(s) para el plazo
                 </span>
+
                 <span
-                  *ngIf="
-                    submission.daysUntilDeadline !== null &&
-                    submission.daysUntilDeadline === 0
-                  "
+                  *ngIf="submission?.daysUntilDeadline === 0"
                   class="expired"
                 >
                   ⏰ El plazo de entrega ha expirado
