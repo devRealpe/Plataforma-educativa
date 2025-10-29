@@ -1,0 +1,326 @@
+<div class="modal-overlay" (click)="onBackdropClick($event)">
+  <div class="modal-container">
+    <!-- Header -->
+    <div class="modal-header">
+      <div class="header-content">
+        <div class="header-icon">
+          <svg
+            width="32"
+            height="32"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+            <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+            <path d="M4 22h16" />
+            <path
+              d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"
+            />
+            <path
+              d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"
+            />
+            <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+          </svg>
+        </div>
+        <div>
+          <h2 class="modal-title">
+            {{ editingChallenge ? "✏️ Editar Reto" : "🏆 Publicar Reto" }}
+          </h2>
+          <p class="modal-subtitle">
+            {{
+              editingChallenge
+                ? "Actualiza la información del reto"
+                : "Publica un nuevo reto para tus estudiantes"
+            }}
+          </p>
+        </div>
+      </div>
+      <button class="close-btn" (click)="close()">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Form -->
+    <form (ngSubmit)="onSubmit()" class="modal-form">
+      <!-- Título -->
+      <div class="form-group">
+        <label for="title">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+            <path
+              d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"
+            />
+          </svg>
+          Título del Reto
+          <span class="required">*</span>
+        </label>
+        <input
+          type="text"
+          id="title"
+          class="form-input"
+          [(ngModel)]="challengeForm.title"
+          name="title"
+          placeholder="Ej: Optimiza el Algoritmo de Búsqueda"
+          required
+          maxlength="100"
+        />
+      </div>
+
+      <!-- Descripción -->
+      <div class="form-group">
+        <label for="description">
+          Descripción del Reto
+          <span class="required">*</span>
+        </label>
+        <textarea
+          id="description"
+          class="form-textarea"
+          [(ngModel)]="challengeForm.description"
+          name="description"
+          placeholder="Describe el reto y lo que los estudiantes deben lograr..."
+          rows="5"
+          required
+          maxlength="2000"
+        ></textarea>
+        <div class="char-count">
+          <span [class.char-limit]="challengeForm.description.length > 1800">
+            {{ challengeForm.description.length }}/2000
+          </span>
+          caracteres
+        </div>
+      </div>
+
+      <!-- Row: Dificultad y Bonificación -->
+      <div class="form-row">
+        <div class="form-group">
+          <label for="difficulty">
+            Dificultad <span class="required">*</span>
+          </label>
+          <select
+            id="difficulty"
+            class="form-select"
+            [(ngModel)]="challengeForm.difficulty"
+            name="difficulty"
+            required
+          >
+            <option value="">Seleccionar</option>
+            <option value="BASICO">🌱 Básico</option>
+            <option value="INTERMEDIO">🎯 Intermedio</option>
+            <option value="AVANZADO">🚀 Avanzado</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="maxBonusPoints">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <polygon
+                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+              />
+            </svg>
+            Bonificación Máxima (XP)
+            <span class="required">*</span>
+          </label>
+          <input
+            type="number"
+            id="maxBonusPoints"
+            class="form-input"
+            [(ngModel)]="challengeForm.maxBonusPoints"
+            name="maxBonusPoints"
+            min="1"
+            max="10"
+            required
+            placeholder="1-10 XP"
+          />
+          <small class="input-hint"
+            >Los estudiantes pueden ganar entre 0 y
+            {{ challengeForm.maxBonusPoints }} XP</small
+          >
+        </div>
+      </div>
+
+      <!-- Fecha Límite -->
+      <div class="form-group">
+        <label for="deadline">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+            <line x1="16" y1="2" x2="16" y2="6" />
+            <line x1="8" y1="2" x2="8" y2="6" />
+            <line x1="3" y1="10" x2="21" y2="10" />
+          </svg>
+          Fecha Límite (Opcional)
+        </label>
+        <input
+          type="datetime-local"
+          id="deadline"
+          class="form-input"
+          [(ngModel)]="challengeForm.deadline"
+          name="deadline"
+        />
+      </div>
+
+      <!-- Archivo -->
+      <div class="form-group">
+        <label>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="17 8 12 3 7 8" />
+            <line x1="12" y1="3" x2="12" y2="15" />
+          </svg>
+          Archivo del Reto {{ editingChallenge ? "(Opcional)" : "" }}
+        </label>
+
+        <div
+          class="file-upload-area"
+          *ngIf="!selectedFile && !editingChallenge?.fileName"
+        >
+          <input
+            type="file"
+            id="challenge-file"
+            class="file-input"
+            (change)="onFileSelected($event)"
+            accept=".pdf,.zip,.rar,.txt,.doc,.docx"
+          />
+          <label for="challenge-file" class="file-label">
+            <svg
+              width="48"
+              height="48"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="17 8 12 3 7 8" />
+              <line x1="12" y1="3" x2="12" y2="15" />
+            </svg>
+            <span>Haz clic para seleccionar archivo</span>
+            <span class="file-hint">PDF, ZIP, documentos (máx. 10MB)</span>
+          </label>
+        </div>
+
+        <div
+          class="file-selected"
+          *ngIf="selectedFile || editingChallenge?.fileName"
+        >
+          <div class="file-info">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"
+              />
+              <polyline points="13 2 13 9 20 9" />
+            </svg>
+            <span>{{ selectedFile?.name || editingChallenge?.fileName }}</span>
+          </div>
+          <button type="button" class="remove-file-btn" (click)="removeFile()">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Info Box -->
+      <div class="info-box">
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="16" x2="12" y2="12" />
+          <line x1="12" y1="8" x2="12.01" y2="8" />
+        </svg>
+        <div>
+          <strong>Sobre los retos:</strong> Los retos son desafíos opcionales
+          que permiten a los estudiantes ganar puntos de bonificación (XP) para
+          destacarse en el podio del curso.
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="form-actions">
+        <button type="button" class="cancel-btn" (click)="close()">
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          class="submit-btn"
+          [disabled]="!isFormValid() || isSubmitting"
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
+            />
+            <polyline points="17 21 17 13 7 13 7 21" />
+            <polyline points="7 3 7 8 15 8" />
+          </svg>
+          {{
+            isSubmitting
+              ? "⏳ Guardando..."
+              : editingChallenge
+              ? "💾 Guardar Cambios"
+              : "🚀 Publicar Reto"
+          }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
