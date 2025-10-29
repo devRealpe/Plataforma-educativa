@@ -22,7 +22,6 @@ public class SubmissionDTO {
     private String feedback;
     private LocalDateTime gradedAt;
     private boolean hasFile;
-    private Boolean published;
     private LocalDateTime lastModifiedAt;
     private Integer editCount;
     private Boolean canBeEdited;
@@ -43,7 +42,6 @@ public class SubmissionDTO {
         this.feedback = submission.getFeedback();
         this.gradedAt = submission.getGradedAt();
         this.hasFile = submission.hasFile();
-        this.published = submission.getPublished();
         this.lastModifiedAt = submission.getLastModifiedAt();
         this.editCount = submission.getEditCount();
         this.canBeEdited = submission.canBeEdited();

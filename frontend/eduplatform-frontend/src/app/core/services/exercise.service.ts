@@ -38,12 +38,11 @@ export interface Submission {
   fileName?: string;
   fileType?: string;
   submittedAt?: string;
-  status?: string;
+  status?: string; // 'PENDING' | 'GRADED' | 'REJECTED'
   grade?: number;
   feedback?: string;
   gradedAt?: string;
   hasFile?: boolean;
-  published?: boolean;
   lastModifiedAt?: string;
   editCount?: number;
   canBeEdited?: boolean;
@@ -177,6 +176,7 @@ export class ExerciseService {
 
   /**
    * Subir entrega (Estudiante)
+   * La entrega queda inmediatamente visible para el profesor
    */
   submitExercise(exerciseId: number, file: File): Observable<Submission> {
     const formData = new FormData();
@@ -192,6 +192,7 @@ export class ExerciseService {
 
   /**
    * Editar entrega (Estudiante)
+   * Solo si no está calificada y dentro del plazo
    */
   updateSubmission(submissionId: number, file: File): Observable<Submission> {
     const formData = new FormData();
@@ -202,17 +203,6 @@ export class ExerciseService {
     return this.http.put<Submission>(`${this.submissionUrl}/${submissionId}`, formData);
   }
 
-  /**
-   * Publicar/Despublicar entrega (Estudiante)
-   */
-  togglePublishSubmission(submissionId: number): Observable<Submission> {
-    console.log('📤 Cambiando estado de publicación:', submissionId);
-
-    return this.http.patch<Submission>(
-      `${this.submissionUrl}/${submissionId}/publish`,
-      {}
-    );
-  }
 
   /**
    * Obtener entregas de un ejercicio (Profesor)

@@ -17,10 +17,9 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/submissions")
-// ✅ CORS: Permite todas las operaciones desde localhost:4200
-@CrossOrigin(origins = "http://localhost:4200", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT,
-        RequestMethod.DELETE, RequestMethod.PATCH,
-        RequestMethod.OPTIONS }, allowedHeaders = "*", allowCredentials = "true")
+@CrossOrigin(origins = "http://localhost:4200", methods = {
+        RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS
+}, allowedHeaders = "*", allowCredentials = "true")
 public class SubmissionController {
 
     @Autowired
@@ -28,6 +27,7 @@ public class SubmissionController {
 
     /**
      * Subir entrega (Estudiante)
+     * La entrega queda inmediatamente visible para el profesor
      */
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> submitExercise(
@@ -35,9 +35,19 @@ public class SubmissionController {
             @RequestParam("file") MultipartFile file,
             Authentication auth) {
         try {
+            System.out.println("📤 Subiendo entrega para ejercicio: " + exerciseId);
+            System.out.println("   Usuario: " + auth.getName());
+            System.out.println("   Archivo: " + file.getOriginalFilename());
+
             Submission submission = submissionService.submitExercise(exerciseId, auth.getName(), file);
-            return ResponseEntity.ok(new SubmissionDTO(submission));
+
+            System.out.println("   ✅ Entrega creada exitosamente");
+
+            return ResponseEntity.ok(Map.of(
+                    "message", "Entrega subida exitosamente. El profesor ya puede verla y calificarla.",
+                    "submission", new SubmissionDTO(submission)));
         } catch (RuntimeException e) {
+            System.err.println("   ❌ Error al subir entrega: " + e.getMessage());
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
@@ -51,41 +61,18 @@ public class SubmissionController {
             @RequestParam("file") MultipartFile file,
             Authentication auth) {
         try {
+            System.out.println("✏️ Editando entrega: " + id);
+            System.out.println("   Usuario: " + auth.getName());
+
             Submission submission = submissionService.updateSubmission(id, auth.getName(), file);
+
+            System.out.println("   ✅ Entrega actualizada exitosamente");
+
             return ResponseEntity.ok(Map.of(
                     "message", "Entrega actualizada exitosamente",
                     "submission", new SubmissionDTO(submission)));
         } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
-        }
-    }
-
-    /**
-     * 🔥 CRÍTICO: Publicar/Despublicar entrega (Estudiante)
-     * Este endpoint usa PATCH y necesita CORS configurado correctamente
-     */
-    @PatchMapping("/{id}/publish")
-    public ResponseEntity<?> togglePublishSubmission(
-            @PathVariable Long id,
-            Authentication auth) {
-        try {
-            System.out.println("🔥 PATCH /publish recibido para submission: " + id);
-            System.out.println("   Usuario: " + auth.getName());
-
-            Submission submission = submissionService.togglePublishSubmission(id, auth.getName());
-
-            String message = submission.getPublished()
-                    ? "Entrega publicada exitosamente. El profesor ahora puede calificarla."
-                    : "Entrega despublicada. El profesor ya no puede verla hasta que la publiques nuevamente.";
-
-            System.out.println("   ✅ Estado cambiado a: " + (submission.getPublished() ? "PUBLICADO" : "NO PUBLICADO"));
-
-            return ResponseEntity.ok(Map.of(
-                    "message", message,
-                    "published", submission.getPublished(),
-                    "submission", new SubmissionDTO(submission)));
-        } catch (RuntimeException e) {
-            System.err.println("   ❌ Error en toggle publish: " + e.getMessage());
+            System.err.println("   ❌ Error al editar entrega: " + e.getMessage());
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
@@ -156,14 +143,17 @@ public class SubmissionController {
             String feedback = (String) gradeData.get("feedback");
 
             Submission submission = submissionService.gradeSubmission(id, grade, feedback, auth.getName());
-            return ResponseEntity.ok(new SubmissionDTO(submission));
+
+            return ResponseEntity.ok(Map.of(
+                    "message", "Entrega calificada exitosamente",
+                    "submission", new SubmissionDTO(submission)));
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
 
     /**
-     * Descargar archivo de entrega desde la base de datos
+     * Descargar archivo de entrega
      */
     @GetMapping("/{id}/download")
     public ResponseEntity<byte[]> downloadSubmission(

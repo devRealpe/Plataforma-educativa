@@ -46,10 +46,6 @@ public class Submission {
     @Column(nullable = false)
     private SubmissionStatus status = SubmissionStatus.PENDING;
 
-    // Estado de publicación
-    @Column(nullable = false)
-    private Boolean published = false;
-
     private Double grade;
 
     @Column(length = 1000)
@@ -76,7 +72,7 @@ public class Submission {
     }
 
     public enum SubmissionStatus {
-        PENDING, // Sin calificar
+        PENDING, // Sin calificar (visible para el profesor)
         GRADED, // Calificado
         REJECTED // Rechazado (opcional)
     }

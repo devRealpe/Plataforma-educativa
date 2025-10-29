@@ -28,10 +28,11 @@ public class SubmissionService {
 
     /**
      * Subir entrega (Estudiante)
+     * La entrega queda inmediatamente disponible para el profesor
      */
     @Transactional
     public Submission submitExercise(Long exerciseId, String studentEmail, MultipartFile file) {
-        // ✅ VALIDACIÓN TEMPRANA: Verificar que el archivo no sea nulo
+        // Validar archivo
         if (file == null || file.isEmpty()) {
             throw new RuntimeException("Debes seleccionar un archivo para subir la entrega");
         }
@@ -42,14 +43,17 @@ public class SubmissionService {
         User student = userRepository.findByEmail(studentEmail)
                 .orElseThrow(() -> new RuntimeException("Estudiante no encontrado"));
 
+        // Validar que esté inscrito
         if (!exercise.getCourse().getStudents().contains(student)) {
             throw new RuntimeException("No estás inscrito en este curso");
         }
 
+        // Validar que no haya entregado antes
         if (submissionRepository.existsByExerciseIdAndStudentId(exerciseId, student.getId())) {
-            throw new RuntimeException("Ya has entregado este ejercicio");
+            throw new RuntimeException("Ya has entregado este ejercicio. Usa la opción 'Editar' para actualizarlo");
         }
 
+        // Validar deadline
         if (exercise.getDeadline() != null && LocalDateTime.now().isAfter(exercise.getDeadline())) {
             throw new RuntimeException("La fecha límite de entrega ha pasado");
         }
@@ -58,7 +62,6 @@ public class SubmissionService {
         submission.setExercise(exercise);
         submission.setStudent(student);
         submission.setStatus(Submission.SubmissionStatus.PENDING);
-        submission.setPublished(false);
         submission.setEditCount(0);
 
         try {
@@ -74,10 +77,10 @@ public class SubmissionService {
 
     /**
      * Editar entrega (Estudiante)
+     * Solo si no ha sido calificada y está dentro del plazo
      */
     @Transactional
     public Submission updateSubmission(Long submissionId, String studentEmail, MultipartFile file) {
-        // ✅ VALIDACIÓN: Verificar que el archivo no sea nulo
         if (file == null || file.isEmpty()) {
             throw new RuntimeException("Debes seleccionar un archivo para actualizar la entrega");
         }
@@ -109,10 +112,6 @@ public class SubmissionService {
             submission.setFileType(file.getContentType());
             submission.setEditCount(submission.getEditCount() + 1);
             submission.setLastModifiedAt(LocalDateTime.now());
-
-            if (submission.getPublished()) {
-                submission.setPublished(false);
-            }
         } catch (IOException e) {
             throw new RuntimeException("Error al procesar el archivo: " + e.getMessage());
         }
@@ -121,37 +120,8 @@ public class SubmissionService {
     }
 
     /**
-     * Publicar/Despublicar entrega (Estudiante)
-     */
-    @Transactional
-    public Submission togglePublishSubmission(Long submissionId, String studentEmail) {
-        Submission submission = submissionRepository.findById(submissionId)
-                .orElseThrow(() -> new RuntimeException("Entrega no encontrada"));
-
-        User student = userRepository.findByEmail(studentEmail)
-                .orElseThrow(() -> new RuntimeException("Estudiante no encontrado"));
-
-        if (!submission.getStudent().getId().equals(student.getId())) {
-            throw new RuntimeException("No puedes modificar esta entrega");
-        }
-
-        if (submission.getStatus() == Submission.SubmissionStatus.GRADED) {
-            throw new RuntimeException("No puedes cambiar el estado de publicación de una entrega calificada");
-        }
-
-        if (!submission.getPublished()) {
-            if (submission.getExercise().getDeadline() != null &&
-                    LocalDateTime.now().isAfter(submission.getExercise().getDeadline())) {
-                throw new RuntimeException("La fecha límite ha pasado. Ya no puedes publicar tu entrega.");
-            }
-        }
-
-        submission.setPublished(!submission.getPublished());
-        return submissionRepository.save(submission);
-    }
-
-    /**
      * Obtener entregas de un ejercicio (Profesor)
+     * Todas las entregas están visibles automáticamente
      */
     public List<Submission> getSubmissionsByExercise(Long exerciseId, String teacherEmail) {
         Exercise exercise = exerciseRepository.findById(exerciseId)
@@ -212,10 +182,6 @@ public class SubmissionService {
             throw new RuntimeException("No tienes permiso para calificar esta entrega");
         }
 
-        if (!submission.getPublished()) {
-            throw new RuntimeException("No puedes calificar una entrega que no ha sido publicada por el estudiante");
-        }
-
         if (grade < 0 || grade > 100) {
             throw new RuntimeException("La calificación debe estar entre 0 y 100");
         }
@@ -229,7 +195,7 @@ public class SubmissionService {
     }
 
     /**
-     * Obtener archivo de entrega desde la base de datos
+     * Obtener archivo de entrega
      */
     public byte[] getSubmissionFile(Long id, String userEmail) {
         Submission submission = getSubmissionById(id, userEmail);
