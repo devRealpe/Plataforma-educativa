@@ -1,0 +1,289 @@
+<div class="modal-overlay" (click)="onBackdropClick($event)">
+  <div class="modal-container">
+    <!-- Header -->
+    <div class="modal-header">
+      <div class="header-content">
+        <div class="header-icon">
+          <svg
+            width="32"
+            height="32"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+            <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+            <path d="M4 22h16" />
+            <path
+              d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"
+            />
+            <path
+              d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"
+            />
+            <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+          </svg>
+        </div>
+        <div>
+          <h2 class="modal-title">
+            {{
+              isEditMode
+                ? "✏️ Editar Solución del Reto"
+                : "🏆 Subir Solución del Reto"
+            }}
+          </h2>
+          <p class="modal-subtitle">{{ challenge.title }}</p>
+        </div>
+      </div>
+      <button class="close-btn" (click)="close()">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Form -->
+    <form (ngSubmit)="onSubmit()" class="modal-form">
+      <!-- Información del Reto -->
+      <div class="challenge-info">
+        <div class="info-row">
+          <div class="info-item">
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <polygon points="12 2 2 7 12 12 22 7 12 2" />
+              <polyline points="2 17 12 22 22 17" />
+              <polyline points="2 12 12 17 22 12" />
+            </svg>
+            <span><strong>Dificultad:</strong> {{ challenge.difficulty }}</span>
+          </div>
+          <div class="info-item">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+              <polygon
+                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+              />
+            </svg>
+            <span
+              ><strong>Bonificación máxima:</strong>
+              {{ challenge.maxBonusPoints }} XP</span
+            >
+          </div>
+        </div>
+
+        <!-- Deadline Warning -->
+        <div
+          *ngIf="
+            getDaysUntilDeadline() !== null && getDaysUntilDeadline()! <= 3
+          "
+          class="deadline-warning"
+          [class.expired]="getDaysUntilDeadline() === 0"
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <polyline points="12 6 12 12 16 14" />
+          </svg>
+          <span>{{ getDeadlineMessage() }}</span>
+        </div>
+      </div>
+
+      <!-- Descripción -->
+      <div class="challenge-description">
+        <p>{{ challenge.description }}</p>
+      </div>
+
+      <!-- Archivo del Reto (si existe) -->
+      <div *ngIf="challenge.hasFile" class="download-section">
+        <button
+          type="button"
+          class="download-btn"
+          (click)="challengeService.downloadChallenge(challenge.id!).subscribe(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = challenge.fileName || 'reto.pdf';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+          })"
+        >
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="7 10 12 15 17 10" />
+            <line x1="12" y1="15" x2="12" y2="3" />
+          </svg>
+          Descargar Archivo del Reto
+        </button>
+      </div>
+
+      <!-- Upload Area -->
+      <div class="form-group">
+        <label>
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="17 8 12 3 7 8" />
+            <line x1="12" y1="3" x2="12" y2="15" />
+          </svg>
+          {{
+            isEditMode
+              ? "Actualizar Archivo de Solución"
+              : "Archivo de Solución"
+          }}
+          <span class="required">*</span>
+        </label>
+
+        <div class="file-upload-area" *ngIf="!selectedFile">
+          <input
+            type="file"
+            id="solution-file"
+            class="file-input"
+            (change)="onFileSelected($event)"
+            accept=".pdf,.zip,.rar,.txt,.doc,.docx"
+          />
+          <label for="solution-file" class="file-label">
+            <svg
+              width="48"
+              height="48"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="17 8 12 3 7 8" />
+              <line x1="12" y1="3" x2="12" y2="15" />
+            </svg>
+            <span>Haz clic para seleccionar archivo</span>
+            <span class="file-hint">PDF, ZIP, documentos (máx. 10MB)</span>
+          </label>
+        </div>
+
+        <div *ngIf="selectedFile" class="file-selected">
+          <div class="file-info">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"
+              />
+              <polyline points="13 2 13 9 20 9" />
+            </svg>
+            <span>{{ selectedFile.name }}</span>
+          </div>
+          <button type="button" class="remove-file-btn" (click)="removeFile()">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Info Box -->
+      <div class="info-box">
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <circle cx="12" cy="12" r="10" />
+          <line x1="12" y1="16" x2="12" y2="12" />
+          <line x1="12" y1="8" x2="12.01" y2="8" />
+        </svg>
+        <div>
+          <strong>{{
+            isEditMode ? "✏️ Editando solución:" : "📤 Importante:"
+          }}</strong>
+          {{
+            isEditMode
+              ? "Puedes actualizar tu solución hasta que el profesor la revise."
+              : "Una vez enviada, el profesor revisará tu solución y te otorgará una bonificación según tu desempeño."
+          }}
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="form-actions">
+        <button type="button" class="cancel-btn" (click)="close()">
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          class="submit-btn"
+          [disabled]="!isFormValid() || isSubmitting"
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
+            />
+            <polyline points="17 21 17 13 7 13 7 21" />
+            <polyline points="7 3 7 8 15 8" />
+          </svg>
+          {{
+            isSubmitting
+              ? "⏳ Enviando..."
+              : isEditMode
+              ? "💾 Actualizar Solución"
+              : "🚀 Enviar Solución"
+          }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
