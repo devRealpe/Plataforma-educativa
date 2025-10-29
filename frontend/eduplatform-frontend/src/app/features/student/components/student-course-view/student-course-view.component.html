@@ -90,7 +90,10 @@
         *ngFor="let exercise of exercises"
         class="exercise-card"
         [class.completed]="hasSubmission(exercise)"
+        [class.graded]="getSubmission(exercise)?.status === 'GRADED'"
+        [class.published]="getSubmission(exercise)?.published"
       >
+        <!-- Status Badge Superior -->
         <div class="status-badge" *ngIf="hasSubmission(exercise)">
           <svg
             width="16"
@@ -113,6 +116,18 @@
               [style.background-color]="getDifficultyColor(exercise.difficulty)"
             >
               {{ exercise.difficulty }}
+            </span>
+
+            <!-- Badge de Deadline Warning -->
+            <span
+              *ngIf="
+                getDaysUntilDeadline(exercise) !== null &&
+                getDaysUntilDeadline(exercise)! <= 3
+              "
+              class="badge deadline-warning"
+              [class.expired]="getDaysUntilDeadline(exercise) === 0"
+            >
+              {{ getDeadlineMessage(exercise) }}
             </span>
           </div>
         </div>
@@ -171,8 +186,13 @@
             </div>
           </div>
 
-          <!-- Submission Info -->
-          <div class="submission-info" *ngIf="hasSubmission(exercise)">
+          <!-- 🆕 SUBMISSION INFO MEJORADA -->
+          <div
+            class="submission-info"
+            *ngIf="
+              hasSubmission(exercise) && getSubmission(exercise) as submission
+            "
+          >
             <div class="submission-header">
               <svg
                 width="20"
@@ -186,24 +206,105 @@
               </svg>
               <span>Ejercicio entregado</span>
             </div>
-            <div
-              class="submission-details"
-              *ngIf="getSubmission(exercise) as submission"
-            >
-              <p>
-                <strong>Fecha de entrega:</strong>
-                {{ submission.submittedAt | date : "short" }}
-              </p>
-              <p><strong>Archivo:</strong> {{ submission.fileName }}</p>
 
+            <div class="submission-details">
+              <!-- Información Básica -->
+              <div class="info-row">
+                <div class="info-col">
+                  <strong>📅 Fecha de entrega:</strong>
+                  <span>{{ submission.submittedAt | date : "short" }}</span>
+                </div>
+                <div class="info-col">
+                  <strong>📎 Archivo:</strong>
+                  <span>{{ submission.fileName }}</span>
+                </div>
+              </div>
+
+              <!-- Estado de Publicación -->
+              <div
+                class="publication-status"
+                [class.published]="submission.published"
+                [class.unpublished]="!submission.published"
+              >
+                <div class="status-indicator">
+                  <svg
+                    *ngIf="submission.published"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                    <polyline points="22 4 12 14.01 9 11.01" />
+                  </svg>
+                  <svg
+                    *ngIf="!submission.published"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="15" y1="9" x2="9" y2="15" />
+                    <line x1="9" y1="9" x2="15" y2="15" />
+                  </svg>
+                  <span class="status-text">
+                    {{
+                      submission.published ? "📤 Publicado" : "📝 No Publicado"
+                    }}
+                  </span>
+                </div>
+                <p class="status-description">
+                  {{
+                    submission.published
+                      ? "El profesor puede ver y calificar tu entrega"
+                      : "Solo tú puedes ver esta entrega. Publícala cuando esté lista."
+                  }}
+                </p>
+              </div>
+
+              <!-- Información de Ediciones -->
+              <div
+                class="edit-info"
+                *ngIf="submission.editCount && submission.editCount > 0"
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M12 20h9" />
+                  <path
+                    d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"
+                  />
+                </svg>
+                <span
+                  >Editado {{ submission.editCount }}
+                  {{ submission.editCount === 1 ? "vez" : "veces" }}</span
+                >
+                <span class="last-edit"
+                  >Última modificación:
+                  {{ submission.lastModifiedAt | date : "short" }}</span
+                >
+              </div>
+
+              <!-- Estado de Calificación -->
               <div class="grade-status">
-                <p
+                <!-- Pendiente de Calificación -->
+                <div
                   *ngIf="submission.status === 'PENDING'"
                   class="status-pending"
                 >
                   <svg
-                    width="16"
-                    height="16"
+                    width="20"
+                    height="20"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
@@ -212,17 +313,27 @@
                     <circle cx="12" cy="12" r="10" />
                     <polyline points="12 6 12 12 16 14" />
                   </svg>
-                  Estado: Pendiente de calificación
-                </p>
+                  <div class="status-content">
+                    <strong>⏳ Pendiente de calificación</strong>
+                    <p>
+                      {{
+                        submission.published
+                          ? "El profesor revisará tu entrega pronto"
+                          : "Debes publicar tu entrega para que el profesor pueda calificarla"
+                      }}
+                    </p>
+                  </div>
+                </div>
 
+                <!-- Calificado -->
                 <div
                   *ngIf="submission.status === 'GRADED'"
-                  class="grade-display"
+                  class="status-graded"
                 >
-                  <p class="status-graded">
+                  <div class="grade-header">
                     <svg
-                      width="16"
-                      height="16"
+                      width="20"
+                      height="20"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
@@ -231,32 +342,86 @@
                       <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
                       <polyline points="22 4 12 14.01 9 11.01" />
                     </svg>
-                    Estado: Calificado
-                  </p>
+                    <strong>✅ Calificado</strong>
+                  </div>
+
                   <div class="grade-box">
                     <span class="grade-label">Calificación:</span>
                     <span
                       class="grade-value"
                       [class.high]="submission.grade! >= 3.0"
-                      [class.low]="submission.grade! < 3.0"
+                      [class.medium]="
+                        submission.grade! >= 2.0 && submission.grade! < 3.0
+                      "
+                      [class.low]="submission.grade! < 2.0"
                     >
                       {{ submission.grade }}/5.0
                     </span>
                   </div>
+
                   <p class="graded-date">
-                    Calificado: {{ submission.gradedAt | date : "short" }}
+                    📅 Calificado el: {{ submission.gradedAt | date : "short" }}
                   </p>
+
+                  <!-- Retroalimentación -->
+                  <div *ngIf="submission.feedback" class="feedback-box">
+                    <div class="feedback-header">
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                      >
+                        <path
+                          d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+                        />
+                      </svg>
+                      <strong>Retroalimentación del profesor:</strong>
+                    </div>
+                    <p class="feedback-text">{{ submission.feedback }}</p>
+                  </div>
                 </div>
               </div>
 
-              <div *ngIf="submission.feedback" class="feedback-box">
-                <strong>📝 Retroalimentación del profesor:</strong>
-                <p>{{ submission.feedback }}</p>
+              <!-- Días Restantes -->
+              <div
+                class="deadline-info"
+                *ngIf="
+                  submission.daysUntilDeadline !== null &&
+                  submission.status !== 'GRADED'
+                "
+              >
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+                <span *ngIf="submission.daysUntilDeadline > 0">
+                  ⏰ {{ submission.daysUntilDeadline }}
+                  {{ submission.daysUntilDeadline === 1 ? "día" : "días" }}
+                  restante(s) para el plazo
+                </span>
+                <span
+                  *ngIf="submission.daysUntilDeadline === 0"
+                  class="expired"
+                >
+                  ⏰ El plazo de entrega ha expirado
+                </span>
               </div>
             </div>
           </div>
 
+          <!-- 🆕 BOTONES DE ACCIÓN MEJORADOS -->
           <div class="card-footer">
+            <!-- Descargar Ejercicio -->
             <button
               class="footer-btn"
               (click)="downloadExercise(exercise)"
@@ -277,6 +442,7 @@
               Descargar Ejercicio
             </button>
 
+            <!-- Ver Pistas -->
             <button
               class="footer-btn hints-btn"
               (click)="toggleHints(exercise.id!)"
@@ -297,31 +463,164 @@
               {{ showHints[exercise.id!] ? "Ocultar" : "Ver" }} Pistas
             </button>
 
-            <button
-              class="footer-btn primary"
-              (click)="openUploadModal(exercise)"
-              [disabled]="hasSubmission(exercise)"
-            >
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
+            <!-- 🆕 CONDICIONALES PARA BOTONES SEGÚN ESTADO -->
+            <ng-container *ngIf="!hasSubmission(exercise)">
+              <!-- Subir Primera Entrega -->
+              <button
+                class="footer-btn primary"
+                (click)="openUploadModal(exercise)"
               >
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                <polyline points="17 8 12 3 7 8" />
-                <line x1="12" y1="3" x2="12" y2="15" />
-              </svg>
-              {{ hasSubmission(exercise) ? "Ya Entregado" : "Subir Entrega" }}
-            </button>
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="17 8 12 3 7 8" />
+                  <line x1="12" y1="3" x2="12" y2="15" />
+                </svg>
+                Subir Entrega
+              </button>
+            </ng-container>
+
+            <ng-container
+              *ngIf="
+                hasSubmission(exercise) && getSubmission(exercise) as submission
+              "
+            >
+              <!-- Descargar Mi Entrega -->
+              <button
+                class="footer-btn secondary"
+                (click)="downloadSubmission(submission)"
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="7 10 12 15 17 10" />
+                  <line x1="12" y1="15" x2="12" y2="3" />
+                </svg>
+                Descargar Mi Entrega
+              </button>
+
+              <!-- Editar Entrega (solo si puede editar) -->
+              <button
+                class="footer-btn edit-btn"
+                (click)="openEditModal(exercise)"
+                [disabled]="!submission.canBeEdited"
+                [title]="
+                  submission.canBeEdited
+                    ? 'Editar tu entrega'
+                    : 'No puedes editar: ' +
+                      (submission.status === 'GRADED'
+                        ? 'ya fue calificada'
+                        : 'plazo expirado')
+                "
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M12 20h9" />
+                  <path
+                    d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"
+                  />
+                </svg>
+                {{ submission.canBeEdited ? "Editar Entrega" : "No Editable" }}
+              </button>
+
+              <!-- Publicar/Despublicar (solo si no está calificada) -->
+              <button
+                *ngIf="submission.status !== 'GRADED'"
+                class="footer-btn publish-btn"
+                [class.published]="submission.published"
+                (click)="confirmTogglePublish(exercise)"
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path
+                    *ngIf="!submission.published"
+                    d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
+                  />
+                  <polyline
+                    *ngIf="!submission.published"
+                    points="17 8 12 3 7 8"
+                  />
+                  <line
+                    *ngIf="!submission.published"
+                    x1="12"
+                    y1="3"
+                    x2="12"
+                    y2="15"
+                  />
+                  <circle *ngIf="submission.published" cx="12" cy="12" r="10" />
+                  <line
+                    *ngIf="submission.published"
+                    x1="15"
+                    y1="9"
+                    x2="9"
+                    y2="15"
+                  />
+                  <line
+                    *ngIf="submission.published"
+                    x1="9"
+                    y1="9"
+                    x2="15"
+                    y2="15"
+                  />
+                </svg>
+                {{ submission.published ? "Despublicar" : "Publicar" }}
+              </button>
+
+              <!-- Eliminar Entrega (solo si no está calificada) -->
+              <button
+                *ngIf="submission.status !== 'GRADED'"
+                class="footer-btn danger-btn"
+                (click)="deleteSubmission(exercise)"
+              >
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <polyline points="3 6 5 6 21 6" />
+                  <path
+                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
+                  />
+                  <line x1="10" y1="11" x2="10" y2="17" />
+                  <line x1="14" y1="11" x2="14" y2="17" />
+                </svg>
+                Eliminar
+              </button>
+            </ng-container>
           </div>
         </div>
       </div>
     </div>
   </main>
-  <!-- Modal de Subida de Entrega -->
+
+  <!-- 🆕 MODAL DE SUBIR/EDITAR ENTREGA -->
   <div
     *ngIf="showUploadModal"
     class="modal-overlay"
@@ -330,7 +629,7 @@
     <div class="modal-container" (click)="$event.stopPropagation()">
       <!-- Header -->
       <div class="modal-header">
-        <h3>📤 Subir Entrega</h3>
+        <h3>{{ isEditMode ? "✏️ Editar Entrega" : "📤 Subir Entrega" }}</h3>
         <button class="close-btn" (click)="closeUploadModal()">
           <svg
             width="24"
@@ -350,7 +649,14 @@
       <div class="modal-content">
         <p class="modal-description">
           <strong>Ejercicio:</strong> {{ selectedExercise?.title }}<br />
-          Sube tu archivo de entrega (máximo 10MB)
+          <span *ngIf="isEditMode" class="edit-warning">
+            ⚠️ Al editar, tu entrega se despublicará automáticamente. Recuerda
+            publicarla cuando esté lista.
+          </span>
+          <span *ngIf="!isEditMode">
+            Sube tu archivo de entrega (máximo 10MB). Podrás editarlo antes de
+            publicarlo.
+          </span>
         </p>
 
         <!-- File Upload -->
@@ -424,9 +730,28 @@
           (click)="submitExercise()"
           [disabled]="!selectedFile || isSubmitting"
         >
-          {{ isSubmitting ? "⏳ Subiendo..." : "📤 Subir Entrega" }}
+          {{
+            isSubmitting
+              ? "⏳ Guardando..."
+              : isEditMode
+              ? "💾 Guardar Cambios"
+              : "📤 Subir Entrega"
+          }}
         </button>
       </div>
     </div>
   </div>
+
+  <!-- 🆕 MODAL DE CONFIRMACIÓN PARA PUBLICAR/DESPUBLICAR -->
+  <app-confirmation-modal
+    *ngIf="showPublishConfirmModal"
+    [title]="publishConfirmTitle"
+    [message]="publishConfirmMessage"
+    [confirmText]="publishConfirmButton"
+    cancelText="Cancelar"
+    [type]="submissionToToggle?.published ? 'warning' : 'info'"
+    (confirm)="togglePublishSubmission()"
+    (cancel)="cancelTogglePublish()"
+  >
+  </app-confirmation-modal>
 </div>
