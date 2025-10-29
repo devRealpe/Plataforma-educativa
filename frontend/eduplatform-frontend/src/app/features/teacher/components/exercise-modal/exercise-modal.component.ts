@@ -76,7 +76,7 @@ export class ExerciseModalComponent implements OnInit {
 
     const request$ = this.editingExercise?.id
       ? this.exerciseService.updateExercise(this.editingExercise.id, this.exerciseForm, this.selectedFile || undefined)
-      : this.exerciseService.createExercise(this.exerciseForm, this.selectedFile || undefined);
+      : this.exerciseService.createExercise(this.exerciseForm, this.courseId, this.selectedFile || undefined);
 
     request$.subscribe({
       next: (exercise) => {

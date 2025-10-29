@@ -27,7 +27,6 @@ export class HintModalComponent implements OnInit {
 editForm: Hint = {
   content: '',
   order: 1,
-  cost: 0
 };
 
 editHint(hint: Hint) {
@@ -40,7 +39,6 @@ cancelEdit() {
   this.editForm = {
     content: '',
     order: 1,
-    cost: 0
   };
 }
 
@@ -80,7 +78,6 @@ saveEdit() {
   newHint: Hint = {
     content: '',
     order: 1,
-    cost: 0
   };
 
   constructor(
@@ -138,7 +135,6 @@ saveEdit() {
         this.newHint = {
           content: '',
           order: nextOrder,
-          cost: 0
         };
         
         this.isSubmitting = false;

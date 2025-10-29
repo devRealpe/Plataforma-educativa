@@ -17,7 +17,10 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/submissions")
-@CrossOrigin(origins = "http://localhost:4200")
+// ✅ CORS: Permite todas las operaciones desde localhost:4200
+@CrossOrigin(origins = "http://localhost:4200", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT,
+        RequestMethod.DELETE, RequestMethod.PATCH,
+        RequestMethod.OPTIONS }, allowedHeaders = "*", allowCredentials = "true")
 public class SubmissionController {
 
     @Autowired
@@ -58,24 +61,31 @@ public class SubmissionController {
     }
 
     /**
-     * Publicar/Despublicar entrega (Estudiante)
+     * 🔥 CRÍTICO: Publicar/Despublicar entrega (Estudiante)
+     * Este endpoint usa PATCH y necesita CORS configurado correctamente
      */
     @PatchMapping("/{id}/publish")
     public ResponseEntity<?> togglePublishSubmission(
             @PathVariable Long id,
             Authentication auth) {
         try {
+            System.out.println("🔥 PATCH /publish recibido para submission: " + id);
+            System.out.println("   Usuario: " + auth.getName());
+
             Submission submission = submissionService.togglePublishSubmission(id, auth.getName());
 
             String message = submission.getPublished()
                     ? "Entrega publicada exitosamente. El profesor ahora puede calificarla."
                     : "Entrega despublicada. El profesor ya no puede verla hasta que la publiques nuevamente.";
 
+            System.out.println("   ✅ Estado cambiado a: " + (submission.getPublished() ? "PUBLICADO" : "NO PUBLICADO"));
+
             return ResponseEntity.ok(Map.of(
                     "message", message,
                     "published", submission.getPublished(),
                     "submission", new SubmissionDTO(submission)));
         } catch (RuntimeException e) {
+            System.err.println("   ❌ Error en toggle publish: " + e.getMessage());
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
@@ -90,7 +100,6 @@ public class SubmissionController {
         try {
             List<Submission> submissions = submissionService.getSubmissionsByExercise(exerciseId, auth.getName());
 
-            // Convertir a DTOs con información completa
             List<SubmissionDTO> submissionDTOs = submissions.stream()
                     .map(SubmissionDTO::new)
                     .collect(Collectors.toList());
@@ -109,7 +118,6 @@ public class SubmissionController {
         try {
             List<Submission> submissions = submissionService.getMySubmissions(auth.getName());
 
-            // Convertir a DTOs con información completa
             List<SubmissionDTO> submissionDTOs = submissions.stream()
                     .map(SubmissionDTO::new)
                     .collect(Collectors.toList());

@@ -29,22 +29,38 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Endpoints públicos
+                        // ========================================
+                        // Endpoints públicos (sin autenticación)
+                        // ========================================
                         .requestMatchers("/api/auth/login", "/api/auth/register").permitAll()
 
+                        // ========================================
                         // Endpoints de cursos (autenticados)
+                        // ========================================
                         .requestMatchers("/api/courses/**").authenticated()
 
+                        // ========================================
                         // Endpoints de ejercicios (autenticados)
+                        // ========================================
                         .requestMatchers("/api/exercises/**").authenticated()
 
+                        // ========================================
                         // Endpoints de pistas (autenticados)
+                        // ========================================
                         .requestMatchers("/api/hints/**").authenticated()
 
-                        // Endpoints de entregas (autenticados)
+                        // ========================================
+                        // 🔥 CRÍTICO: Endpoints de entregas
+                        // Nota: El controlador usa la ruta base "/api/submissions"
+                        // pero los endpoints están bajo "/api/exercises/submissions"
+                        // en el código del controlador. Sin embargo, Spring Security
+                        // necesita la ruta correcta del @RequestMapping.
+                        // ========================================
                         .requestMatchers("/api/submissions/**").authenticated()
 
+                        // ========================================
                         // Cualquier otra petición requiere autenticación
+                        // ========================================
                         .anyRequest().authenticated());
         return http.build();
     }
@@ -52,10 +68,25 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
+
+        // ✅ Orígenes permitidos
         config.setAllowedOrigins(List.of("http://localhost:4200"));
-        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+
+        // ✅ Métodos HTTP permitidos (incluye PATCH para publicar entregas)
+        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+
+        // ✅ Headers permitidos
         config.setAllowedHeaders(List.of("*"));
+
+        // ✅ Headers expuestos al cliente
+        config.setExposedHeaders(List.of("Authorization", "Content-Type"));
+
+        // ✅ Permitir credenciales (cookies, authorization headers)
         config.setAllowCredentials(true);
+
+        // ✅ Tiempo de caché de la respuesta preflight (1 hora)
+        config.setMaxAge(3600L);
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
