@@ -198,25 +198,6 @@ export class ChallengeService {
   }
 
   /**
-   * Revisar y otorgar bonificación (Profesor)
-   */
-  reviewChallengeSubmission(id: number, bonusPoints: number, feedback: string): Observable<ChallengeSubmission> {
-    return this.http.put<ChallengeSubmission>(`${this.submissionUrl}/${id}/review`, {
-      bonusPoints,
-      feedback
-    });
-  }
-
-  /**
-   * Descargar archivo de solución
-   */
-  downloadChallengeSubmission(id: number): Observable<Blob> {
-    return this.http.get(`${this.submissionUrl}/${id}/download`, {
-      responseType: 'blob'
-    });
-  }
-
-  /**
    * Eliminar solución (Estudiante, antes de revisar)
    */
   deleteChallengeSubmission(id: number): Observable<any> {
@@ -247,4 +228,37 @@ export class ChallengeService {
   getMyPosition(courseId: number): Observable<PodiumEntry> {
     return this.http.get<PodiumEntry>(`${this.podiumUrl}/my-position/${courseId}`);
   }
+
+  /**
+ * Obtiene todas las soluciones de un reto específico
+ */
+getChallengeSubmissions(challengeId: number): Observable<ChallengeSubmission[]> {
+  return this.http.get<ChallengeSubmission[]>(
+    `${this.apiUrl}/${challengeId}/submissions`
+  );
+}
+
+/**
+ * Descarga el archivo de una solución de reto
+ */
+downloadChallengeSubmission(submissionId: number): Observable<Blob> {
+  return this.http.get(
+    `${this.apiUrl}/submissions/${submissionId}/download`,
+    { responseType: 'blob' }
+  );
+}
+
+/**
+ * Revisa una solución de reto (otorga bonificación)
+ */
+reviewChallengeSubmission(
+  submissionId: number,
+  bonusPoints: number,
+  feedback: string
+): Observable<ChallengeSubmission> {
+  return this.http.post<ChallengeSubmission>(
+    `${this.apiUrl}/submissions/${submissionId}/review`,
+    { bonusPoints, feedback }
+  );
+}
 }

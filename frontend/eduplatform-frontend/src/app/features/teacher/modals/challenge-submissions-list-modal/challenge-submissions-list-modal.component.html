@@ -1,0 +1,237 @@
+<div class="modal-overlay" (click)="onBackdropClick($event)">
+  <div class="modal-container">
+    <!-- Header -->
+    <div class="modal-header">
+      <div class="header-content">
+        <div class="header-icon">
+          <svg
+            width="32"
+            height="32"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+            <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+            <path d="M4 22h16" />
+            <path
+              d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"
+            />
+            <path
+              d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"
+            />
+            <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+          </svg>
+        </div>
+        <div>
+          <h2 class="modal-title">🏆 Soluciones del Reto</h2>
+          <p class="modal-subtitle">{{ challengeTitle }}</p>
+        </div>
+      </div>
+      <button class="close-btn" (click)="close()">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Content -->
+    <div class="modal-content">
+      <!-- Stats -->
+      <div class="stats-row">
+        <div class="stat-item">
+          <span class="stat-value">{{ submissions.length }}</span>
+          <span class="stat-label">Total Soluciones</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">{{ getPendingCount() }}</span>
+          <span class="stat-label">Pendientes</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">{{ getReviewedCount() }}</span>
+          <span class="stat-label">Revisadas</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">{{ getAverageBonusPoints() }}</span>
+          <span class="stat-label">XP Promedio</span>
+        </div>
+      </div>
+
+      <!-- Loading -->
+      <div *ngIf="isLoading" class="loading">
+        <div class="spinner"></div>
+        <p>Cargando soluciones...</p>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="!isLoading && submissions.length === 0" class="empty-state">
+        <svg
+          width="80"
+          height="80"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+        >
+          <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+          <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+          <path d="M4 22h16" />
+        </svg>
+        <h3>No hay soluciones todavía</h3>
+        <p>Los estudiantes aún no han enviado soluciones para este reto</p>
+      </div>
+
+      <!-- Submissions List -->
+      <div
+        *ngIf="!isLoading && submissions.length > 0"
+        class="submissions-list"
+      >
+        <div *ngFor="let submission of submissions" class="submission-card">
+          <!-- Student Info -->
+          <div class="submission-header">
+            <div class="student-info">
+              <div class="student-avatar">
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+              </div>
+              <div>
+                <h4 class="student-name">{{ submission.studentName }}</h4>
+                <p class="student-email">{{ submission.studentEmail }}</p>
+              </div>
+            </div>
+            <div
+              class="submission-status"
+              [ngClass]="getStatusClass(submission.status)"
+            >
+              {{ getStatusText(submission.status) }}
+            </div>
+          </div>
+
+          <!-- Submission Details -->
+          <div class="submission-details">
+            <div class="detail-item">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                <line x1="16" y1="2" x2="16" y2="6" />
+                <line x1="8" y1="2" x2="8" y2="6" />
+                <line x1="3" y1="10" x2="21" y2="10" />
+              </svg>
+              <span>{{ formatDate(submission.submittedAt) }}</span>
+            </div>
+            <div class="detail-item" *ngIf="submission.fileName">
+              <svg
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"
+                />
+                <polyline points="13 2 13 9 20 9" />
+              </svg>
+              <span>{{ submission.fileName }}</span>
+            </div>
+          </div>
+
+          <!-- Bonus Points Section (if reviewed) -->
+          <div class="bonus-section" *ngIf="submission.status === 'REVIEWED'">
+            <div class="bonus-display">
+              <span class="bonus-label">Bonificación otorgada:</span>
+              <span class="bonus-value">{{ submission.bonusPoints }} XP</span>
+            </div>
+            <div class="feedback-display" *ngIf="submission.feedback">
+              <strong>Retroalimentación:</strong>
+              <p>{{ submission.feedback }}</p>
+            </div>
+          </div>
+
+          <!-- Actions -->
+          <div class="submission-actions">
+            <button
+              class="action-btn download"
+              (click)="downloadSubmission(submission)"
+              *ngIf="submission.fileName"
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              Descargar
+            </button>
+            <button
+              class="action-btn review"
+              (click)="reviewSubmission(submission)"
+            >
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path
+                  d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
+                />
+                <path
+                  d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
+                />
+              </svg>
+              {{
+                submission.status === "REVIEWED" ? "Editar Revisión" : "Revisar"
+              }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de revisión individual -->
+<app-review-challenge-submission-modal
+  *ngIf="showReviewModal && selectedSubmission"
+  [submission]="selectedSubmission"
+  [maxBonusPoints]="maxBonusPoints"
+  [challengeId]="challengeId"
+  [challengeTitle]="challengeTitle"
+  (closeModal)="closeReviewModal()"
+  (submissionReviewed)="handleSubmissionReviewed($event)"
+>
+</app-review-challenge-submission-modal>

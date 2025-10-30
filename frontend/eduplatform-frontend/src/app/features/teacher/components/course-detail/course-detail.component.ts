@@ -11,7 +11,7 @@ import { ConfirmationModalComponent } from '../../../../shared/components/confir
 import { SubmissionsModalComponent } from '../submissions-modal/submissions-modal.component';
 import { PodiumComponent } from '../../../../shared/components/podium/podium.component';
 import { ChallengeService, Challenge } from '../../../../core/services/challenge.service';
-import { ReviewChallengeSubmissionModalComponent } from '../../modals/review-challenge-submission-modal/review-challenge-submission-modal.component';
+import { ChallengeSubmissionsListModalComponent } from '../../modals/challenge-submissions-list-modal/challenge-submissions-list-modal.component';
 import { ChallengeModalComponent } from '../../modals/challenge-modal/challenge-modal.component';
 
 @Component({
@@ -25,7 +25,7 @@ import { ChallengeModalComponent } from '../../modals/challenge-modal/challenge-
     ConfirmationModalComponent,
     SubmissionsModalComponent,
     PodiumComponent,
-    ReviewChallengeSubmissionModalComponent,
+    ChallengeSubmissionsListModalComponent,
     ChallengeModalComponent
   ],
   templateUrl: './course-detail.component.html',
@@ -49,12 +49,14 @@ export class CourseDetailComponent implements OnInit {
   showChallengeSubmissionsModal = false;
   showChallengeModal = false;
   showPodium = true;
+  showDeleteChallengeModal = false;
   
   editingExercise: Exercise | null = null;
   selectedExercise: Exercise | null = null;
   exerciseToDelete: Exercise | null = null;
   selectedChallenge: Challenge | null = null;
   editingChallenge: Challenge | null = null;
+  challengeToDelete: Challenge | null = null;
 
   // Tab Navigation
   activeTab: 'exercises' | 'challenges' | 'podium' = 'exercises';
@@ -107,30 +109,44 @@ export class CourseDetailComponent implements OnInit {
   }
 
   editChallenge(challenge: Challenge) {
-    this.openChallengeModal(challenge);
+    this.editingChallenge = challenge;
+    this.showChallengeModal = true;
   }
 
   deleteChallenge(challenge: Challenge) {
-    if (!challenge.id) return;
+    this.challengeToDelete = challenge;
+    this.showDeleteChallengeModal = true;
+  }
 
-    const confirmMessage = `¿Estás seguro de que deseas eliminar el reto "${challenge.title}"?\n\nEsta acción eliminará:\n• El reto y sus archivos\n• Todas las soluciones enviadas\n• Las bonificaciones otorgadas\n\nEsta acción no se puede deshacer.`;
+  confirmDeleteChallenge() {
+    if (!this.challengeToDelete?.id) return;
 
-    if (confirm(confirmMessage)) {
-      this.challengeService.deleteChallenge(challenge.id).subscribe({
-        next: () => {
-          this.challenges = this.challenges.filter(c => c.id !== challenge.id);
-          this.snackBar.open(
-            `✅ Reto "${challenge.title}" eliminado`,
-            'Cerrar',
-            { duration: 3000, panelClass: ['success-snackbar'] }
-          );
-        },
-        error: (error) => {
-          console.error('❌ Error al eliminar reto:', error);
-          this.snackBar.open('Error al eliminar reto', 'Cerrar', { duration: 3000 });
-        }
-      });
-    }
+    const challengeId = this.challengeToDelete.id;
+    const challengeTitle = this.challengeToDelete.title;
+
+    this.showDeleteChallengeModal = false;
+
+    this.challengeService.deleteChallenge(challengeId).subscribe({
+      next: () => {
+        this.challenges = this.challenges.filter(c => c.id !== challengeId);
+        this.snackBar.open(
+          `✅ Reto "${challengeTitle}" eliminado`,
+          'Cerrar',
+          { duration: 3000, panelClass: ['success-snackbar'] }
+        );
+        this.challengeToDelete = null;
+      },
+      error: (error) => {
+        console.error('❌ Error al eliminar reto:', error);
+        this.snackBar.open('Error al eliminar reto', 'Cerrar', { duration: 3000 });
+        this.challengeToDelete = null;
+      }
+    });
+  }
+
+  cancelDeleteChallenge() {
+    this.showDeleteChallengeModal = false;
+    this.challengeToDelete = null;
   }
 
   // ========== TAB NAVIGATION ==========
@@ -357,5 +373,9 @@ export class CourseDetailComponent implements OnInit {
 
   getDeleteMessage(): string {
     return `¿Estás seguro de que deseas eliminar el ejercicio "${this.exerciseToDelete?.title || ''}"?\n\nEsta acción eliminará:\n• El ejercicio y sus archivos\n• Todas las pistas asociadas\n• Todas las entregas de estudiantes\n\nEsta acción no se puede deshacer.`;
+  }
+
+  getDeleteChallengeMessage(): string {
+    return `¿Estás seguro de que deseas eliminar el reto "${this.challengeToDelete?.title || ''}"?\n\nEsta acción eliminará:\n• El reto y sus archivos\n• Todas las soluciones enviadas\n• Las bonificaciones otorgadas\n\nEsta acción no se puede deshacer.`;
   }
 }
