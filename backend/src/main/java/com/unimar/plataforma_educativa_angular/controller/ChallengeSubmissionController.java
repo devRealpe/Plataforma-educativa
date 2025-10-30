@@ -128,25 +128,40 @@ public class ChallengeSubmissionController {
         }
     }
 
+    // ========================================
+    // ✅ ENDPOINT FALTANTE: REVISAR SOLUCIÓN
+    // ========================================
     /**
      * Revisar y otorgar bonificación (Profesor)
+     * Este endpoint recibe bonusPoints y feedback del profesor
      */
-    @PutMapping("/{id}/review")
+    @PostMapping("/{id}/review")
     public ResponseEntity<?> reviewSubmission(
             @PathVariable Long id,
             @RequestBody Map<String, Object> reviewData,
             Authentication auth) {
         try {
+            System.out.println("🔍 Revisando solución de reto: " + id);
+            System.out.println("   Profesor: " + auth.getName());
+            System.out.println("   Datos: " + reviewData);
+
             Integer bonusPoints = ((Number) reviewData.get("bonusPoints")).intValue();
             String feedback = (String) reviewData.get("feedback");
 
-            ChallengeSubmission submission = submissionService.reviewSubmission(id, bonusPoints, feedback,
+            ChallengeSubmission submission = submissionService.reviewSubmission(
+                    id,
+                    bonusPoints,
+                    feedback,
                     auth.getName());
+
+            System.out.println("   ✅ Solución revisada exitosamente");
 
             return ResponseEntity.ok(Map.of(
                     "message", "Solución revisada exitosamente",
                     "submission", new ChallengeSubmissionDTO(submission)));
         } catch (RuntimeException e) {
+            System.err.println("   ❌ Error al revisar solución: " + e.getMessage());
+            e.printStackTrace(); // Para debug
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }

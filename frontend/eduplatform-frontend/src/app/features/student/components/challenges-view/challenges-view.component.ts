@@ -66,9 +66,10 @@ export class ChallengesViewComponent implements OnInit {
     return !!this.getMySubmission(challengeId);
   }
 
-  openSubmissionModal(challenge: Challenge) {
+  // ✅ MÉTODO AGREGADO: Abrir modal con soporte para edición
+  openSubmissionModal(challenge: Challenge, existingSubmission?: ChallengeSubmission) {
     this.selectedChallenge = challenge;
-    this.existingSubmission = this.getMySubmission(challenge.id!);
+    this.existingSubmission = existingSubmission || this.getMySubmission(challenge.id!);
     this.showSubmissionModal = true;
   }
 
@@ -92,10 +93,10 @@ export class ChallengesViewComponent implements OnInit {
 
   getDifficultyColor(difficulty: string): string {
     switch (difficulty) {
-      case 'BASICO': return 'difficulty-basic';
-      case 'INTERMEDIO': return 'difficulty-intermediate';
-      case 'AVANZADO': return 'difficulty-advanced';
-      default: return 'difficulty-basic';
+      case 'BASICO': return '#10b981';
+      case 'INTERMEDIO': return '#f59e0b';
+      case 'AVANZADO': return '#ef4444';
+      default: return '#6b7280';
     }
   }
 
@@ -148,6 +149,30 @@ export class ChallengesViewComponent implements OnInit {
       error: (error) => {
         console.error('Error al descargar:', error);
         this.snackBar.open('Error al descargar el archivo', 'Cerrar', { duration: 3000 });
+      }
+    });
+  }
+
+  // ✅ MÉTODO AGREGADO: Descargar mi solución enviada
+  downloadMySubmission(submission: ChallengeSubmission) {
+    if (!submission.id) return;
+
+    this.challengeService.downloadChallengeSubmission(submission.id).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = submission.fileName || 'mi_solucion.zip';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        
+        this.snackBar.open('📥 Tu solución descargada', 'Cerrar', { duration: 2000 });
+      },
+      error: (error) => {
+        console.error('Error al descargar solución:', error);
+        this.snackBar.open('Error al descargar tu solución', 'Cerrar', { duration: 3000 });
       }
     });
   }

@@ -229,27 +229,27 @@ export class ChallengeService {
     return this.http.get<PodiumEntry>(`${this.podiumUrl}/my-position/${courseId}`);
   }
 
-  /**
- * Obtiene todas las soluciones de un reto específico
+/**
+ * Obtiene todas las soluciones de un reto específico (CORREGIDO)
  */
 getChallengeSubmissions(challengeId: number): Observable<ChallengeSubmission[]> {
   return this.http.get<ChallengeSubmission[]>(
-    `${this.apiUrl}/${challengeId}/submissions`
+    `${this.submissionUrl}/challenge/${challengeId}` // ✅ Ahora usa submissionUrl
   );
 }
 
 /**
- * Descarga el archivo de una solución de reto
+ * Descarga el archivo de una solución de reto (CORREGIDO)
  */
 downloadChallengeSubmission(submissionId: number): Observable<Blob> {
   return this.http.get(
-    `${this.apiUrl}/submissions/${submissionId}/download`,
+    `${this.submissionUrl}/${submissionId}/download`, // ✅ Ahora usa submissionUrl
     { responseType: 'blob' }
   );
 }
 
 /**
- * Revisa una solución de reto (otorga bonificación)
+ * Revisa una solución de reto (CORREGIDO)
  */
 reviewChallengeSubmission(
   submissionId: number,
@@ -257,7 +257,7 @@ reviewChallengeSubmission(
   feedback: string
 ): Observable<ChallengeSubmission> {
   return this.http.post<ChallengeSubmission>(
-    `${this.apiUrl}/submissions/${submissionId}/review`,
+    `${this.submissionUrl}/${submissionId}/review`, // ✅ Ahora usa submissionUrl
     { bonusPoints, feedback }
   );
 }
