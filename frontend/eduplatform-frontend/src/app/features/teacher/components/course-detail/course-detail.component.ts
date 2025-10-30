@@ -70,6 +70,74 @@ export class CourseDetailComponent implements OnInit {
     this.loadChallenges(); // ← AGREGAR
   }
 
+  // Agregar en las propiedades existentes
+showChallengeModal = false;
+editingChallenge: Challenge | null = null;
+isTeacher: boolean = true; // O determínalo basado en el rol del usuario
+
+// Métodos para manejar retos
+openChallengeModal(challenge?: Challenge) {
+  this.editingChallenge = challenge || null;
+  this.showChallengeModal = true;
+}
+
+closeChallengeModal() {
+  this.showChallengeModal = false;
+  this.editingChallenge = null;
+}
+
+handleChallengeCreated(challenge: Challenge) {
+  if (this.editingChallenge) {
+    // Actualizar reto existente en la lista
+    const index = this.challenges.findIndex(c => c.id === challenge.id);
+    if (index !== -1) {
+      this.challenges[index] = challenge;
+    }
+  } else {
+    // Agregar nuevo reto a la lista
+    this.challenges.push(challenge);
+  }
+  
+  this.closeChallengeModal();
+  
+  // Mostrar mensaje de éxito
+  const action = this.editingChallenge ? 'actualizado' : 'creado';
+  this.snackBar.open(
+    `✅ Reto "${challenge.title}" ${action} exitosamente`,
+    'Cerrar',
+    { duration: 3000, panelClass: ['success-snackbar'] }
+  );
+}
+
+// Método para editar reto (agregar botones de edición/eliminación en la tarjeta de retos)
+editChallenge(challenge: Challenge) {
+  this.openChallengeModal(challenge);
+}
+
+deleteChallenge(challenge: Challenge) {
+  if (!challenge.id) return;
+
+  // Implementar confirmación similar a deleteExercise
+  const confirmMessage = `¿Estás seguro de que deseas eliminar el reto "${challenge.title}"?\n\nEsta acción eliminará:\n• El reto y sus archivos\n• Todas las soluciones enviadas\n• Las bonificaciones otorgadas\n\nEsta acción no se puede deshacer.`;
+
+  if (confirm(confirmMessage)) {
+    this.challengeService.deleteChallenge(challenge.id).subscribe({
+      next: () => {
+        this.challenges = this.challenges.filter(c => c.id !== challenge.id);
+        this.snackBar.open(
+          `✅ Reto "${challenge.title}" eliminado`,
+          'Cerrar',
+          { duration: 3000, panelClass: ['success-snackbar'] }
+        );
+      },
+      error: (error) => {
+        console.error('❌ Error al eliminar reto:', error);
+        this.snackBar.open('Error al eliminar reto', 'Cerrar', { duration: 3000 });
+      }
+    });
+  }
+}
+
   // ========== AGREGAR ESTOS MÉTODOS ==========
 
   setActiveTab(tab: 'exercises' | 'challenges' | 'podium') {

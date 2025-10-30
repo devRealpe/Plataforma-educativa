@@ -16,6 +16,9 @@ export class ReviewChallengeSubmissionModalComponent implements OnInit {
   @Input() maxBonusPoints: number = 10;
   @Output() closeModal = new EventEmitter<void>();
   @Output() submissionReviewed = new EventEmitter<ChallengeSubmission>();
+  @Input() challengeId!: number;
+@Input() challengeTitle!: string;
+
 
   isSubmitting = false;
   bonusPoints: number = 0;

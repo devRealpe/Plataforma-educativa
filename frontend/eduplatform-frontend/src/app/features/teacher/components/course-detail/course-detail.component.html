@@ -72,6 +72,28 @@
           </svg>
           Estudiantes
         </button>
+
+        <!-- BOTÓN CREAR RETO - SOLO PARA PROFESORES -->
+        <button
+          class="action-btn primary"
+          (click)="openChallengeModal()"
+          *ngIf="isTeacher"
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+            <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+            <path d="M4 22h16" />
+          </svg>
+          Crear Reto
+        </button>
+
         <button class="action-btn primary" (click)="openExerciseModal()">
           <svg
             width="20"
@@ -572,10 +594,20 @@
 </app-submissions-modal>
 
 <!-- AGREGAR AL FINAL, DESPUÉS DE LOS MODALES EXISTENTES: -->
-<app-review-challenge-submissions-modal
+<app-review-challenge-submission-modal
   *ngIf="showChallengeSubmissionsModal && selectedChallenge"
   [challengeId]="selectedChallenge.id!"
   [challengeTitle]="selectedChallenge.title"
   (closeModal)="closeChallengeSubmissionsModal()"
 >
-</app-review-challenge-submissions-modal>
+</app-review-challenge-submission-modal>
+
+<!-- Modal Crear/Editar Reto -->
+<app-challenge-modal
+  *ngIf="showChallengeModal"
+  [courseId]="courseId"
+  [editingChallenge]="editingChallenge"
+  (closeModal)="closeChallengeModal()"
+  (challengeCreated)="handleChallengeCreated($event)"
+>
+</app-challenge-modal>

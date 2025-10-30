@@ -1,1 +1,249 @@
-<p>review-challenge-submission-modal works!</p>
+<div class="modal-overlay" (click)="onBackdropClick($event)">
+  <div class="modal-container">
+    <!-- Header -->
+    <div class="modal-header">
+      <div class="header-content">
+        <div class="header-icon">
+          <svg
+            width="32"
+            height="32"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
+            <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
+            <path d="M4 22h16" />
+            <path
+              d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"
+            />
+            <path
+              d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"
+            />
+            <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
+          </svg>
+        </div>
+        <div>
+          <h2 class="modal-title">🏆 Revisar Solución de Reto</h2>
+          <p class="modal-subtitle" *ngIf="submission">
+            {{ submission.studentName }}
+          </p>
+        </div>
+      </div>
+      <button class="close-btn" (click)="close()">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <line x1="18" y1="6" x2="6" y2="18" />
+          <line x1="6" y1="6" x2="18" y2="18" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Content -->
+    <div class="modal-content" *ngIf="submission">
+      <!-- Student Info -->
+      <div class="student-section">
+        <div class="student-avatar">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+        </div>
+        <div class="student-info">
+          <h3 class="student-name">{{ submission.studentName }}</h3>
+          <p class="student-email">{{ submission.studentEmail }}</p>
+        </div>
+        <div class="status-badge" [ngClass]="getStatusBadgeClass()">
+          {{ getStatusText() }}
+        </div>
+      </div>
+
+      <!-- Submission Details -->
+      <div class="details-section">
+        <div class="detail-item">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+            <line x1="16" y1="2" x2="16" y2="6" />
+            <line x1="8" y1="2" x2="8" y2="6" />
+            <line x1="3" y1="10" x2="21" y2="10" />
+          </svg>
+          <span
+            ><strong>Fecha de entrega:</strong>
+            {{ formatDate(submission.submittedAt) }}</span
+          >
+        </div>
+        <div class="detail-item" *ngIf="submission.fileName">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"
+            />
+            <polyline points="13 2 13 9 20 9" />
+          </svg>
+          <span><strong>Archivo:</strong> {{ submission.fileName }}</span>
+        </div>
+        <div
+          class="detail-item"
+          *ngIf="submission.editCount && submission.editCount > 0"
+        >
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
+            />
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+          </svg>
+          <span><strong>Ediciones:</strong> {{ submission.editCount }}</span>
+        </div>
+      </div>
+
+      <!-- Download Button -->
+      <button
+        class="download-btn"
+        (click)="downloadSubmission()"
+        *ngIf="submission.fileName"
+      >
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+          <polyline points="7 10 12 15 17 10" />
+          <line x1="12" y1="15" x2="12" y2="3" />
+        </svg>
+        Descargar Solución
+      </button>
+
+      <!-- Review Form -->
+      <form (ngSubmit)="onSubmit()" class="review-form">
+        <div class="form-group">
+          <label for="bonusPoints">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <polygon
+                points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
+              />
+            </svg>
+            Bonificación (0 - {{ maxBonusPoints }} XP)
+            <span class="required">*</span>
+          </label>
+          <input
+            type="number"
+            id="bonusPoints"
+            class="form-input"
+            [(ngModel)]="bonusPoints"
+            name="bonusPoints"
+            [min]="0"
+            [max]="maxBonusPoints"
+            required
+          />
+          <small class="input-hint">
+            Otorga entre 0 y {{ maxBonusPoints }} puntos de bonificación (0 =
+            rechazar)
+          </small>
+        </div>
+
+        <div class="form-group">
+          <label for="feedback">
+            Retroalimentación
+            <span class="required">*</span>
+          </label>
+          <textarea
+            id="feedback"
+            class="form-textarea"
+            [(ngModel)]="feedback"
+            name="feedback"
+            placeholder="Escribe tu retroalimentación para el estudiante..."
+            rows="5"
+            required
+          ></textarea>
+        </div>
+
+        <!-- Info Box -->
+        <div class="info-box">
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="16" x2="12" y2="12" />
+            <line x1="12" y1="8" x2="12.01" y2="8" />
+          </svg>
+          <div>
+            <strong>Importante:</strong> Si otorgas 0 puntos, la solución será
+            marcada como rechazada. La bonificación se sumará al podio del
+            estudiante.
+          </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="form-actions">
+          <button type="button" class="cancel-btn" (click)="close()">
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            class="submit-btn"
+            [disabled]="!isFormValid() || isSubmitting"
+          >
+            <svg
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path
+                d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"
+              />
+              <polyline points="17 21 17 13 7 13 7 21" />
+              <polyline points="7 3 7 8 15 8" />
+            </svg>
+            {{ isSubmitting ? "⏳ Guardando..." : "✅ Guardar Revisión" }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
