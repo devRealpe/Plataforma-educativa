@@ -1,4 +1,3 @@
-
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -13,6 +12,7 @@ import { SubmissionsModalComponent } from '../submissions-modal/submissions-moda
 import { PodiumComponent } from '../../../../shared/components/podium/podium.component';
 import { ChallengeService, Challenge } from '../../../../core/services/challenge.service';
 import { ReviewChallengeSubmissionModalComponent } from '../../modals/review-challenge-submission-modal/review-challenge-submission-modal.component';
+import { ChallengeModalComponent } from '../../modals/challenge-modal/challenge-modal.component';
 
 @Component({
   selector: 'app-course-detail',
@@ -24,8 +24,9 @@ import { ReviewChallengeSubmissionModalComponent } from '../../modals/review-cha
     ManageStudentsModalComponent,
     ConfirmationModalComponent,
     SubmissionsModalComponent,
-    PodiumComponent, // ← AGREGAR
-    ReviewChallengeSubmissionModalComponent // ← AGREGAR
+    PodiumComponent,
+    ReviewChallengeSubmissionModalComponent,
+    ChallengeModalComponent
   ],
   templateUrl: './course-detail.component.html',
   styleUrls: ['./course-detail.component.scss']
@@ -34,9 +35,10 @@ export class CourseDetailComponent implements OnInit {
   courseId!: number;
   course: Course | null = null;
   exercises: Exercise[] = [];
-  challenges: Challenge[] = []; // ← AGREGAR
+  challenges: Challenge[] = [];
   isLoading = true;
-  isLoadingChallenges = false; // ← AGREGAR
+  isLoadingChallenges = false;
+  isTeacher: boolean = true;
 
   // Modal states
   showExerciseModal = false;
@@ -44,101 +46,94 @@ export class CourseDetailComponent implements OnInit {
   showStudentsModal = false;
   showDeleteConfirmModal = false;
   showSubmissionsModal = false;
-  showChallengeSubmissionsModal = false; // ← AGREGAR
-  showPodium = true; // ← AGREGAR
+  showChallengeSubmissionsModal = false;
+  showChallengeModal = false;
+  showPodium = true;
   
   editingExercise: Exercise | null = null;
   selectedExercise: Exercise | null = null;
   exerciseToDelete: Exercise | null = null;
-  selectedChallenge: Challenge | null = null; // ← AGREGAR
+  selectedChallenge: Challenge | null = null;
+  editingChallenge: Challenge | null = null;
 
   // Tab Navigation
-  activeTab: 'exercises' | 'challenges' | 'podium' = 'exercises'; // ← AGREGAR
+  activeTab: 'exercises' | 'challenges' | 'podium' = 'exercises';
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private courseService: CourseService,
     private exerciseService: ExerciseService,
-    private challengeService: ChallengeService, // ← AGREGAR
+    private challengeService: ChallengeService,
     private snackBar: MatSnackBar
   ) {}
 
   ngOnInit() {
     this.courseId = Number(this.route.snapshot.paramMap.get('id'));
     this.loadCourseData();
-    this.loadChallenges(); // ← AGREGAR
+    this.loadChallenges();
   }
 
-  // Agregar en las propiedades existentes
-showChallengeModal = false;
-editingChallenge: Challenge | null = null;
-isTeacher: boolean = true; // O determínalo basado en el rol del usuario
+  // ========== MÉTODOS PARA MANEJAR RETOS ==========
 
-// Métodos para manejar retos
-openChallengeModal(challenge?: Challenge) {
-  this.editingChallenge = challenge || null;
-  this.showChallengeModal = true;
-}
-
-closeChallengeModal() {
-  this.showChallengeModal = false;
-  this.editingChallenge = null;
-}
-
-handleChallengeCreated(challenge: Challenge) {
-  if (this.editingChallenge) {
-    // Actualizar reto existente en la lista
-    const index = this.challenges.findIndex(c => c.id === challenge.id);
-    if (index !== -1) {
-      this.challenges[index] = challenge;
-    }
-  } else {
-    // Agregar nuevo reto a la lista
-    this.challenges.push(challenge);
+  openChallengeModal(challenge?: Challenge) {
+    this.editingChallenge = challenge || null;
+    this.showChallengeModal = true;
   }
-  
-  this.closeChallengeModal();
-  
-  // Mostrar mensaje de éxito
-  const action = this.editingChallenge ? 'actualizado' : 'creado';
-  this.snackBar.open(
-    `✅ Reto "${challenge.title}" ${action} exitosamente`,
-    'Cerrar',
-    { duration: 3000, panelClass: ['success-snackbar'] }
-  );
-}
 
-// Método para editar reto (agregar botones de edición/eliminación en la tarjeta de retos)
-editChallenge(challenge: Challenge) {
-  this.openChallengeModal(challenge);
-}
+  closeChallengeModal() {
+    this.showChallengeModal = false;
+    this.editingChallenge = null;
+  }
 
-deleteChallenge(challenge: Challenge) {
-  if (!challenge.id) return;
-
-  // Implementar confirmación similar a deleteExercise
-  const confirmMessage = `¿Estás seguro de que deseas eliminar el reto "${challenge.title}"?\n\nEsta acción eliminará:\n• El reto y sus archivos\n• Todas las soluciones enviadas\n• Las bonificaciones otorgadas\n\nEsta acción no se puede deshacer.`;
-
-  if (confirm(confirmMessage)) {
-    this.challengeService.deleteChallenge(challenge.id).subscribe({
-      next: () => {
-        this.challenges = this.challenges.filter(c => c.id !== challenge.id);
-        this.snackBar.open(
-          `✅ Reto "${challenge.title}" eliminado`,
-          'Cerrar',
-          { duration: 3000, panelClass: ['success-snackbar'] }
-        );
-      },
-      error: (error) => {
-        console.error('❌ Error al eliminar reto:', error);
-        this.snackBar.open('Error al eliminar reto', 'Cerrar', { duration: 3000 });
+  handleChallengeCreated(challenge: Challenge) {
+    if (this.editingChallenge) {
+      const index = this.challenges.findIndex(c => c.id === challenge.id);
+      if (index !== -1) {
+        this.challenges[index] = challenge;
       }
-    });
+    } else {
+      this.challenges.push(challenge);
+    }
+    
+    this.closeChallengeModal();
+    
+    const action = this.editingChallenge ? 'actualizado' : 'creado';
+    this.snackBar.open(
+      `✅ Reto "${challenge.title}" ${action} exitosamente`,
+      'Cerrar',
+      { duration: 3000, panelClass: ['success-snackbar'] }
+    );
   }
-}
 
-  // ========== AGREGAR ESTOS MÉTODOS ==========
+  editChallenge(challenge: Challenge) {
+    this.openChallengeModal(challenge);
+  }
+
+  deleteChallenge(challenge: Challenge) {
+    if (!challenge.id) return;
+
+    const confirmMessage = `¿Estás seguro de que deseas eliminar el reto "${challenge.title}"?\n\nEsta acción eliminará:\n• El reto y sus archivos\n• Todas las soluciones enviadas\n• Las bonificaciones otorgadas\n\nEsta acción no se puede deshacer.`;
+
+    if (confirm(confirmMessage)) {
+      this.challengeService.deleteChallenge(challenge.id).subscribe({
+        next: () => {
+          this.challenges = this.challenges.filter(c => c.id !== challenge.id);
+          this.snackBar.open(
+            `✅ Reto "${challenge.title}" eliminado`,
+            'Cerrar',
+            { duration: 3000, panelClass: ['success-snackbar'] }
+          );
+        },
+        error: (error) => {
+          console.error('❌ Error al eliminar reto:', error);
+          this.snackBar.open('Error al eliminar reto', 'Cerrar', { duration: 3000 });
+        }
+      });
+    }
+  }
+
+  // ========== TAB NAVIGATION ==========
 
   setActiveTab(tab: 'exercises' | 'challenges' | 'podium') {
     this.activeTab = tab;
@@ -352,7 +347,10 @@ deleteChallenge(challenge: Challenge) {
       'Principiante': '#10b981',
       'Intermedio': '#f59e0b',
       'Avanzado': '#ef4444',
-      'Experto': '#8b5cf6'
+      'Experto': '#8b5cf6',
+      'BASICO': '#10b981',
+      'INTERMEDIO': '#f59e0b',
+      'AVANZADO': '#ef4444'
     };
     return colors[difficulty] || '#6b7280';
   }
