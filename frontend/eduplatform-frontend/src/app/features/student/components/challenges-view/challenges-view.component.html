@@ -302,3 +302,16 @@
   (submissionCreated)="onSubmissionCreated($event)"
 >
 </app-challenge-submission-modal>
+
+<!-- Modal Confirmación Eliminar Solución -->
+<app-confirmation-modal
+  *ngIf="showDeleteSubmissionModal && submissionToDelete"
+  title="¿Eliminar solución?"
+  [message]="getDeleteSubmissionMessage()"
+  confirmText="Eliminar"
+  cancelText="Cancelar"
+  type="danger"
+  (confirm)="confirmDeleteSubmission()"
+  (cancel)="cancelDeleteSubmission()"
+>
+</app-confirmation-modal>

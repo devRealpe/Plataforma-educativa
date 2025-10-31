@@ -2,12 +2,13 @@ import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ChallengeService, Challenge, ChallengeSubmission } from '../../../../core/services/challenge.service';
 import { ChallengeSubmissionModalComponent } from '../../modals/challenge-submission-modal/challenge-submission-modal.component';
+import { ConfirmationModalComponent } from '../../../../shared/components/confirmation-modal/confirmation-modal.component';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-challenges-view',
   standalone: true,
-  imports: [CommonModule, ChallengeSubmissionModalComponent],
+  imports: [CommonModule, ChallengeSubmissionModalComponent, ConfirmationModalComponent],
   templateUrl: './challenges-view.component.html',
   styleUrls: ['./challenges-view.component.scss']
 })
@@ -21,6 +22,11 @@ export class ChallengesViewComponent implements OnInit {
   showSubmissionModal = false;
   selectedChallenge: Challenge | null = null;
   existingSubmission: ChallengeSubmission | undefined;
+
+  // Modal de confirmación de eliminación
+  showDeleteSubmissionModal = false;
+  submissionToDelete: ChallengeSubmission | null = null;
+  challengeToDelete: Challenge | null = null;
 
   constructor(
     private challengeService: ChallengeService,
@@ -66,7 +72,7 @@ export class ChallengesViewComponent implements OnInit {
     return !!this.getMySubmission(challengeId);
   }
 
-  //  Abrir modal para edición
+  // Abrir modal para edición
   openSubmissionModal(challenge: Challenge, existingSubmission?: ChallengeSubmission) {
     this.selectedChallenge = challenge;
     this.existingSubmission = existingSubmission || this.getMySubmission(challenge.id!);
@@ -178,5 +184,76 @@ export class ChallengesViewComponent implements OnInit {
         this.snackBar.open('Error al descargar tu solución', 'Cerrar', { duration: 3000 });
       }
     });
+  }
+
+  // ========== MÉTODOS DE ELIMINACIÓN ==========
+
+  // Eliminar mi solución de reto
+  deleteChallengeSubmission(challenge: Challenge) {
+    const submission = this.getMySubmission(challenge.id!);
+    
+    if (!submission) {
+      this.snackBar.open('No se encontró tu solución', 'Cerrar', { duration: 3000 });
+      return;
+    }
+
+    if (submission.status === 'REVIEWED') {
+      this.snackBar.open(
+        '🚫 No puedes eliminar una solución revisada',
+        'Cerrar',
+        { duration: 4000, panelClass: ['error-snackbar'] }
+      );
+      return;
+    }
+
+    this.submissionToDelete = submission;
+    this.challengeToDelete = challenge;
+    this.showDeleteSubmissionModal = true;
+  }
+
+  confirmDeleteSubmission() {
+    if (!this.submissionToDelete?.id) return;
+
+    const submissionId = this.submissionToDelete.id;
+    const challengeTitle = this.challengeToDelete?.title || 'el reto';
+
+    this.showDeleteSubmissionModal = false;
+
+    this.challengeService.deleteChallengeSubmission(submissionId).subscribe({
+      next: () => {
+        // Eliminar de la lista local
+        this.mySubmissions = this.mySubmissions.filter(s => s.id !== submissionId);
+        
+        this.snackBar.open(
+          `✅ Solución de "${challengeTitle}" eliminada`,
+          'Cerrar',
+          { duration: 3000, panelClass: ['success-snackbar'] }
+        );
+        
+        this.submissionToDelete = null;
+        this.challengeToDelete = null;
+      },
+      error: (error) => {
+        console.error('❌ Error al eliminar solución:', error);
+        this.snackBar.open(
+          error.error?.error || 'Error al eliminar la solución',
+          'Cerrar',
+          { duration: 3000, panelClass: ['error-snackbar'] }
+        );
+        
+        this.submissionToDelete = null;
+        this.challengeToDelete = null;
+      }
+    });
+  }
+
+  cancelDeleteSubmission() {
+    this.showDeleteSubmissionModal = false;
+    this.submissionToDelete = null;
+    this.challengeToDelete = null;
+  }
+
+  getDeleteSubmissionMessage(): string {
+    return `¿Estás seguro de que deseas eliminar tu solución para "${this.challengeToDelete?.title || 'este reto'}"?\n\nEsta acción no se puede deshacer.`;
   }
 }

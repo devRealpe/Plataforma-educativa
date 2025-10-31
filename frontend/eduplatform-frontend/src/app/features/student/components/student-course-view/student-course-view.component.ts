@@ -33,6 +33,10 @@ export class StudentCourseViewComponent implements OnInit {
   isSubmitting = false;
   isEditMode = false;
 
+    // Delete confirmation modal
+  showDeleteModal = false;
+  exerciseToDelete: Exercise | null = null;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
