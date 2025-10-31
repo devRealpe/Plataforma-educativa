@@ -197,14 +197,10 @@ export class ChallengeService {
     return this.http.get<ChallengeSubmission>(`${this.submissionUrl}/${id}`);
   }
 
- // Eliminar una solución de reto (solo si no está calificada)
-  deleteChallengeSubmission(submissionId: number): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/${submissionId}`, {
-      
-      headers: { Authorization: `Bearer ${this.submissionUrl()}` }
 
-    });
-  }
+deleteChallengeSubmission(submissionId: number): Observable<void> {
+  return this.http.delete<void>(`${this.submissionUrl}/${submissionId}`);
+}
 
   // ========================================
   // PODIO

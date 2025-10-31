@@ -9,10 +9,11 @@ import { ConfirmationModalComponent } from '../../../../shared/components/confir
 import { PodiumComponent } from '../../../../shared/components/podium/podium.component';
 import { ChallengesViewComponent } from '../challenges-view/challenges-view.component';
 
+
 @Component({
   selector: 'app-student-course-view',
   standalone: true,
-  imports: [CommonModule, FormsModule, PodiumComponent, ChallengesViewComponent],
+  imports: [CommonModule, FormsModule, PodiumComponent, ChallengesViewComponent, ConfirmationModalComponent],
   templateUrl: './student-course-view.component.html',
   styleUrls: ['./student-course-view.component.scss']
 })
@@ -36,6 +37,7 @@ export class StudentCourseViewComponent implements OnInit {
     // Delete confirmation modal
   showDeleteModal = false;
   exerciseToDelete: Exercise | null = null;
+  submissionToDelete: Submission | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -46,7 +48,88 @@ export class StudentCourseViewComponent implements OnInit {
   ) {}
 
     // Tab Navigation
-  activeTab: 'exercises' | 'challenges' | 'podium' = 'exercises'; // ← AGREGAR
+  activeTab: 'exercises' | 'challenges' | 'podium' = 'exercises'; 
+
+
+/**
+ * Inicia el proceso de eliminación de una entrega
+ */
+deleteSubmission(exercise: Exercise) {
+  const submission = this.getSubmission(exercise);
+  
+  if (!submission?.id) {
+    this.snackBar.open('No se encontró tu entrega', 'Cerrar', { duration: 3000 });
+    return;
+  }
+
+  if (submission.status === 'GRADED') {
+    this.snackBar.open(
+      '🚫 No puedes eliminar una entrega calificada',
+      'Cerrar',
+      { duration: 4000, panelClass: ['error-snackbar'] }
+    );
+    return;
+  }
+
+  this.exerciseToDelete = exercise;
+  this.submissionToDelete = submission;
+  this.showDeleteModal = true;
+}
+
+/**
+ * Confirma la eliminación de la entrega
+ */
+confirmDeleteSubmission() {
+  if (!this.submissionToDelete?.id) return;
+
+  const submissionId = this.submissionToDelete.id;
+  const exerciseTitle = this.exerciseToDelete?.title || 'el ejercicio';
+
+  this.showDeleteModal = false;
+
+  this.exerciseService.deleteSubmission(submissionId).subscribe({
+    next: () => {
+      // Eliminar de la lista local
+      this.submissions = this.submissions.filter(s => s.id !== submissionId);
+      
+      this.snackBar.open(
+        `✅ Entrega de "${exerciseTitle}" eliminada`,
+        'Cerrar',
+        { duration: 3000, panelClass: ['success-snackbar'] }
+      );
+      
+      this.exerciseToDelete = null;
+      this.submissionToDelete = null;
+    },
+    error: (error) => {
+      console.error('❌ Error al eliminar entrega:', error);
+      this.snackBar.open(
+        error.error?.error || 'Error al eliminar la entrega',
+        'Cerrar',
+        { duration: 3000, panelClass: ['error-snackbar'] }
+      );
+      
+      this.exerciseToDelete = null;
+      this.submissionToDelete = null;
+    }
+  });
+}
+
+/**
+ * Cancela la eliminación de la entrega
+ */
+cancelDeleteSubmission() {
+  this.showDeleteModal = false;
+  this.exerciseToDelete = null;
+  this.submissionToDelete = null;
+}
+
+/**
+ * Genera el mensaje para el modal de confirmación
+ */
+getDeleteSubmissionMessage(): string {
+  return `¿Estás seguro de que deseas eliminar tu entrega para "${this.exerciseToDelete?.title || 'este ejercicio'}"?\n\nEsta acción no se puede deshacer.`;
+}
 
   ngOnInit() {
     this.courseId = Number(this.route.snapshot.paramMap.get('id'));
@@ -320,43 +403,6 @@ export class StudentCourseViewComponent implements OnInit {
     }
   }
 
-  deleteSubmission(exercise: Exercise) {
-    const submission = this.getSubmission(exercise);
-    
-    if (!submission?.id) {
-      this.snackBar.open('No se encontró tu entrega', 'Cerrar', { duration: 3000 });
-      return;
-    }
-
-    if (submission.status === 'GRADED') {
-      this.snackBar.open(
-        '🚫 No puedes eliminar una entrega calificada',
-        'Cerrar',
-        { duration: 4000, panelClass: ['error-snackbar'] }
-      );
-      return;
-    }
-
-    if (confirm('¿Estás seguro de eliminar esta entrega?')) {
-      this.exerciseService.deleteSubmission(submission.id).subscribe({
-        next: () => {
-          this.submissions = this.submissions.filter(s => s.id !== submission.id);
-          this.snackBar.open('✅ Entrega eliminada', 'Cerrar', {
-            duration: 3000,
-            panelClass: ['success-snackbar']
-          });
-        },
-        error: (error) => {
-          console.error('❌ Error al eliminar:', error);
-          this.snackBar.open(
-            error.error?.error || 'Error al eliminar',
-            'Cerrar',
-            { duration: 3000, panelClass: ['error-snackbar'] }
-          );
-        }
-      });
-    }
-  }
 
   hasSubmission(exercise: Exercise): boolean {
     return this.submissions.some(s => s.exerciseId === exercise.id);

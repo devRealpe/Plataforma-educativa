@@ -727,3 +727,16 @@
     </div>
   </div>
 </div>
+
+<!-- Modal Confirmación Eliminar Entrega -->
+<app-confirmation-modal
+  *ngIf="showDeleteModal && exerciseToDelete"
+  title="¿Eliminar entrega?"
+  [message]="getDeleteSubmissionMessage()"
+  confirmText="Eliminar"
+  cancelText="Cancelar"
+  type="danger"
+  (confirm)="confirmDeleteSubmission()"
+  (cancel)="cancelDeleteSubmission()"
+>
+</app-confirmation-modal>
