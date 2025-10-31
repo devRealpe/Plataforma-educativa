@@ -81,6 +81,7 @@ export class ChallengeSubmissionModalComponent implements OnInit {
         );
         
         this.submissionCreated.emit(submission);
+
         this.close();
       },
       error: (error) => {

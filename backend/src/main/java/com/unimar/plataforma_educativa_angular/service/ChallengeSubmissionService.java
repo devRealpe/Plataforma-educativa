@@ -30,8 +30,89 @@ public class ChallengeSubmissionService {
     }
 
     /**
-     * Subir solución de reto (Estudiante)
+     * Revisar y otorgar bonificación (Profesor)
+     * ✅ CORRECCIÓN: Asegura que se actualice student_scores correctamente
      */
+    @Transactional
+    public ChallengeSubmission reviewSubmission(Long id, Integer bonusPoints, String feedback, String teacherEmail) {
+        System.out.println("🔍 Revisando solución de reto: " + id);
+        System.out.println("   Bonificación: " + bonusPoints + " XP");
+        System.out.println("   Profesor: " + teacherEmail);
+
+        ChallengeSubmission submission = submissionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Solución no encontrada"));
+
+        User teacher = userRepository.findByEmail(teacherEmail)
+                .orElseThrow(() -> new RuntimeException("Profesor no encontrado"));
+
+        if (!submission.getChallenge().getCourse().getTeacher().getId().equals(teacher.getId())) {
+            throw new RuntimeException("No tienes permiso para revisar esta solución");
+        }
+
+        // Validar bonificación
+        int maxBonus = submission.getChallenge().getMaxBonusPoints();
+        if (bonusPoints < 0 || bonusPoints > maxBonus) {
+            throw new RuntimeException("La bonificación debe estar entre 0 y " + maxBonus + " XP");
+        }
+
+        // Actualizar la solución
+        submission.setBonusPoints(bonusPoints);
+        submission.setFeedback(feedback);
+        submission.setStatus(bonusPoints > 0 ? ChallengeSubmission.SubmissionStatus.REVIEWED
+                : ChallengeSubmission.SubmissionStatus.REJECTED);
+        submission.setReviewedAt(LocalDateTime.now());
+
+        ChallengeSubmission savedSubmission = submissionRepository.save(submission);
+        System.out.println("   ✅ Solución guardada en BD");
+
+        // ✅ CRÍTICO: Actualizar puntuación del estudiante si recibió bonificación
+        if (bonusPoints > 0) {
+            System.out.println("   💎 Actualizando puntuación del estudiante...");
+            updateStudentScore(submission.getStudent(), submission.getChallenge().getCourse(), bonusPoints);
+            System.out.println("   ✅ Puntuación actualizada correctamente");
+        } else {
+            System.out.println("   ⚠️ No se otorgó bonificación (0 XP)");
+        }
+
+        return savedSubmission;
+    }
+
+    /**
+     * ✅ CORRECCIÓN: Método mejorado para actualizar puntuación del estudiante
+     */
+    private void updateStudentScore(User student, Course course, Integer bonusPoints) {
+        System.out.println("      📊 Buscando registro de puntuación...");
+        System.out.println("         Estudiante ID: " + student.getId());
+        System.out.println("         Curso ID: " + course.getId());
+
+        StudentScore score = studentScoreRepository
+                .findByStudentIdAndCourseId(student.getId(), course.getId())
+                .orElse(null);
+
+        if (score == null) {
+            System.out.println("      🆕 Registro no encontrado. Creando nuevo registro...");
+            score = new StudentScore();
+            score.setStudent(student);
+            score.setCourse(course);
+            score.setTotalBonusPoints(0);
+            score.setChallengesCompleted(0);
+        } else {
+            System.out.println("      ✅ Registro encontrado. Actualizando...");
+            System.out.println("         Puntos actuales: " + score.getTotalBonusPoints() + " XP");
+            System.out.println("         Retos completados: " + score.getChallengesCompleted());
+        }
+
+        // Actualizar puntuación
+        score.addBonusPoints(bonusPoints);
+        studentScoreRepository.save(score);
+
+        System.out.println("      💾 Registro guardado en student_scores");
+        System.out.println("         Nuevos puntos totales: " + score.getTotalBonusPoints() + " XP");
+        System.out.println("         Nuevos retos completados: " + score.getChallengesCompleted());
+    }
+
+    // ... resto de métodos sin cambios
+
     @Transactional
     public ChallengeSubmission submitChallenge(Long challengeId, String studentEmail, MultipartFile file) {
         if (file == null || file.isEmpty()) {
@@ -78,9 +159,6 @@ public class ChallengeSubmissionService {
         return submissionRepository.save(submission);
     }
 
-    /**
-     * Editar solución (Estudiante)
-     */
     @Transactional
     public ChallengeSubmission updateSubmission(Long submissionId, String studentEmail, MultipartFile file) {
         if (file == null || file.isEmpty()) {
@@ -121,9 +199,6 @@ public class ChallengeSubmissionService {
         return submissionRepository.save(submission);
     }
 
-    /**
-     * Obtener soluciones de un reto (Profesor)
-     */
     public List<ChallengeSubmission> getSubmissionsByChallenge(Long challengeId, String teacherEmail) {
         Challenge challenge = challengeRepository.findById(challengeId)
                 .orElseThrow(() -> new RuntimeException("Reto no encontrado"));
@@ -138,9 +213,6 @@ public class ChallengeSubmissionService {
         return submissionRepository.findByChallengeId(challengeId);
     }
 
-    /**
-     * Obtener mis soluciones (Estudiante)
-     */
     public List<ChallengeSubmission> getMySubmissions(String studentEmail) {
         User student = userRepository.findByEmail(studentEmail)
                 .orElseThrow(() -> new RuntimeException("Estudiante no encontrado"));
@@ -148,9 +220,6 @@ public class ChallengeSubmissionService {
         return submissionRepository.findByStudentId(student.getId());
     }
 
-    /**
-     * Obtener una solución específica
-     */
     public ChallengeSubmission getSubmissionById(Long id, String userEmail) {
         ChallengeSubmission submission = submissionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Solución no encontrada"));
@@ -168,65 +237,6 @@ public class ChallengeSubmissionService {
         return submission;
     }
 
-    /**
-     * Revisar y otorgar bonificación (Profesor)
-     */
-    @Transactional
-    public ChallengeSubmission reviewSubmission(Long id, Integer bonusPoints, String feedback, String teacherEmail) {
-        ChallengeSubmission submission = submissionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Solución no encontrada"));
-
-        User teacher = userRepository.findByEmail(teacherEmail)
-                .orElseThrow(() -> new RuntimeException("Profesor no encontrado"));
-
-        if (!submission.getChallenge().getCourse().getTeacher().getId().equals(teacher.getId())) {
-            throw new RuntimeException("No tienes permiso para revisar esta solución");
-        }
-
-        // Validar bonificación
-        int maxBonus = submission.getChallenge().getMaxBonusPoints();
-        if (bonusPoints < 0 || bonusPoints > maxBonus) {
-            throw new RuntimeException("La bonificación debe estar entre 0 y " + maxBonus + " XP");
-        }
-
-        submission.setBonusPoints(bonusPoints);
-        submission.setFeedback(feedback);
-        submission.setStatus(bonusPoints > 0 ? ChallengeSubmission.SubmissionStatus.REVIEWED
-                : ChallengeSubmission.SubmissionStatus.REJECTED);
-        submission.setReviewedAt(LocalDateTime.now());
-
-        ChallengeSubmission savedSubmission = submissionRepository.save(submission);
-
-        // Actualizar puntuación del estudiante si recibió bonificación
-        if (bonusPoints > 0) {
-            updateStudentScore(submission.getStudent(), submission.getChallenge().getCourse(), bonusPoints);
-        }
-
-        return savedSubmission;
-    }
-
-    /**
-     * Actualizar puntuación del estudiante
-     */
-    private void updateStudentScore(User student, Course course, Integer bonusPoints) {
-        StudentScore score = studentScoreRepository
-                .findByStudentIdAndCourseId(student.getId(), course.getId())
-                .orElse(new StudentScore());
-
-        if (score.getId() == null) {
-            score.setStudent(student);
-            score.setCourse(course);
-            score.setTotalBonusPoints(0);
-            score.setChallengesCompleted(0);
-        }
-
-        score.addBonusPoints(bonusPoints);
-        studentScoreRepository.save(score);
-    }
-
-    /**
-     * Obtener archivo de solución
-     */
     public byte[] getSubmissionFile(Long id, String userEmail) {
         ChallengeSubmission submission = getSubmissionById(id, userEmail);
 
@@ -237,9 +247,6 @@ public class ChallengeSubmissionService {
         return submission.getFileData();
     }
 
-    /**
-     * Eliminar solución (Solo antes de ser revisada)
-     */
     @Transactional
     public void deleteSubmission(Long id, String studentEmail) {
         ChallengeSubmission submission = submissionRepository.findById(id)

@@ -66,7 +66,7 @@ export class ChallengesViewComponent implements OnInit {
     return !!this.getMySubmission(challengeId);
   }
 
-  // ✅ MÉTODO AGREGADO: Abrir modal con soporte para edición
+  //  Abrir modal para edición
   openSubmissionModal(challenge: Challenge, existingSubmission?: ChallengeSubmission) {
     this.selectedChallenge = challenge;
     this.existingSubmission = existingSubmission || this.getMySubmission(challenge.id!);
@@ -87,6 +87,9 @@ export class ChallengesViewComponent implements OnInit {
     } else {
       this.mySubmissions.push(submission);
     }
+
+    // Refrescar la lista de envios
+    this.loadMySubmissions();
 
     this.snackBar.open('✅ Solución enviada exitosamente', 'Cerrar', { duration: 3000 });
   }
@@ -153,7 +156,7 @@ export class ChallengesViewComponent implements OnInit {
     });
   }
 
-  // ✅ MÉTODO AGREGADO: Descargar mi solución enviada
+  // Descargar mi solución enviada
   downloadMySubmission(submission: ChallengeSubmission) {
     if (!submission.id) return;
 

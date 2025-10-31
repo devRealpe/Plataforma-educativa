@@ -262,6 +262,7 @@ export class StudentCourseViewComponent implements OnInit {
 
       this.exerciseService.updateSubmission(submission.id, this.selectedFile).subscribe({
         next: (updated) => {
+          this.loadMySubmissions();
           const index = this.submissions.findIndex(s => s.id === updated.id);
           if (index !== -1) {
             this.submissions[index] = updated;
@@ -290,7 +291,8 @@ export class StudentCourseViewComponent implements OnInit {
       // CREAR
       this.exerciseService.submitExercise(this.selectedExercise.id, this.selectedFile).subscribe({
         next: (submission) => {
-          this.submissions.push(submission);
+
+          this.loadMySubmissions();
           
           this.snackBar.open(
             '✅ Entrega subida exitosamente. El profesor ya puede verla.',
