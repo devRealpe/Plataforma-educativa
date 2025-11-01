@@ -18,21 +18,11 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.lenient;
 
 /**
  * Pruebas Unitarias - Historia de Usuario 10 (HU10)
  * Subida de Ejercicio Desarrollado
- * 
- * Descripción: Como estudiante, quiero subir el ejercicio desarrollado
- * para que el docente pueda revisarlo y asignarme una calificación
- * 
- * Criterios de Aceptación:
- * CID 1: Cuando el estudiante selecciona un ejercicio y adjunta su archivo
- * desarrollado, luego hace clic en "Subir ejercicio"
- * → El sistema carga el archivo y muestra un mensaje de confirmación
- * 
- * CID 2: Cuando el estudiante intenta subir un ejercicio sin adjuntar archivo
- * → El botón "Subir ejercicio" se mantiene inhabilitado
  */
 @ExtendWith(MockitoExtension.class)
 @DisplayName("Pruebas Unitarias - HU10: Subida de Ejercicio Desarrollado")
@@ -60,21 +50,18 @@ class SubmissionServiceTest_HU10 {
 
         @BeforeEach
         void setUp() {
-                // Profesor del curso
                 testTeacher = new User();
                 testTeacher.setId(1L);
                 testTeacher.setEmail("teacher@test.com");
                 testTeacher.setNombre("Profesor Test");
                 testTeacher.setRole(Role.TEACHER);
 
-                // Estudiante inscrito en el curso
                 testStudent = new User();
                 testStudent.setId(2L);
                 testStudent.setEmail("student@test.com");
                 testStudent.setNombre("Estudiante Test");
                 testStudent.setRole(Role.STUDENT);
 
-                // Curso de prueba
                 testCourse = new Course();
                 testCourse.setId(1L);
                 testCourse.setTitle("Programación Java");
@@ -84,7 +71,6 @@ class SubmissionServiceTest_HU10 {
                 testCourse.setStudents(new HashSet<>());
                 testCourse.getStudents().add(testStudent);
 
-                // Ejercicio del curso
                 testExercise = new Exercise();
                 testExercise.setId(1L);
                 testExercise.setTitle("Sistema de Gestión de Biblioteca");
@@ -94,33 +80,18 @@ class SubmissionServiceTest_HU10 {
                 testExercise.setDeadline(LocalDateTime.now().plusDays(7));
         }
 
-        // ========================================
-        // CASOS DE PRUEBA PRINCIPALES - HU10
-        // ========================================
-
-        /**
-         * CP010-01 - Escenario 01 (CID 1)
-         * Subida exitosa de ejercicio desarrollado con archivo adjunto
-         * 
-         * Dado: Un estudiante inscrito en el curso con un ejercicio asignado
-         * Cuando: Selecciona el ejercicio y adjunta su archivo desarrollado
-         * (solucion.zip)
-         * Y: Hace clic en "Subir ejercicio"
-         * Entonces: El sistema carga el archivo en la base de datos
-         * Y: Muestra un mensaje de confirmación
-         * Y: Establece el estado como PENDING
-         */
         @Test
-        @DisplayName("CP010-01 - HU10: Subida exitosa de ejercicio desarrollado con archivo")
-        void testCP010_01_SubidaExitosaConArchivo() throws Exception {
-                // ==================== ARRANGE ====================
+        @DisplayName("CP010-01 - HU10: Subida exitosa de ejercicio desarrollado")
+        void testCP010_01_SubidaExitosaDeEjercicio() throws Exception {
                 System.out.println("\n=== CP010-01: Subida exitosa de ejercicio desarrollado ===");
 
-                byte[] fileContent = "PK... [contenido del archivo ZIP con código Java]".getBytes();
+                byte[] fileContent = "PK... [contenido del archivo ZIP con solución]".getBytes();
 
+                when(mockFile.isEmpty()).thenReturn(false);
                 when(mockFile.getBytes()).thenReturn(fileContent);
                 when(mockFile.getOriginalFilename()).thenReturn("solucion.zip");
                 when(mockFile.getContentType()).thenReturn("application/zip");
+
                 when(exerciseRepository.findById(1L)).thenReturn(Optional.of(testExercise));
                 when(userRepository.findByEmail("student@test.com")).thenReturn(Optional.of(testStudent));
                 when(submissionRepository.existsByExerciseIdAndStudentId(1L, 2L)).thenReturn(false);
@@ -134,29 +105,26 @@ class SubmissionServiceTest_HU10 {
                 savedSubmission.setFileType("application/zip");
                 savedSubmission.setStatus(Submission.SubmissionStatus.PENDING);
                 savedSubmission.setSubmittedAt(LocalDateTime.now());
+                savedSubmission.setEditCount(0);
 
                 when(submissionRepository.save(any(Submission.class))).thenReturn(savedSubmission);
 
-                // ==================== ACT ====================
                 Submission result = submissionService.submitExercise(1L, "student@test.com", mockFile);
 
-                // ==================== ASSERT ====================
-                assertNotNull(result, "La entrega no debe ser nula");
-                assertNotNull(result.getId(), "La entrega debe tener un ID asignado");
-                assertTrue(result.hasFile(), "La entrega debe tener archivo adjunto");
-                assertEquals("solucion.zip", result.getFileName(), "El nombre del archivo debe coincidir");
-                assertEquals("application/zip", result.getFileType(), "El tipo de archivo debe ser ZIP");
-                assertArrayEquals(fileContent, result.getFileData(), "El contenido del archivo debe coincidir");
-                assertTrue(result.getFileData().length > 0, "El archivo debe tener contenido");
-                assertEquals(Submission.SubmissionStatus.PENDING, result.getStatus(),
-                                "El estado debe ser PENDING (pendiente de calificación)");
-                assertNull(result.getGrade(), "No debe tener calificación aún");
-                assertNull(result.getFeedback(), "No debe tener retroalimentación aún");
-                assertNotNull(result.getSubmittedAt(), "Debe tener fecha de entrega");
-                assertEquals(testStudent.getId(), result.getStudent().getId(),
-                                "Debe estar asociado al estudiante correcto");
-                assertEquals(testExercise.getId(), result.getExercise().getId(),
-                                "Debe estar asociado al ejercicio correcto");
+                assertNotNull(result);
+                assertNotNull(result.getId());
+                assertTrue(result.hasFile());
+                assertEquals("solucion.zip", result.getFileName());
+                assertEquals("application/zip", result.getFileType());
+                assertArrayEquals(fileContent, result.getFileData());
+                assertTrue(result.getFileData().length > 0);
+                assertEquals(Submission.SubmissionStatus.PENDING, result.getStatus());
+                assertNull(result.getGrade());
+                assertNull(result.getFeedback());
+                assertNotNull(result.getSubmittedAt());
+                assertEquals(0, result.getEditCount());
+                assertEquals(testStudent.getId(), result.getStudent().getId());
+                assertEquals(testExercise.getId(), result.getExercise().getId());
 
                 verify(exerciseRepository, times(1)).findById(1L);
                 verify(userRepository, times(1)).findByEmail("student@test.com");
@@ -166,59 +134,121 @@ class SubmissionServiceTest_HU10 {
                 verify(mockFile, times(1)).getOriginalFilename();
                 verify(mockFile, times(1)).getContentType();
 
-                // ==================== RESULTADO ====================
-                System.out.println("CP010-01 PASÓ: Ejercicio desarrollado subido exitosamente");
-                System.out.println("   Archivo: " + result.getFileName());
-                System.out.println("   Tamaño: " + result.getFileData().length + " bytes");
-                System.out.println("   Estudiante: " + result.getStudent().getNombre());
-                System.out.println("   Ejercicio: " + result.getExercise().getTitle());
-                System.out.println("   Fecha entrega: " + result.getSubmittedAt());
-                System.out.println("   Estado: " + result.getStatus());
-                System.out.println("   Mensaje: 'Ejercicio subido exitosamente. El profesor lo revisará pronto.'");
+                System.out.println("✅ VALIDACIÓN EXITOSA");
         }
 
-        /**
-         * CP010-02 - Escenario 02 (CID 2)
-         * Intento de subir ejercicio sin archivo adjunto
-         * 
-         * Dado: Un estudiante inscrito en el curso con un ejercicio asignado
-         * Cuando: Intenta subir un ejercicio sin adjuntar archivo (file = null)
-         * Entonces: El sistema lanza una excepción
-         * Y: NO guarda la entrega en la base de datos
-         * 
-         * NOTA: En el frontend, el botón "Subir ejercicio" debe estar inhabilitado
-         * cuando no hay archivo seleccionado, pero el backend valida igualmente.
-         */
         @Test
-        @DisplayName("CP010-02 - HU10: Intento de subir ejercicio sin archivo adjunto")
+        @DisplayName("CP010-02 - HU10: Subida sin archivo adjunto")
         void testCP010_02_SubidaSinArchivo() {
-                // ==================== ARRANGE ====================
-                System.out.println("\n=== CP010-02: Intento de subir sin archivo ===");
+                System.out.println("\n=== CP010-02: Subida sin archivo adjunto ===");
 
-                when(exerciseRepository.findById(1L)).thenReturn(Optional.of(testExercise));
-                when(userRepository.findByEmail("student@test.com")).thenReturn(Optional.of(testStudent));
-                when(submissionRepository.existsByExerciseIdAndStudentId(1L, 2L)).thenReturn(false);
+                // Hacemos lenient porque el método lanza excepción antes de usar los mocks
+                lenient().when(exerciseRepository.findById(1L)).thenReturn(Optional.of(testExercise));
+                lenient().when(userRepository.findByEmail("student@test.com")).thenReturn(Optional.of(testStudent));
+                lenient().when(submissionRepository.existsByExerciseIdAndStudentId(1L, 2L)).thenReturn(false);
 
-                // ==================== ACT & ASSERT ====================
                 RuntimeException exception = assertThrows(
                                 RuntimeException.class,
-                                () -> submissionService.submitExercise(1L, "student@test.com", null),
-                                "Debe lanzar excepción cuando no hay archivo");
+                                () -> submissionService.submitExercise(1L, "student@test.com", null));
 
-                String errorMessage = exception.getMessage();
-                assertTrue(
-                                errorMessage.contains("Error al procesar el archivo") ||
-                                                errorMessage.contains("file") ||
-                                                errorMessage.contains("null"),
-                                "El mensaje debe indicar error con el archivo. Mensaje recibido: " + errorMessage);
-
+                assertEquals("Debes seleccionar un archivo para subir la entrega", exception.getMessage());
                 verify(submissionRepository, never()).save(any(Submission.class));
 
-                // ==================== RESULTADO ====================
-                System.out.println("CP010-02 PASÓ: Sistema rechaza subida sin archivo");
-                System.out.println("   Error: " + errorMessage);
-                System.out.println("   Validación: No se guardó ninguna entrega en la base de datos");
-                System.out.println("   Frontend: El botón 'Subir ejercicio' debe estar INHABILITADO");
-                System.out.println("      cuando no hay archivo seleccionado (validación preventiva)");
+                System.out.println("✅ Sistema rechaza subida sin archivo");
+        }
+
+        @Test
+        @DisplayName("HU10: Solo estudiantes inscritos pueden subir entregas")
+        void testSubida_SoloEstudiantesInscritos() throws Exception {
+                System.out.println("\n=== Validación: Solo estudiantes inscritos pueden subir ===");
+
+                User otherStudent = new User();
+                otherStudent.setId(99L);
+                otherStudent.setEmail("other@test.com");
+                otherStudent.setRole(Role.STUDENT);
+
+                Course courseWithoutStudent = new Course();
+                courseWithoutStudent.setId(1L);
+                courseWithoutStudent.setTeacher(testTeacher);
+                courseWithoutStudent.setStudents(new HashSet<>());
+
+                Exercise exercise = new Exercise();
+                exercise.setId(1L);
+                exercise.setCourse(courseWithoutStudent);
+
+                byte[] fileContent = "contenido".getBytes();
+                lenient().when(mockFile.isEmpty()).thenReturn(false);
+                lenient().when(mockFile.getBytes()).thenReturn(fileContent);
+                lenient().when(exerciseRepository.findById(1L)).thenReturn(Optional.of(exercise));
+                lenient().when(userRepository.findByEmail("other@test.com")).thenReturn(Optional.of(otherStudent));
+
+                RuntimeException exception = assertThrows(
+                                RuntimeException.class,
+                                () -> submissionService.submitExercise(1L, "other@test.com", mockFile));
+
+                assertEquals("No estás inscrito en este curso", exception.getMessage());
+                verify(submissionRepository, never()).save(any(Submission.class));
+        }
+
+        @Test
+        @DisplayName("HU10: No permitir subir ejercicio ya entregado")
+        void testSubida_NoPermitirDuplicados() throws Exception {
+                System.out.println("\n=== Validación: No permitir entregas duplicadas ===");
+
+                byte[] fileContent = "contenido".getBytes();
+                lenient().when(mockFile.isEmpty()).thenReturn(false);
+                lenient().when(mockFile.getBytes()).thenReturn(fileContent);
+                lenient().when(exerciseRepository.findById(1L)).thenReturn(Optional.of(testExercise));
+                lenient().when(userRepository.findByEmail("student@test.com")).thenReturn(Optional.of(testStudent));
+                lenient().when(submissionRepository.existsByExerciseIdAndStudentId(1L, 2L)).thenReturn(true);
+
+                RuntimeException exception = assertThrows(
+                                RuntimeException.class,
+                                () -> submissionService.submitExercise(1L, "student@test.com", mockFile));
+
+                assertTrue(exception.getMessage().contains("Ya has entregado este ejercicio"));
+                verify(submissionRepository, never()).save(any(Submission.class));
+        }
+
+        @Test
+        @DisplayName("HU10: No permitir subir después de la fecha límite")
+        void testSubida_DespuesDeFechaLimite() throws Exception {
+                System.out.println("\n=== Validación: Fecha límite de entrega ===");
+
+                testExercise.setDeadline(LocalDateTime.now().minusDays(1));
+
+                byte[] fileContent = "contenido".getBytes();
+                lenient().when(mockFile.isEmpty()).thenReturn(false);
+                lenient().when(mockFile.getBytes()).thenReturn(fileContent);
+                lenient().when(exerciseRepository.findById(1L)).thenReturn(Optional.of(testExercise));
+                lenient().when(userRepository.findByEmail("student@test.com")).thenReturn(Optional.of(testStudent));
+                lenient().when(submissionRepository.existsByExerciseIdAndStudentId(1L, 2L)).thenReturn(false);
+
+                RuntimeException exception = assertThrows(
+                                RuntimeException.class,
+                                () -> submissionService.submitExercise(1L, "student@test.com", mockFile));
+
+                assertEquals("La fecha límite de entrega ha pasado", exception.getMessage());
+                verify(submissionRepository, never()).save(any(Submission.class));
+        }
+
+        @Test
+        @DisplayName("HU10: Rechazar archivo vacío")
+        void testSubida_ArchivoVacio() {
+                System.out.println("\n=== Validación: Archivo vacío ===");
+
+                lenient().when(mockFile.isEmpty()).thenReturn(true);
+                lenient().when(exerciseRepository.findById(1L)).thenReturn(Optional.of(testExercise));
+                lenient().when(userRepository.findByEmail("student@test.com")).thenReturn(Optional.of(testStudent));
+                lenient().when(submissionRepository.existsByExerciseIdAndStudentId(1L, 2L)).thenReturn(false);
+
+                RuntimeException exception = assertThrows(
+                                RuntimeException.class,
+                                () -> submissionService.submitExercise(1L, "student@test.com", mockFile));
+
+                assertEquals("Debes seleccionar un archivo para subir la entrega", exception.getMessage());
+                verify(submissionRepository, never()).save(any(Submission.class));
+
+                System.out.println("✅ Sistema rechaza archivos vacíos");
         }
 }
