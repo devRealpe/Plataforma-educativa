@@ -30,14 +30,17 @@ public class ChallengeSubmissionService {
     }
 
     /**
-     * Revisar y otorgar bonificación (Profesor)
-     * ✅ CORRECCIÓN: Asegura que se actualice student_scores correctamente
+     * ✅ CORRECCIÓN CRÍTICA: Revisar y otorgar bonificación
      */
     @Transactional
     public ChallengeSubmission reviewSubmission(Long id, Integer bonusPoints, String feedback, String teacherEmail) {
-        System.out.println("🔍 Revisando solución de reto: " + id);
+        System.out.println("\n========================================");
+        System.out.println("🔍 REVISANDO SOLUCIÓN DE RETO");
+        System.out.println("========================================");
+        System.out.println("   Submission ID: " + id);
         System.out.println("   Bonificación: " + bonusPoints + " XP");
         System.out.println("   Profesor: " + teacherEmail);
+        System.out.println("   Feedback: " + feedback);
 
         ChallengeSubmission submission = submissionRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Solución no encontrada"));
@@ -55,63 +58,92 @@ public class ChallengeSubmissionService {
             throw new RuntimeException("La bonificación debe estar entre 0 y " + maxBonus + " XP");
         }
 
+        System.out.println("   ✅ Validaciones superadas");
+        System.out.println("   📝 Estudiante: " + submission.getStudent().getNombre());
+        System.out.println("   📚 Curso: " + submission.getChallenge().getCourse().getTitle());
+
         // Actualizar la solución
         submission.setBonusPoints(bonusPoints);
         submission.setFeedback(feedback);
-        submission.setStatus(bonusPoints > 0 ? ChallengeSubmission.SubmissionStatus.REVIEWED
+        submission.setStatus(bonusPoints > 0
+                ? ChallengeSubmission.SubmissionStatus.REVIEWED
                 : ChallengeSubmission.SubmissionStatus.REJECTED);
         submission.setReviewedAt(LocalDateTime.now());
 
         ChallengeSubmission savedSubmission = submissionRepository.save(submission);
-        System.out.println("   ✅ Solución guardada en BD");
+        System.out.println("   💾 Solución guardada en BD");
 
-        // ✅ CRÍTICO: Actualizar puntuación del estudiante si recibió bonificación
-        if (bonusPoints > 0) {
-            System.out.println("   💎 Actualizando puntuación del estudiante...");
-            updateStudentScore(submission.getStudent(), submission.getChallenge().getCourse(), bonusPoints);
-            System.out.println("   ✅ Puntuación actualizada correctamente");
-        } else {
-            System.out.println("   ⚠️ No se otorgó bonificación (0 XP)");
-        }
+        // ✅ CRÍTICO: Actualizar puntuación SIEMPRE (incluso con 0 puntos para tracking)
+        System.out.println("\n   📊 Actualizando student_scores...");
+        updateStudentScore(
+                submission.getStudent(),
+                submission.getChallenge().getCourse(),
+                bonusPoints,
+                bonusPoints > 0 // Solo incrementar challengesCompleted si bonusPoints > 0
+        );
+        System.out.println("   ✅ student_scores actualizado correctamente");
+
+        System.out.println("========================================");
+        System.out.println("✅ REVISIÓN COMPLETADA EXITOSAMENTE");
+        System.out.println("========================================\n");
 
         return savedSubmission;
     }
 
     /**
-     * ✅ CORRECCIÓN: Método mejorado para actualizar puntuación del estudiante
+     * ✅ CORRECCIÓN: Método mejorado con logs detallados
      */
-    private void updateStudentScore(User student, Course course, Integer bonusPoints) {
-        System.out.println("      📊 Buscando registro de puntuación...");
-        System.out.println("         Estudiante ID: " + student.getId());
-        System.out.println("         Curso ID: " + course.getId());
+    private void updateStudentScore(User student, Course course, Integer bonusPoints, boolean incrementChallenges) {
+        System.out.println("\n      ═══════════════════════════════════");
+        System.out.println("      📊 ACTUALIZANDO STUDENT_SCORES");
+        System.out.println("      ═══════════════════════════════════");
+        System.out.println("         🎓 Estudiante: " + student.getNombre() + " (ID: " + student.getId() + ")");
+        System.out.println("         📚 Curso: " + course.getTitle() + " (ID: " + course.getId() + ")");
+        System.out.println("         💎 Bonificación: " + bonusPoints + " XP");
+        System.out.println("         🏆 Incrementar retos: " + incrementChallenges);
 
         StudentScore score = studentScoreRepository
                 .findByStudentIdAndCourseId(student.getId(), course.getId())
                 .orElse(null);
 
         if (score == null) {
-            System.out.println("      🆕 Registro no encontrado. Creando nuevo registro...");
+            System.out.println("\n      🆕 REGISTRO NO ENCONTRADO - Creando nuevo...");
             score = new StudentScore();
             score.setStudent(student);
             score.setCourse(course);
             score.setTotalBonusPoints(0);
             score.setChallengesCompleted(0);
+            System.out.println("         ✅ Nuevo registro creado");
         } else {
-            System.out.println("      ✅ Registro encontrado. Actualizando...");
-            System.out.println("         Puntos actuales: " + score.getTotalBonusPoints() + " XP");
-            System.out.println("         Retos completados: " + score.getChallengesCompleted());
+            System.out.println("\n      📋 REGISTRO EXISTENTE ENCONTRADO:");
+            System.out.println("         • Puntos actuales: " + score.getTotalBonusPoints() + " XP");
+            System.out.println("         • Retos completados: " + score.getChallengesCompleted());
         }
 
-        // Actualizar puntuación
-        score.addBonusPoints(bonusPoints);
-        studentScoreRepository.save(score);
+        // ✅ CORRECCIÓN: Actualizar siempre los puntos
+        int previousPoints = score.getTotalBonusPoints();
+        int previousChallenges = score.getChallengesCompleted();
 
-        System.out.println("      💾 Registro guardado en student_scores");
-        System.out.println("         Nuevos puntos totales: " + score.getTotalBonusPoints() + " XP");
-        System.out.println("         Nuevos retos completados: " + score.getChallengesCompleted());
+        score.setTotalBonusPoints(previousPoints + bonusPoints);
+
+        if (incrementChallenges) {
+            score.setChallengesCompleted(previousChallenges + 1);
+        }
+
+        studentScoreRepository.save(score);
+        System.out.println("\n      💾 GUARDADO EN BASE DE DATOS:");
+        System.out.println("         • Puntos anteriores: " + previousPoints + " XP");
+        System.out.println("         • Puntos nuevos: " + score.getTotalBonusPoints() + " XP");
+        System.out.println("         • Retos anteriores: " + previousChallenges);
+        System.out.println("         • Retos nuevos: " + score.getChallengesCompleted());
+        System.out.println("      ═══════════════════════════════════");
+        System.out.println("      ✅ ACTUALIZACIÓN COMPLETADA");
+        System.out.println("      ═══════════════════════════════════\n");
     }
 
-    // ... resto de métodos sin cambios
+    // ========================================
+    // Resto de métodos sin cambios
+    // ========================================
 
     @Transactional
     public ChallengeSubmission submitChallenge(Long challengeId, String studentEmail, MultipartFile file) {
