@@ -1,8 +1,17 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject, tap } from 'rxjs';
 
-interface UserProfile {
+// ✅ Respuesta del login (con token)
+export interface LoginResponse {
+  token: string;
+  email: string;
+  name: string;
+  role: string;
+}
+
+// ✅ Perfil del usuario (sin token) - Exportada para usarla en componentes
+export interface UserProfile {
   email: string;
   name: string;
   role: string;
@@ -40,11 +49,11 @@ export class AuthService {
   /**
    * Login
    */
-  login(credentials: { email: string; password: string }): Observable<any> {
-    return this.http.post(`${this.apiUrl}/login`, credentials).pipe(
-      tap((response: any) => {
+  login(email: string, password: string): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { email, password }).pipe(
+      tap((response: LoginResponse) => {
         if (response.token) {
-          localStorage.setItem('token', response.token);
+          this.saveToken(response.token);
           
           const user: UserProfile = {
             email: response.email,
@@ -114,7 +123,14 @@ export class AuthService {
   }
 
   /**
-   * Verificar si hay token
+   * Guardar token
+   */
+  saveToken(token: string) {
+    localStorage.setItem('token', token);
+  }
+
+  /**
+   * Obtener token
    */
   getToken(): string | null {
     return localStorage.getItem('token');

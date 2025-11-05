@@ -13,7 +13,10 @@ import { AuthService } from '../services/auth.service';
   providedIn: 'root',
 })
 export class AuthGuard implements CanActivate {
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(
+    private authService: AuthService, 
+    private router: Router
+  ) {}
 
   canActivate(
     route: ActivatedRouteSnapshot,
@@ -23,11 +26,16 @@ export class AuthGuard implements CanActivate {
     | UrlTree
     | Observable<boolean | UrlTree>
     | Promise<boolean | UrlTree> {
-    if (this.authService.isLoggedIn()) {
+    
+    // ✅ CORREGIDO: Usar isAuthenticated() en lugar de isLoggedIn()
+    if (this.authService.isAuthenticated()) {
       return true;
     } else {
       // Si no hay token -> redirigir al login
-      this.router.navigate(['/login']);
+      console.warn('🔒 Acceso denegado. Redirigiendo al login...');
+      this.router.navigate(['/login'], {
+        queryParams: { returnUrl: state.url } // ✅ Guardar URL para redirigir después del login
+      });
       return false;
     }
   }

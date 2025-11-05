@@ -1,50 +1,247 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
-import { MatButtonModule } from '@angular/material/button';
-import { AuthService, LoginResponse } from '../../../core/services/auth.service';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { AuthService, UserProfile } from '../../../core/services/auth.service'; // ✅ Importar UserProfile del servicio
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-profile',
-  standalone: true,   // 👈 marca que es standalone
-  imports: [
-    CommonModule,
-    MatCardModule,
-    MatIconModule,
-    MatButtonModule
-  ],
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './profile.component.html',
   styleUrls: ['./profile.component.scss']
 })
 export class ProfileComponent implements OnInit {
-  user: LoginResponse | null = null;
-  loading = true;
-  error: string | null = null;
+  user: UserProfile | null = null;
+  profileForm!: FormGroup;
+  passwordForm!: FormGroup;
+  
+  isEditingProfile = false;
+  isChangingPassword = false;
+  
+  profileMessage = '';
+  profileError = '';
+  passwordMessage = '';
+  passwordError = '';
+  
+  isLoadingProfile = false;
+  isLoadingPassword = false;
 
-  constructor(private auth: AuthService, private router: Router) {}
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private router: Router
+  ) {}
 
-  ngOnInit(): void {
-    this.auth.getProfile().subscribe({
-      next: (res) => {
-        this.user = res;
-        this.loading = false;
-      },
-      error: (err) => {
-        console.error(err);
-        this.error = 'No se pudo cargar el perfil';
-        this.loading = false;
-        if (err?.status === 401) {
-          this.auth.logout();
+  ngOnInit() {
+    this.initForms();
+    this.loadUserData();
+  }
+
+  /**
+   * Inicializar formularios
+   */
+  initForms() {
+    this.profileForm = this.fb.group({
+      nombre: ['', [Validators.required, Validators.minLength(3)]]
+    });
+
+    this.passwordForm = this.fb.group({
+      currentPassword: ['', [Validators.required]],
+      newPassword: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', [Validators.required]]
+    }, { validators: this.passwordMatchValidator });
+  }
+
+  /**
+   * Cargar datos del usuario
+   */
+  loadUserData() {
+    // ✅ Primero intentar obtener del servicio
+    this.user = this.authService.getCurrentUser();
+    
+    if (!this.user) {
+      // Si no hay usuario en memoria, cargar desde el backend
+      this.authService.getProfile().subscribe({
+        next: (profile) => { // ✅ Ya tiene el tipo correcto UserProfile
+          this.user = profile;
+          this.profileForm.patchValue({ nombre: profile.name });
+        },
+        error: (err) => {
+          console.error('Error al cargar perfil:', err);
           this.router.navigate(['/login']);
         }
+      });
+    } else {
+      this.profileForm.patchValue({ nombre: this.user.name });
+    }
+  }
+
+  /**
+   * Validador para confirmar contraseña
+   */
+  passwordMatchValidator(form: FormGroup) {
+    const newPassword = form.get('newPassword')?.value;
+    const confirmPassword = form.get('confirmPassword')?.value;
+    
+    return newPassword === confirmPassword ? null : { passwordMismatch: true };
+  }
+
+  /**
+   * Activar edición de perfil
+   */
+  enableProfileEdit() {
+    this.isEditingProfile = true;
+    this.profileMessage = '';
+    this.profileError = '';
+  }
+
+  /**
+   * Cancelar edición de perfil
+   */
+  cancelProfileEdit() {
+    this.isEditingProfile = false;
+    this.profileForm.patchValue({ nombre: this.user?.name || '' });
+    this.profileMessage = '';
+    this.profileError = '';
+  }
+
+  /**
+   * Guardar cambios en el perfil
+   */
+  saveProfile() {
+    if (this.profileForm.invalid) {
+      return;
+    }
+
+    this.isLoadingProfile = true;
+    this.profileMessage = '';
+    this.profileError = '';
+
+    const nombre = this.profileForm.value.nombre;
+
+    this.authService.updateProfile(nombre).subscribe({
+      next: (response) => {
+        this.profileMessage = '✅ Perfil actualizado exitosamente';
+        
+        // ✅ Actualizar el usuario local
+        if (this.user) {
+          this.user = { ...this.user, name: response.name };
+        }
+        
+        this.isEditingProfile = false;
+        this.isLoadingProfile = false;
+
+        setTimeout(() => {
+          this.profileMessage = '';
+        }, 3000);
+      },
+      error: (err) => {
+        this.profileError = err.error?.error || 'Error al actualizar el perfil';
+        this.isLoadingProfile = false;
       }
     });
   }
 
-  logout(): void {
-    this.auth.logout();
+  /**
+   * Activar cambio de contraseña
+   */
+  enablePasswordChange() {
+    this.isChangingPassword = true;
+    this.passwordMessage = '';
+    this.passwordError = '';
+    this.passwordForm.reset();
+  }
+
+  /**
+   * Cancelar cambio de contraseña
+   */
+  cancelPasswordChange() {
+    this.isChangingPassword = false;
+    this.passwordForm.reset();
+    this.passwordMessage = '';
+    this.passwordError = '';
+  }
+
+  /**
+   * Cambiar contraseña
+   */
+  changePassword() {
+    if (this.passwordForm.invalid) {
+      return;
+    }
+
+    this.isLoadingPassword = true;
+    this.passwordMessage = '';
+    this.passwordError = '';
+
+    const { currentPassword, newPassword } = this.passwordForm.value;
+
+    this.authService.changePassword(currentPassword, newPassword).subscribe({
+      next: (response) => {
+        this.passwordMessage = '✅ Contraseña actualizada exitosamente';
+        this.isChangingPassword = false;
+        this.passwordForm.reset();
+        this.isLoadingPassword = false;
+
+        setTimeout(() => {
+          this.passwordMessage = '';
+        }, 3000);
+      },
+      error: (err) => {
+        this.passwordError = err.error?.error || 'Error al cambiar la contraseña';
+        this.isLoadingPassword = false;
+      }
+    });
+  }
+
+  /**
+   * Obtener icono según el rol
+   */
+  getRoleIcon(): string {
+    return this.user?.role === 'TEACHER' ? '👨‍🏫' : '👨‍🎓';
+  }
+
+  /**
+   * Obtener label del rol
+   */
+  getRoleLabel(): string {
+    return this.user?.role === 'TEACHER' ? 'Profesor' : 'Estudiante';
+  }
+
+  /**
+   * Obtener iniciales del nombre
+   */
+  getInitials(): string {
+    if (!this.user?.name) return '?';
+    
+    const names = this.user.name.split(' ');
+    if (names.length >= 2) {
+      return (names[0][0] + names[1][0]).toUpperCase();
+    }
+    return this.user.name.substring(0, 2).toUpperCase();
+  }
+
+  /**
+   * Volver al dashboard según el rol
+   */
+  goBack() {
+    const role = this.authService.getUserRole();
+    
+    if (role === 'TEACHER') {
+      this.router.navigate(['/teacher-dashboard']);
+    } else if (role === 'STUDENT') {
+      this.router.navigate(['/student-dashboard']);
+    } else {
+      this.router.navigate(['/login']);
+    }
+  }
+
+  /**
+   * Cerrar sesión
+   */
+  logout() {
+    this.authService.logout();
     this.router.navigate(['/login']);
   }
 }
