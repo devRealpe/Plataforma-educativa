@@ -31,6 +31,7 @@ public class ChallengeSubmissionService {
 
     /**
      * ✅ CORRECCIÓN CRÍTICA: Revisar y otorgar bonificación
+     * Ahora maneja correctamente las re-calificaciones
      */
     @Transactional
     public ChallengeSubmission reviewSubmission(Long id, Integer bonusPoints, String feedback, String teacherEmail) {
@@ -38,7 +39,7 @@ public class ChallengeSubmissionService {
         System.out.println("🔍 REVISANDO SOLUCIÓN DE RETO");
         System.out.println("========================================");
         System.out.println("   Submission ID: " + id);
-        System.out.println("   Bonificación: " + bonusPoints + " XP");
+        System.out.println("   Bonificación nueva: " + bonusPoints + " XP");
         System.out.println("   Profesor: " + teacherEmail);
         System.out.println("   Feedback: " + feedback);
 
@@ -62,6 +63,22 @@ public class ChallengeSubmissionService {
         System.out.println("   📝 Estudiante: " + submission.getStudent().getNombre());
         System.out.println("   📚 Curso: " + submission.getChallenge().getCourse().getTitle());
 
+        // ✅ CORRECCIÓN: Detectar si es una re-calificación
+        Integer previousBonusPoints = submission.getBonusPoints();
+        boolean isRecalification = (previousBonusPoints != null &&
+                submission.getStatus() == ChallengeSubmission.SubmissionStatus.REVIEWED);
+
+        // Convertir a int con valor por defecto 0 para evitar NullPointerException
+        int previousPoints = (previousBonusPoints != null) ? previousBonusPoints : 0;
+
+        System.out.println("\n   🔄 Tipo de revisión:");
+        System.out.println("      • Es re-calificación: " + isRecalification);
+        if (isRecalification) {
+            System.out.println("      • Puntos anteriores: " + previousPoints + " XP");
+            System.out.println("      • Puntos nuevos: " + bonusPoints + " XP");
+            System.out.println("      • Diferencia: " + (bonusPoints - previousPoints) + " XP");
+        }
+
         // Actualizar la solución
         submission.setBonusPoints(bonusPoints);
         submission.setFeedback(feedback);
@@ -73,14 +90,23 @@ public class ChallengeSubmissionService {
         ChallengeSubmission savedSubmission = submissionRepository.save(submission);
         System.out.println("   💾 Solución guardada en BD");
 
-        // ✅ CRÍTICO: Actualizar puntuación SIEMPRE (incluso con 0 puntos para tracking)
+        // ✅ CORRECCIÓN: Actualizar puntuación correctamente
         System.out.println("\n   📊 Actualizando student_scores...");
-        updateStudentScore(
-                submission.getStudent(),
-                submission.getChallenge().getCourse(),
-                bonusPoints,
-                bonusPoints > 0 // Solo incrementar challengesCompleted si bonusPoints > 0
-        );
+        if (isRecalification) {
+            // Si es re-calificación, restar puntos anteriores y sumar nuevos
+            updateStudentScoreRecalification(
+                    submission.getStudent(),
+                    submission.getChallenge().getCourse(),
+                    previousPoints,
+                    bonusPoints);
+        } else {
+            // Si es primera calificación, solo sumar
+            updateStudentScore(
+                    submission.getStudent(),
+                    submission.getChallenge().getCourse(),
+                    bonusPoints,
+                    bonusPoints > 0);
+        }
         System.out.println("   ✅ student_scores actualizado correctamente");
 
         System.out.println("========================================");
@@ -91,11 +117,69 @@ public class ChallengeSubmissionService {
     }
 
     /**
-     * ✅ CORRECCIÓN: Método mejorado con logs detallados
+     * ✅ NUEVO MÉTODO: Actualizar puntuación en caso de re-calificación
+     */
+    private void updateStudentScoreRecalification(User student, Course course,
+            int previousPoints, int newPoints) {
+        System.out.println("\n      ═══════════════════════════════════");
+        System.out.println("      🔄 ACTUALIZANDO PUNTUACIÓN (RE-CALIFICACIÓN)");
+        System.out.println("      ═══════════════════════════════════");
+        System.out.println("         🎓 Estudiante: " + student.getNombre() + " (ID: " + student.getId() + ")");
+        System.out.println("         📚 Curso: " + course.getTitle() + " (ID: " + course.getId() + ")");
+        System.out.println("         📉 Puntos anteriores: " + previousPoints + " XP");
+        System.out.println("         📈 Puntos nuevos: " + newPoints + " XP");
+
+        StudentScore score = studentScoreRepository
+                .findByStudentIdAndCourseId(student.getId(), course.getId())
+                .orElse(null);
+
+        if (score == null) {
+            System.out.println("\n      ⚠️ ADVERTENCIA: No existe registro previo");
+            System.out.println("         Creando nuevo registro con puntos: " + newPoints + " XP");
+            score = new StudentScore();
+            score.setStudent(student);
+            score.setCourse(course);
+            score.setTotalBonusPoints(newPoints);
+            score.setChallengesCompleted(newPoints > 0 ? 1 : 0);
+        } else {
+            System.out.println("\n      📋 REGISTRO EXISTENTE:");
+            System.out.println("         • Puntos actuales: " + score.getTotalBonusPoints() + " XP");
+            System.out.println("         • Retos completados: " + score.getChallengesCompleted());
+
+            // ✅ CORRECCIÓN: Restar puntos anteriores y sumar nuevos
+            int updatedPoints = score.getTotalBonusPoints() - previousPoints + newPoints;
+            score.setTotalBonusPoints(Math.max(0, updatedPoints)); // Evitar negativos
+
+            // Ajustar challengesCompleted
+            if (previousPoints > 0 && newPoints == 0) {
+                // Si tenía puntos y ahora no, decrementar retos completados
+                score.setChallengesCompleted(Math.max(0, score.getChallengesCompleted() - 1));
+            } else if (previousPoints == 0 && newPoints > 0) {
+                // Si no tenía puntos y ahora sí, incrementar retos completados
+                score.setChallengesCompleted(score.getChallengesCompleted() + 1);
+            }
+            // Si ambos son > 0 o ambos son 0, no cambiar challengesCompleted
+
+            System.out.println("\n      📊 CÁLCULO:");
+            System.out.println("         " + (score.getTotalBonusPoints() + previousPoints) +
+                    " - " + previousPoints + " + " + newPoints + " = " + score.getTotalBonusPoints());
+        }
+
+        studentScoreRepository.save(score);
+        System.out.println("\n      💾 GUARDADO EN BASE DE DATOS:");
+        System.out.println("         • Puntos finales: " + score.getTotalBonusPoints() + " XP");
+        System.out.println("         • Retos completados: " + score.getChallengesCompleted());
+        System.out.println("      ═══════════════════════════════════");
+        System.out.println("      ✅ RE-CALIFICACIÓN COMPLETADA");
+        System.out.println("      ═══════════════════════════════════\n");
+    }
+
+    /**
+     * ✅ MÉTODO ORIGINAL: Para primera calificación (sin cambios)
      */
     private void updateStudentScore(User student, Course course, Integer bonusPoints, boolean incrementChallenges) {
         System.out.println("\n      ═══════════════════════════════════");
-        System.out.println("      📊 ACTUALIZANDO STUDENT_SCORES");
+        System.out.println("      📊 ACTUALIZANDO STUDENT_SCORES (PRIMERA VEZ)");
         System.out.println("      ═══════════════════════════════════");
         System.out.println("         🎓 Estudiante: " + student.getNombre() + " (ID: " + student.getId() + ")");
         System.out.println("         📚 Curso: " + course.getTitle() + " (ID: " + course.getId() + ")");
@@ -120,7 +204,6 @@ public class ChallengeSubmissionService {
             System.out.println("         • Retos completados: " + score.getChallengesCompleted());
         }
 
-        // ✅ CORRECCIÓN: Actualizar siempre los puntos
         int previousPoints = score.getTotalBonusPoints();
         int previousChallenges = score.getChallengesCompleted();
 

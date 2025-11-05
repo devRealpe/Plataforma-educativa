@@ -59,12 +59,15 @@
     <p>{{ getEmptyStateMessage() }}</p>
   </div>
 
-  <!-- Podium List -->
+  <!-- Podium Content -->
   <div *ngIf="!isLoading && podiumEntries.length > 0" class="podium-content">
-    <!-- Top 3 Podium -->
-    <div class="top-three" *ngIf="podiumEntries.length >= 3">
-      <!-- 2nd Place -->
-      <div class="podium-place second" *ngIf="podiumEntries[1]">
+    <!-- Top 3 Podium - CORREGIDO: Mostrar incluso con 1, 2 o 3 estudiantes -->
+    <div class="top-three" *ngIf="podiumEntries.length > 0">
+      <!-- 2nd Place - Solo si existe -->
+      <div
+        class="podium-place second"
+        *ngIf="podiumEntries.length >= 2 && podiumEntries[1]"
+      >
         <div class="place-number">{{ getPodiumIcon(2) }}</div>
         <div class="place-avatar silver">
           <svg
@@ -88,7 +91,7 @@
         </div>
       </div>
 
-      <!-- 1st Place -->
+      <!-- 1st Place - Siempre se muestra si hay al menos 1 estudiante -->
       <div class="podium-place first" *ngIf="podiumEntries[0]">
         <div class="crown">👑</div>
         <div class="place-number">{{ getPodiumIcon(1) }}</div>
@@ -114,8 +117,11 @@
         </div>
       </div>
 
-      <!-- 3rd Place -->
-      <div class="podium-place third" *ngIf="podiumEntries[2]">
+      <!-- 3rd Place - Solo si existe -->
+      <div
+        class="podium-place third"
+        *ngIf="podiumEntries.length >= 3 && podiumEntries[2]"
+      >
         <div class="place-number">{{ getPodiumIcon(3) }}</div>
         <div class="place-avatar bronze">
           <svg
