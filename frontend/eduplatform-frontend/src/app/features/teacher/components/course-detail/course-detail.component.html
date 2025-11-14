@@ -1,773 +1,1143 @@
-<div class="course-detail-container">
-  <!-- Header -->
-  <header class="header">
-    <div class="header-content">
-      <button class="back-btn" (click)="goBack()">
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <line x1="19" y1="12" x2="5" y2="12" />
-          <polyline points="12 19 5 12 12 5" />
-        </svg>
-        Volver
-      </button>
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GameLearn - Plataforma Educativa</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        /* Colores inspirados en videojuegos */
+        --primary-purple: #8b5cf6;
+        --primary-blue: #3b82f6;
+        --primary-cyan: #06b6d4;
+        --success-green: #10b981;
+        --warning-orange: #f59e0b;
+        --danger-red: #ef4444;
+        --dark-blue: #1e1b4b;
+        --dark-purple: #4c1d95;
+        --light-bg: #f8fafc;
+        --card-bg: #ffffff;
+        --text-dark: #1f2937;
+        --text-light: #6b7280;
+        --border-color: #e5e7eb;
 
-      <div class="course-info" *ngIf="course">
-        <h1 class="course-title">{{ course.title }}</h1>
-        <p class="course-description">{{ course.description }}</p>
-        <div class="course-meta">
-          <span class="meta-item">
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <polygon points="12 2 2 7 12 12 22 7 12 2" />
-              <polyline points="2 17 12 22 22 17" />
-              <polyline points="2 12 12 17 22 12" />
-            </svg>
-            {{ course.level }}
-          </span>
-          <span class="meta-item">
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-            >
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-              <circle cx="9" cy="7" r="4" />
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-              <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-            </svg>
-            {{ course.studentCount || 0 }} Estudiantes
-          </span>
-        </div>
-      </div>
+        /* Gradientes de videojuegos */
+        --gradient-primary: linear-gradient(
+          135deg,
+          var(--primary-purple) 0%,
+          var(--primary-blue) 100%
+        );
+        --gradient-dark: linear-gradient(
+          135deg,
+          var(--dark-blue) 0%,
+          var(--dark-purple) 100%
+        );
+        --gradient-success: linear-gradient(
+          135deg,
+          var(--success-green) 0%,
+          var(--primary-cyan) 100%
+        );
+        --gradient-warning: linear-gradient(
+          135deg,
+          var(--warning-orange) 0%,
+          #f97316 100%
+        );
+        --gradient-card: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
 
-      <div class="header-actions">
-        <button class="action-btn secondary" (click)="manageStudents()">
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-            <circle cx="9" cy="7" r="4" />
-            <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-          </svg>
-          Estudiantes
-        </button>
+        /* Sombras */
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+        --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.15);
+        --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.2);
 
-        <!-- BOTÓN CREAR RETO - SOLO PARA PROFESORES -->
-        <button
-          class="action-btn primary"
-          (click)="openChallengeModal()"
-          *ngIf="isTeacher"
-        >
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
-            <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
-            <path d="M4 22h16" />
-          </svg>
-          Crear Reto
-        </button>
+        /* Bordes redondeados */
+        --radius-sm: 8px;
+        --radius-md: 12px;
+        --radius-lg: 16px;
+        --radius-xl: 24px;
+      }
 
-        <button class="action-btn primary" (click)="openExerciseModal()">
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-          Crear Ejercicio
-        </button>
-      </div>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
 
-      <!-- NAVEGACIÓN POR PESTAÑAS -->
-      <div class="tabs-navigation">
-        <button
-          class="tab-btn"
-          [class.active]="activeTab === 'exercises'"
-          (click)="setActiveTab('exercises')"
-        >
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path
-              d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
-            />
-            <polyline points="14 2 14 8 20 8" />
-          </svg>
-          Ejercicios ({{ exercises.length }})
-        </button>
-        <button
-          class="tab-btn"
-          [class.active]="activeTab === 'challenges'"
-          (click)="setActiveTab('challenges')"
-        >
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
-            <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
-            <path d="M4 22h16" />
-            <path
-              d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"
-            />
-            <path
-              d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"
-            />
-            <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" />
-          </svg>
-          Retos ({{ challenges.length }})
-        </button>
-        <button
-          class="tab-btn"
-          [class.active]="activeTab === 'podium'"
-          (click)="setActiveTab('podium')"
-        >
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
-            <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
-            <path d="M4 22h16" />
-          </svg>
-          Podio
-        </button>
-      </div>
-    </div>
-  </header>
+      body {
+        background-color: var(--light-bg);
+        color: var(--text-dark);
+        line-height: 1.6;
+      }
 
-  <!-- Main Content -->
-  <main class="main-content">
-    <!-- PESTAÑA EJERCICIOS -->
-    <div *ngIf="activeTab === 'exercises'">
-      <!-- Loading -->
-      <div *ngIf="isLoading" class="loading">
-        <div class="spinner"></div>
-        <p>Cargando ejercicios...</p>
-      </div>
+      .course-detail-container {
+        min-height: 100vh;
+        background: radial-gradient(
+            circle at 10% 20%,
+            rgba(139, 92, 246, 0.1) 0%,
+            transparent 20%
+          ),
+          radial-gradient(
+            circle at 90% 80%,
+            rgba(59, 130, 246, 0.1) 0%,
+            transparent 20%
+          ),
+          radial-gradient(
+            circle at 50% 50%,
+            rgba(6, 182, 212, 0.05) 0%,
+            transparent 50%
+          );
+      }
 
-      <!-- Empty State -->
-      <div *ngIf="!isLoading && exercises.length === 0" class="empty-state">
-        <div class="empty-icon">
-          <svg
-            width="80"
-            height="80"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.5"
-          >
-            <path
-              d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
-            />
-            <polyline points="14 2 14 8 20 8" />
-            <line x1="16" y1="13" x2="8" y2="13" />
-            <line x1="16" y1="17" x2="8" y2="17" />
-            <polyline points="10 9 9 9 8 9" />
-          </svg>
-        </div>
-        <h3 class="empty-title">No hay ejercicios todavía</h3>
-        <p class="empty-description">
-          Crea el primer ejercicio para este curso
-        </p>
-        <button class="empty-action-btn" (click)="openExerciseModal()">
-          <svg
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-          >
-            <line x1="12" y1="5" x2="12" y2="19" />
-            <line x1="5" y1="12" x2="19" y2="12" />
-          </svg>
-          Crear Primer Ejercicio
-        </button>
-      </div>
+      /* Header Styles */
+      .header {
+        background: var(--gradient-dark);
+        color: white;
+        position: relative;
+        overflow: hidden;
+        box-shadow: var(--shadow-lg);
+      }
 
-      <!-- Exercises Grid -->
-      <div *ngIf="!isLoading && exercises.length > 0" class="exercises-grid">
-        <div *ngFor="let exercise of exercises" class="exercise-card">
-          <!-- Card Header -->
-          <div class="card-header">
-            <div class="header-left">
-              <h3 class="exercise-title">{{ exercise.title }}</h3>
-              <div class="exercise-badges">
-                <span
-                  class="badge difficulty"
-                  [style.background-color]="
-                    getDifficultyColor(exercise.difficulty)
-                  "
-                >
-                  {{ exercise.difficulty }}
-                </span>
-              </div>
-            </div>
-            <div class="card-actions">
-              <button
-                class="icon-btn edit"
-                (click)="editExercise(exercise)"
-                title="Editar"
-              >
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path
-                    d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
-                  />
-                  <path
-                    d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
-                  />
-                </svg>
-              </button>
-              <button
-                class="icon-btn delete"
-                (click)="deleteExercise(exercise)"
-                title="Eliminar"
-              >
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <polyline points="3 6 5 6 21 6" />
-                  <path
-                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-                  />
-                </svg>
-              </button>
+      .header::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(
+            circle at 20% 80%,
+            rgba(255, 255, 255, 0.1) 0%,
+            transparent 50%
+          ),
+          radial-gradient(
+            circle at 80% 20%,
+            rgba(255, 255, 255, 0.1) 0%,
+            transparent 50%
+          );
+        pointer-events: none;
+      }
+
+      .header-content {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+        position: relative;
+        z-index: 1;
+      }
+
+      .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        background: rgba(255, 255, 255, 0.15);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: var(--radius-md);
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        margin-bottom: 1.5rem;
+        backdrop-filter: blur(10px);
+      }
+
+      .back-btn:hover {
+        background: rgba(255, 255, 255, 0.25);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      }
+
+      .course-info {
+        margin-bottom: 1.5rem;
+      }
+
+      .course-title {
+        font-size: 2.5rem;
+        font-weight: 800;
+        margin: 0 0 0.5rem 0;
+        background: linear-gradient(to right, #ffffff, #e0e7ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .course-description {
+        font-size: 1.1rem;
+        color: rgba(255, 255, 255, 0.85);
+        margin: 0 0 1rem 0;
+        line-height: 1.6;
+        max-width: 800px;
+      }
+
+      .course-meta {
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+      }
+
+      .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.9);
+        font-weight: 500;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 0.5rem 1rem;
+        border-radius: var(--radius-md);
+        backdrop-filter: blur(10px);
+      }
+
+      .header-actions {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        margin-bottom: 1.5rem;
+      }
+
+      .action-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.875rem 1.5rem;
+        border: none;
+        border-radius: var(--radius-md);
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.95rem;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .action-btn::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          rgba(255, 255, 255, 0.2),
+          transparent
+        );
+        transition: left 0.5s;
+      }
+
+      .action-btn:hover::before {
+        left: 100%;
+      }
+
+      .action-btn.primary {
+        background: var(--gradient-primary);
+        color: white;
+        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+      }
+
+      .action-btn.primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
+      }
+
+      .action-btn.secondary {
+        background: rgba(255, 255, 255, 0.15);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        backdrop-filter: blur(10px);
+      }
+
+      .action-btn.secondary:hover {
+        background: rgba(255, 255, 255, 0.25);
+        transform: translateY(-2px);
+      }
+
+      /* Tabs Navigation */
+      .tabs-navigation {
+        display: flex;
+        gap: 0.5rem;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: var(--radius-md);
+        padding: 0.5rem;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+      }
+
+      .tab-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.875rem 1.5rem;
+        background: transparent;
+        color: rgba(255, 255, 255, 0.8);
+        border: none;
+        border-radius: var(--radius-sm);
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.95rem;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .tab-btn::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        width: 0;
+        height: 3px;
+        background: white;
+        transition: all 0.3s ease;
+        transform: translateX(-50%);
+      }
+
+      .tab-btn:hover {
+        color: white;
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .tab-btn.active {
+        color: white;
+        background: rgba(255, 255, 255, 0.2);
+      }
+
+      .tab-btn.active::after {
+        width: 80%;
+      }
+
+      /* Main Content */
+      .main-content {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+      }
+
+      /* Loading and Empty States */
+      .loading,
+      .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem 2rem;
+        text-align: center;
+        background: var(--card-bg);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-md);
+        margin: 2rem 0;
+      }
+
+      .spinner {
+        width: 60px;
+        height: 60px;
+        border: 4px solid rgba(139, 92, 246, 0.2);
+        border-top-color: var(--primary-purple);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin-bottom: 1.5rem;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .empty-icon {
+        width: 120px;
+        height: 120px;
+        background: var(--gradient-primary);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 1.5rem;
+        box-shadow: var(--shadow-lg);
+      }
+
+      .empty-icon svg {
+        color: white;
+      }
+
+      .empty-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin: 0 0 0.5rem 0;
+      }
+
+      .empty-description {
+        font-size: 1rem;
+        color: var(--text-light);
+        margin: 0 0 2rem 0;
+        max-width: 500px;
+      }
+
+      .empty-action-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.875rem 1.75rem;
+        background: var(--gradient-primary);
+        color: white;
+        border: none;
+        border-radius: var(--radius-md);
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+      }
+
+      .empty-action-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
+      }
+
+      /* Exercises Grid */
+      .exercises-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+        gap: 1.5rem;
+        margin-top: 2rem;
+      }
+
+      .exercise-card {
+        background: var(--gradient-card);
+        border-radius: var(--radius-lg);
+        border: 1px solid var(--border-color);
+        overflow: hidden;
+        transition: all 0.3s ease;
+        position: relative;
+        box-shadow: var(--shadow-md);
+      }
+
+      .exercise-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: var(--gradient-primary);
+      }
+
+      .exercise-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-xl);
+      }
+
+      .challenge-card::before {
+        background: var(--gradient-warning);
+      }
+
+      .card-header {
+        padding: 1.5rem;
+        background: rgba(255, 255, 255, 0.7);
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+
+      .header-left {
+        flex: 1;
+      }
+
+      .exercise-title {
+        font-size: 1.25rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin: 0 0 0.75rem 0;
+      }
+
+      .exercise-badges {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+      }
+
+      .badge {
+        padding: 0.375rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .badge.difficulty {
+        color: white;
+        box-shadow: var(--shadow-sm);
+      }
+
+      .badge.points {
+        background: linear-gradient(135deg, #fef3c7, #fde68a);
+        color: #92400e;
+        box-shadow: var(--shadow-sm);
+      }
+
+      .card-actions {
+        display: flex;
+        gap: 0.5rem;
+      }
+
+      .icon-btn {
+        width: 36px;
+        height: 36px;
+        border: none;
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .icon-btn.edit {
+        background: rgba(37, 99, 235, 0.1);
+        color: var(--primary-blue);
+      }
+
+      .icon-btn.edit:hover {
+        background: var(--primary-blue);
+        color: white;
+        transform: scale(1.1);
+      }
+
+      .icon-btn.delete {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--danger-red);
+      }
+
+      .icon-btn.delete:hover {
+        background: var(--danger-red);
+        color: white;
+        transform: scale(1.1);
+      }
+
+      .card-body {
+        padding: 1.5rem;
+      }
+
+      .exercise-description {
+        color: var(--text-dark);
+        line-height: 1.6;
+        margin: 0 0 1rem 0;
+      }
+
+      .exercise-info {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .info-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.875rem;
+        color: var(--text-light);
+      }
+
+      .info-item svg {
+        color: var(--primary-blue);
+        flex-shrink: 0;
+      }
+
+      .card-footer {
+        padding: 1rem 1.5rem;
+        background: rgba(255, 255, 255, 0.5);
+        border-top: 1px solid var(--border-color);
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+
+      .footer-btn {
+        flex: 1;
+        min-width: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1rem;
+        background: white;
+        color: var(--text-dark);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-sm);
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+      }
+
+      .footer-btn:hover {
+        background: var(--light-bg);
+        border-color: var(--primary-blue);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-sm);
+      }
+
+      .footer-btn.primary {
+        background: var(--gradient-primary);
+        color: white;
+        border: none;
+      }
+
+      .footer-btn.primary:hover {
+        background: var(--gradient-primary);
+        filter: brightness(1.1);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+      }
+
+      /* Motivational Elements */
+      .motivational-message {
+        background: var(--gradient-success);
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: var(--radius-md);
+        margin: 1.5rem 0;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        box-shadow: var(--shadow-md);
+      }
+
+      .motivational-message i {
+        font-size: 1.5rem;
+      }
+
+      .motivational-message p {
+        margin: 0;
+        font-weight: 500;
+      }
+
+      /* Achievement Badges */
+      .achievement-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        box-shadow: var(--shadow-sm);
+        margin: 0.5rem 0;
+      }
+
+      .achievement-badge i {
+        color: var(--warning-orange);
+      }
+
+      /* Progress Bar */
+      .progress-container {
+        margin: 1.5rem 0;
+      }
+
+      .progress-label {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 0.5rem;
+        font-size: 0.875rem;
+        color: var(--text-light);
+      }
+
+      .progress-bar {
+        height: 8px;
+        background: var(--border-color);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+
+      .progress-fill {
+        height: 100%;
+        background: var(--gradient-primary);
+        border-radius: 4px;
+        transition: width 0.5s ease;
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .header-content,
+        .main-content {
+          padding: 1.5rem;
+        }
+
+        .course-title {
+          font-size: 2rem;
+        }
+
+        .exercises-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .tabs-navigation {
+          overflow-x: auto;
+          padding: 0.5rem;
+        }
+
+        .tab-btn {
+          white-space: nowrap;
+          font-size: 0.875rem;
+          padding: 0.75rem 1.25rem;
+        }
+
+        .card-footer {
+          flex-direction: column;
+        }
+
+        .footer-btn {
+          width: 100%;
+        }
+
+        .header-actions {
+          flex-direction: column;
+        }
+
+        .action-btn {
+          justify-content: center;
+        }
+      }
+
+      /* Animations */
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+
+      .floating {
+        animation: float 5s ease-in-out infinite;
+      }
+
+      /* Game-inspired elements */
+      .xp-badge {
+        background: var(--gradient-warning);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 700;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+      }
+
+      .level-indicator {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(255, 255, 255, 0.2);
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: white;
+      }
+
+      .pixel-border {
+        position: relative;
+      }
+
+      .pixel-border::before {
+        content: "";
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        background: var(--gradient-primary);
+        z-index: -1;
+        border-radius: var(--radius-md);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="course-detail-container">
+      <!-- Header -->
+      <header class="header">
+        <div class="header-content">
+          <button class="back-btn">
+            <i class="fas fa-arrow-left"></i>
+            Volver al Dashboard
+          </button>
+
+          <div class="course-info">
+            <h1 class="course-title">Desarrollo de Videojuegos con Unity</h1>
+            <p class="course-description">
+              Aprende a crear videojuegos desde cero utilizando Unity y C#.
+              Domina los conceptos fundamentales y desarrolla tus propios
+              proyectos.
+            </p>
+
+            <div class="course-meta">
+              <span class="meta-item">
+                <i class="fas fa-layer-group"></i>
+                Nivel Intermedio
+              </span>
+              <span class="meta-item">
+                <i class="fas fa-users"></i>
+                128 Estudiantes
+              </span>
+              <span class="meta-item">
+                <i class="fas fa-star"></i>
+                4.8 (36 reseñas)
+              </span>
             </div>
           </div>
 
-          <!-- Card Body -->
-          <div class="card-body">
-            <p class="exercise-description">{{ exercise.description }}</p>
-
-            <div class="exercise-info">
-              <div class="info-item" *ngIf="challenge.deadline">
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                  <line x1="16" y1="2" x2="16" y2="6" />
-                  <line x1="8" y1="2" x2="8" y2="6" />
-                  <line x1="3" y1="10" x2="21" y2="10" />
-                </svg>
-                <span
-                  >Fecha límite: {{ challenge.deadline | date : "short" }}</span
-                >
-              </div>
-
-              <!-- ✅ NUEVO: Mostrar archivo -->
-              <div class="info-item" *ngIf="challenge.fileName">
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path
-                    d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"
-                  />
-                  <polyline points="13 2 13 9 20 9" />
-                </svg>
-                <span>📎 {{ challenge.fileName }}</span>
-              </div>
-
-              <!-- ✅ NUEVO: Mostrar URL externa -->
-              <div class="info-item" *ngIf="challenge.externalUrl">
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path
-                    d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"
-                  />
-                  <path
-                    d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
-                  />
-                </svg>
-                <span>🔗 Enlace externo disponible</span>
-              </div>
-
-              <div class="info-item">
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                  <circle cx="9" cy="7" r="4" />
-                </svg>
-                <span
-                  >{{ challenge.submissionsCount || 0 }} soluciones
-                  enviadas</span
-                >
-              </div>
-            </div>
-          </div>
-
-          <!-- Card Footer -->
-          <div class="card-footer">
-            <button class="footer-btn" (click)="manageHints(exercise)">
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path
-                  d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
-                />
-              </svg>
-              Gestionar Pistas
+          <div class="header-actions">
+            <button class="action-btn secondary">
+              <i class="fas fa-users"></i>
+              Gestionar Estudiantes
             </button>
 
-            <button class="footer-btn" (click)="viewSubmissions(exercise)">
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path
-                  d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
-                />
-                <polyline points="14 2 14 8 20 8" />
-              </svg>
-              Ver Entregas
+            <button class="action-btn primary">
+              <i class="fas fa-trophy"></i>
+              Crear Reto
             </button>
 
-            <!-- Card Footer -->
-            <div class="card-footer">
-              <!-- ✅ Botón para abrir URL externa (si existe) -->
-              <button
-                class="footer-btn primary"
-                (click)="openExternalUrl(challenge.externalUrl!)"
-                *ngIf="challenge.externalUrl"
-              >
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path
-                    d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
-                  />
-                  <polyline points="15 3 21 3 21 9" />
-                  <line x1="10" y1="14" x2="21" y2="3" />
-                </svg>
-                Abrir Enlace
-              </button>
+            <button class="action-btn primary">
+              <i class="fas fa-plus-circle"></i>
+              Crear Ejercicio
+            </button>
+          </div>
 
-              <!-- ✅ NUEVO: Botón para descargar archivo (si existe) -->
-              <button
-                class="footer-btn secondary"
-                (click)="downloadChallenge(challenge)"
-                *ngIf="challenge.fileName"
-              >
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                  <polyline points="7 10 12 15 17 10" />
-                  <line x1="12" y1="15" x2="12" y2="3" />
-                </svg>
-                Descargar Archivo
-              </button>
-
-              <button
-                class="footer-btn"
-                (click)="viewChallengeSubmissions(challenge)"
-              >
-                Ver Soluciones
-              </button>
-            </div>
+          <!-- Navegación por pestañas -->
+          <div class="tabs-navigation">
+            <button class="tab-btn active">
+              <i class="fas fa-tasks"></i>
+              Ejercicios (5)
+            </button>
+            <button class="tab-btn">
+              <i class="fas fa-trophy"></i>
+              Retos (3)
+            </button>
+            <button class="tab-btn">
+              <i class="fas fa-medal"></i>
+              Podio
+            </button>
+            <button class="tab-btn">
+              <i class="fas fa-chart-line"></i>
+              Progreso
+            </button>
           </div>
         </div>
-      </div>
-    </div>
+      </header>
 
-    <!-- PESTAÑA RETOS -->
-    <div *ngIf="activeTab === 'challenges'">
-      <!-- Loading -->
-      <div *ngIf="isLoadingChallenges" class="loading">
-        <div class="spinner"></div>
-        <p>Cargando retos...</p>
-      </div>
-
-      <!-- Empty State -->
-      <div
-        *ngIf="!isLoadingChallenges && challenges.length === 0"
-        class="empty-state"
-      >
-        <div class="empty-icon">
-          <svg
-            width="80"
-            height="80"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.5"
-          >
-            <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" />
-            <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" />
-            <path d="M4 22h16" />
-          </svg>
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Mensaje motivacional -->
+        <div class="motivational-message">
+          <i class="fas fa-gamepad"></i>
+          <p>
+            ¡Los errores son solo oportunidades para aprender! Cada bug que
+            resuelves te acerca más a dominar el desarrollo de videojuegos.
+          </p>
         </div>
-        <h3 class="empty-title">No hay retos todavía</h3>
-        <p class="empty-description">
-          Crea el primer reto para motivar a tus estudiantes
-        </p>
-      </div>
 
-      <!-- Challenges Grid -->
-      <div
-        *ngIf="!isLoadingChallenges && challenges.length > 0"
-        class="exercises-grid"
-      >
-        <div
-          *ngFor="let challenge of challenges"
-          class="exercise-card challenge-card"
-        >
-          <!-- Card Header -->
-          <div class="card-header">
-            <div class="header-left">
-              <h3 class="exercise-title">{{ challenge.title }}</h3>
-              <div class="exercise-badges">
-                <span
-                  class="badge difficulty"
-                  [style.background-color]="
-                    getDifficultyColor(challenge.difficulty)
-                  "
-                >
-                  {{ challenge.difficulty }}
-                </span>
-                <span class="badge points">
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                  >
-                    <polygon
-                      points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"
-                    />
-                  </svg>
-                  +{{ challenge.maxBonusPoints }} XP
-                </span>
+        <!-- Pestaña Ejercicios -->
+        <div>
+          <!-- Exercises Grid -->
+          <div class="exercises-grid">
+            <!-- Ejercicio 1 -->
+            <div class="exercise-card">
+              <div class="card-header">
+                <div class="header-left">
+                  <h3 class="exercise-title">Movimiento del Personaje</h3>
+                  <div class="exercise-badges">
+                    <span
+                      class="badge difficulty"
+                      style="background: var(--success-green)"
+                    >
+                      <i class="fas fa-leaf"></i>
+                      Fácil
+                    </span>
+                    <span class="achievement-badge">
+                      <i class="fas fa-award"></i>
+                      Primeros Pasos
+                    </span>
+                  </div>
+                </div>
+                <div class="card-actions">
+                  <button class="icon-btn edit" title="Editar">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="icon-btn delete" title="Eliminar">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="card-body">
+                <p class="exercise-description">
+                  Implementa un sistema de movimiento básico para un personaje
+                  en un entorno 2D. El personaje debe poder moverse en cuatro
+                  direcciones usando las teclas WASD o flechas.
+                </p>
+
+                <div class="exercise-info">
+                  <div class="info-item">
+                    <i class="far fa-clock"></i>
+                    <span>Tiempo estimado: 2 horas</span>
+                  </div>
+                  <div class="info-item">
+                    <i class="fas fa-download"></i>
+                    <span>Archivos adjuntos: 3</span>
+                  </div>
+                  <div class="info-item">
+                    <i class="fas fa-users"></i>
+                    <span>24 soluciones enviadas</span>
+                  </div>
+                </div>
+
+                <div class="progress-container">
+                  <div class="progress-label">
+                    <span>Progreso de la clase</span>
+                    <span>75%</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 75%"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card-footer">
+                <button class="footer-btn">
+                  <i class="fas fa-lightbulb"></i>
+                  Ver Pistas
+                </button>
+                <button class="footer-btn primary">
+                  <i class="fas fa-eye"></i>
+                  Ver Entregas
+                </button>
               </div>
             </div>
-            <div class="card-actions">
-              <button
-                class="icon-btn edit"
-                (click)="editChallenge(challenge)"
-                title="Editar"
-              >
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <path
-                    d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"
-                  />
-                  <path
-                    d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"
-                  />
-                </svg>
-              </button>
-              <button
-                class="icon-btn delete"
-                (click)="deleteChallenge(challenge)"
-                title="Eliminar"
-              >
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                >
-                  <polyline points="3 6 5 6 21 6" />
-                  <path
-                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"
-                  />
-                </svg>
-              </button>
-            </div>
-          </div>
 
-          <!-- Para la tarjeta de Challenge -->
-          <div class="exercise-info">
-            <div class="info-item" *ngIf="challenge.deadline">
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                <line x1="16" y1="2" x2="16" y2="6" />
-                <line x1="8" y1="2" x2="8" y2="6" />
-                <line x1="3" y1="10" x2="21" y2="10" />
-              </svg>
-              <span
-                >Fecha límite: {{ challenge.deadline | date : "short" }}</span
-              >
-            </div>
+            <!-- Ejercicio 2 -->
+            <div class="exercise-card">
+              <div class="card-header">
+                <div class="header-left">
+                  <h3 class="exercise-title">Sistema de Colisiones</h3>
+                  <div class="exercise-badges">
+                    <span
+                      class="badge difficulty"
+                      style="background: var(--warning-orange)"
+                    >
+                      <i class="fas fa-fire"></i>
+                      Intermedio
+                    </span>
+                    <span class="xp-badge">
+                      <i class="fas fa-star"></i>
+                      +50 XP
+                    </span>
+                  </div>
+                </div>
+                <div class="card-actions">
+                  <button class="icon-btn edit" title="Editar">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="icon-btn delete" title="Eliminar">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </div>
 
-            <!-- ✅ NUEVO para retos -->
-            <div class="info-item" *ngIf="challenge.externalUrl">
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path
-                  d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"
-                />
-                <path
-                  d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
-                />
-              </svg>
-              <span>🔗 Enlace externo disponible</span>
+              <div class="card-body">
+                <p class="exercise-description">
+                  Crea un sistema de detección de colisiones entre objetos.
+                  Implementa diferentes respuestas según el tipo de colisión
+                  (sólido, trigger, etc.).
+                </p>
+
+                <div class="exercise-info">
+                  <div class="info-item">
+                    <i class="far fa-clock"></i>
+                    <span>Tiempo estimado: 4 horas</span>
+                  </div>
+                  <div class="info-item">
+                    <i class="fas fa-download"></i>
+                    <span>Archivos adjuntos: 5</span>
+                  </div>
+                  <div class="info-item">
+                    <i class="fas fa-users"></i>
+                    <span>18 soluciones enviadas</span>
+                  </div>
+                </div>
+
+                <div class="progress-container">
+                  <div class="progress-label">
+                    <span>Progreso de la clase</span>
+                    <span>45%</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 45%"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card-footer">
+                <button class="footer-btn">
+                  <i class="fas fa-lightbulb"></i>
+                  Ver Pistas
+                </button>
+                <button class="footer-btn primary">
+                  <i class="fas fa-eye"></i>
+                  Ver Entregas
+                </button>
+              </div>
             </div>
 
-            <div class="info-item">
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-                <circle cx="9" cy="7" r="4" />
-              </svg>
-              <span
-                >{{ challenge.submissionsCount || 0 }} soluciones enviadas</span
-              >
+            <!-- Ejercicio 3 -->
+            <div class="exercise-card">
+              <div class="card-header">
+                <div class="header-left">
+                  <h3 class="exercise-title">IA de Enemigos Básica</h3>
+                  <div class="exercise-badges">
+                    <span
+                      class="badge difficulty"
+                      style="background: var(--danger-red)"
+                    >
+                      <i class="fas fa-skull"></i>
+                      Difícil
+                    </span>
+                    <span class="xp-badge">
+                      <i class="fas fa-star"></i>
+                      +100 XP
+                    </span>
+                  </div>
+                </div>
+                <div class="card-actions">
+                  <button class="icon-btn edit" title="Editar">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  <button class="icon-btn delete" title="Eliminar">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+
+              <div class="card-body">
+                <p class="exercise-description">
+                  Desarrolla un sistema de inteligencia artificial simple para
+                  enemigos que puedan patrullar, detectar al jugador y
+                  perseguirlo.
+                </p>
+
+                <div class="exercise-info">
+                  <div class="info-item">
+                    <i class="far fa-clock"></i>
+                    <span>Tiempo estimado: 6 horas</span>
+                  </div>
+                  <div class="info-item">
+                    <i class="fas fa-download"></i>
+                    <span>Archivos adjuntos: 7</span>
+                  </div>
+                  <div class="info-item">
+                    <i class="fas fa-users"></i>
+                    <span>12 soluciones enviadas</span>
+                  </div>
+                </div>
+
+                <div class="progress-container">
+                  <div class="progress-label">
+                    <span>Progreso de la clase</span>
+                    <span>25%</span>
+                  </div>
+                  <div class="progress-bar">
+                    <div class="progress-fill" style="width: 25%"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card-footer">
+                <button class="footer-btn">
+                  <i class="fas fa-lightbulb"></i>
+                  Ver Pistas
+                </button>
+                <button class="footer-btn primary">
+                  <i class="fas fa-eye"></i>
+                  Ver Entregas
+                </button>
+              </div>
             </div>
-          </div>
-
-          <!-- Card Footer -->
-          <div class="card-footer">
-            <button
-              class="footer-btn primary"
-              (click)="openExternalUrl(challenge.externalUrl!)"
-              *ngIf="challenge.externalUrl"
-            >
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-              >
-                <path
-                  d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"
-                />
-                <polyline points="15 3 21 3 21 9" />
-                <line x1="10" y1="14" x2="21" y2="3" />
-              </svg>
-              Abrir Enlace
-            </button>
-
-            <button
-              class="footer-btn"
-              (click)="viewChallengeSubmissions(challenge)"
-            >
-              Ver Soluciones
-            </button>
           </div>
         </div>
-      </div>
+
+        <!-- Sección de logros -->
+        <div style="margin-top: 3rem">
+          <h2 style="margin-bottom: 1rem; color: var(--text-dark)">
+            Logros de la Clase
+          </h2>
+          <div style="display: flex; gap: 1rem; flex-wrap: wrap">
+            <div class="achievement-badge">
+              <i class="fas fa-code"></i>
+              Primer Script Completado
+            </div>
+            <div class="achievement-badge">
+              <i class="fas fa-bug"></i>
+              Cazador de Bugs
+            </div>
+            <div class="achievement-badge">
+              <i class="fas fa-rocket"></i>
+              Proyecto Completado
+            </div>
+            <div class="achievement-badge">
+              <i class="fas fa-users"></i>
+              Colaborador Activo
+            </div>
+          </div>
+        </div>
+      </main>
     </div>
 
-    <!-- PESTAÑA PODIO -->
-    <div *ngIf="activeTab === 'podium' && course">
-      <app-podium
-        [courseId]="courseId"
-        [courseLevel]="course.level"
-        [isTeacher]="true"
-      ></app-podium>
-    </div>
-  </main>
-</div>
+    <script>
+      // Script para la interactividad de las pestañas
+      document.addEventListener("DOMContentLoaded", function () {
+        const tabButtons = document.querySelectorAll(".tab-btn");
 
-<!-- MODALES -->
+        tabButtons.forEach((button) => {
+          button.addEventListener("click", function () {
+            // Remover la clase active de todos los botones
+            tabButtons.forEach((btn) => btn.classList.remove("active"));
 
-<!-- Modal Crear/Editar Ejercicio -->
-<app-exercise-modal
-  *ngIf="showExerciseModal"
-  [courseId]="courseId"
-  [editingExercise]="editingExercise"
-  (closeModal)="closeExerciseModal()"
-  (exerciseCreated)="handleExerciseCreated($event)"
->
-</app-exercise-modal>
+            // Agregar la clase active al botón clickeado
+            this.classList.add("active");
+          });
+        });
 
-<!-- Modal Gestionar Pistas -->
-<app-hint-modal
-  *ngIf="showHintModal && selectedExercise"
-  [exerciseId]="selectedExercise.id!"
-  [exerciseTitle]="selectedExercise.title"
-  (closeModal)="closeHintModal()"
->
-</app-hint-modal>
+        // Efecto de animación para las tarjetas al cargar
+        const cards = document.querySelectorAll(".exercise-card");
+        cards.forEach((card, index) => {
+          card.style.opacity = "0";
+          card.style.transform = "translateY(20px)";
 
-<!-- Modal Gestionar Estudiantes -->
-<app-manage-students-modal
-  *ngIf="showStudentsModal && course"
-  [courseId]="courseId"
-  [courseTitle]="course.title"
-  (closeModal)="closeStudentsModal()"
->
-</app-manage-students-modal>
-
-<!-- Modal Confirmación Eliminar Ejercicio -->
-<app-confirmation-modal
-  *ngIf="showDeleteConfirmModal && exerciseToDelete"
-  title="¿Eliminar ejercicio?"
-  [message]="getDeleteMessage()"
-  confirmText="Eliminar"
-  cancelText="Cancelar"
-  type="danger"
-  (confirm)="confirmDeleteExercise()"
-  (cancel)="cancelDeleteExercise()"
->
-</app-confirmation-modal>
-
-<!-- Modal Ver Entregas de Ejercicios -->
-<app-submissions-modal
-  *ngIf="showSubmissionsModal && selectedExercise"
-  [exerciseId]="selectedExercise.id!"
-  [exerciseTitle]="selectedExercise.title"
-  (closeModal)="closeSubmissionsModal()"
->
-</app-submissions-modal>
-
-<!-- Modal Ver Soluciones de Retos -->
-<app-challenge-submissions-list-modal
-  *ngIf="showChallengeSubmissionsModal && selectedChallenge"
-  [challengeId]="selectedChallenge.id!"
-  [challengeTitle]="selectedChallenge.title"
-  [maxBonusPoints]="selectedChallenge.maxBonusPoints || 10"
-  (closeModal)="closeChallengeSubmissionsModal()"
->
-</app-challenge-submissions-list-modal>
-
-<!-- Modal Crear/Editar Reto -->
-<app-challenge-modal
-  *ngIf="showChallengeModal"
-  [courseId]="courseId"
-  [editingChallenge]="editingChallenge"
-  (closeModal)="closeChallengeModal()"
-  (challengeCreated)="handleChallengeCreated($event)"
->
-</app-challenge-modal>
-
-<!-- Modal Confirmación Eliminar Reto -->
-<app-confirmation-modal
-  *ngIf="showDeleteChallengeModal && challengeToDelete"
-  title="¿Eliminar reto?"
-  [message]="getDeleteChallengeMessage()"
-  confirmText="Eliminar"
-  cancelText="Cancelar"
-  type="danger"
-  (confirm)="confirmDeleteChallenge()"
-  (cancel)="cancelDeleteChallenge()"
->
-</app-confirmation-modal>
+          setTimeout(() => {
+            card.style.transition = "opacity 0.5s ease, transform 0.5s ease";
+            card.style.opacity = "1";
+            card.style.transform = "translateY(0)";
+          }, index * 100);
+        });
+      });
+    </script>
+  </body>
+</html>
