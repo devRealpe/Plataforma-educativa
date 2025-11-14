@@ -14,6 +14,7 @@ public class ChallengeDTO {
     private String description;
     private String difficulty;
     private Integer maxBonusPoints;
+    private String externalUrl;
     private String fileName;
     private String fileType;
     private LocalDateTime deadline;
@@ -22,6 +23,9 @@ public class ChallengeDTO {
     private Long courseId;
     private boolean hasFile;
     private Integer submissionsCount;
+    private boolean hasExternalUrl;
+    private boolean hasResource;
+    private String resourceType; // "FILE", "URL", "BOTH", "NONE"
 
     public ChallengeDTO(Challenge challenge) {
         this.id = challenge.getId();
@@ -29,6 +33,7 @@ public class ChallengeDTO {
         this.description = challenge.getDescription();
         this.difficulty = challenge.getDifficulty();
         this.maxBonusPoints = challenge.getMaxBonusPoints();
+        this.externalUrl = challenge.getExternalUrl();
         this.fileName = challenge.getFileName();
         this.fileType = challenge.getFileType();
         this.deadline = challenge.getDeadline();
@@ -36,6 +41,10 @@ public class ChallengeDTO {
         this.active = challenge.getActive();
         this.courseId = challenge.getCourse() != null ? challenge.getCourse().getId() : null;
         this.hasFile = challenge.hasFile();
+        this.hasExternalUrl = challenge.hasExternalUrl();
+        this.hasResource = challenge.hasResource();
+        this.resourceType = challenge.getResourceType();
+
         this.submissionsCount = challenge.getSubmissions() != null ? challenge.getSubmissions().size() : 0;
     }
 }

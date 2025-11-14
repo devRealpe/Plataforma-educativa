@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 @Service
@@ -25,11 +27,34 @@ public class ChallengeService {
         this.userRepository = userRepository;
     }
 
-    /**
-     * Publicar reto (Profesor)
-     */
+    private void validateUrl(String url) {
+        if (url == null || url.trim().isEmpty()) {
+            return; // URL opcional
+        }
+
+        String urlTrimmed = url.trim();
+
+        // Validar que sea una URL válida
+        try {
+            new URL(urlTrimmed);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("La URL proporcionada no es válida: " + urlTrimmed);
+        }
+
+        // Validar longitud
+        if (urlTrimmed.length() > 500) {
+            throw new RuntimeException("La URL es demasiado larga (máximo 500 caracteres)");
+        }
+
+        // Validar que comience con http:// o https://
+        if (!urlTrimmed.startsWith("http://") && !urlTrimmed.startsWith("https://")) {
+            throw new RuntimeException("La URL debe comenzar con http:// o https://");
+        }
+    }
+
     @Transactional
-    public Challenge createChallenge(Challenge challenge, Long courseId, String teacherEmail, MultipartFile file) {
+    public Challenge createChallenge(Challenge challenge, Long courseId, String teacherEmail,
+            MultipartFile file, String externalUrl) {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new RuntimeException("Curso no encontrado"));
 
@@ -46,25 +71,43 @@ public class ChallengeService {
             throw new RuntimeException("La bonificación debe estar entre 1 y 10 XP");
         }
 
+        if (externalUrl != null && !externalUrl.trim().isEmpty()) {
+            validateUrl(externalUrl);
+            challenge.setExternalUrl(externalUrl.trim());
+            System.out.println("✅ URL externa guardada: " + externalUrl.trim());
+        }
+
         // Guardar archivo si existe
         if (file != null && !file.isEmpty()) {
             try {
                 challenge.setFileData(file.getBytes());
                 challenge.setFileName(file.getOriginalFilename());
                 challenge.setFileType(file.getContentType());
+                System.out.println("✅ Archivo guardado: " + file.getOriginalFilename());
             } catch (IOException e) {
                 throw new RuntimeException("Error al procesar el archivo: " + e.getMessage());
             }
         }
 
+        if (!challenge.hasFile() && !challenge.hasExternalUrl()) {
+            System.out.println("⚠️ Advertencia: Reto sin recursos (archivo o URL)");
+            // Nota: Esto es válido, algunos retos pueden ser solo descripción
+        }
+
         challenge.setCourse(course);
         challenge.setActive(true);
-        return challengeRepository.save(challenge);
+        Challenge saved = challengeRepository.save(challenge);
+
+        System.out.println("🏆 Reto creado exitosamente:");
+        System.out.println("   • ID: " + saved.getId());
+        System.out.println("   • Título: " + saved.getTitle());
+        System.out.println("   • Tiene archivo: " + saved.hasFile());
+        System.out.println("   • Tiene URL: " + saved.hasExternalUrl());
+        System.out.println("   • Tipo de recurso: " + saved.getResourceType());
+
+        return saved;
     }
 
-    /**
-     * Obtener retos activos de un curso (Estudiantes y Profesor)
-     */
     public List<Challenge> getActiveChallengesByCourse(Long courseId, String userEmail) {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new RuntimeException("Curso no encontrado"));
@@ -88,9 +131,6 @@ public class ChallengeService {
         return challengeRepository.findByCourseId(courseId);
     }
 
-    /**
-     * Obtener reto por ID
-     */
     public Challenge getChallengeById(Long id, String userEmail) {
         Challenge challenge = challengeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Reto no encontrado"));
@@ -114,11 +154,9 @@ public class ChallengeService {
         return challenge;
     }
 
-    /**
-     * Editar reto (Profesor)
-     */
     @Transactional
-    public Challenge updateChallenge(Long id, Challenge challengeData, String teacherEmail, MultipartFile file) {
+    public Challenge updateChallenge(Long id, Challenge challengeData, String teacherEmail,
+            MultipartFile file, String externalUrl) {
         Challenge challenge = challengeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Reto no encontrado"));
 
@@ -146,23 +184,43 @@ public class ChallengeService {
             challenge.setActive(challengeData.getActive());
         }
 
+        if (externalUrl != null) {
+            if (externalUrl.trim().isEmpty()) {
+                // Si se envía vacío, eliminar la URL
+                challenge.setExternalUrl(null);
+                System.out.println("🗑️ URL externa eliminada");
+            } else {
+                // Si se envía una URL, validarla y guardarla
+                validateUrl(externalUrl);
+                challenge.setExternalUrl(externalUrl.trim());
+                System.out.println("✅ URL externa actualizada: " + externalUrl.trim());
+            }
+        }
+
         // Actualizar archivo si se proporciona
         if (file != null && !file.isEmpty()) {
             try {
                 challenge.setFileData(file.getBytes());
                 challenge.setFileName(file.getOriginalFilename());
                 challenge.setFileType(file.getContentType());
+                System.out.println("✅ Archivo actualizado: " + file.getOriginalFilename());
             } catch (IOException e) {
                 throw new RuntimeException("Error al actualizar el archivo: " + e.getMessage());
             }
         }
 
-        return challengeRepository.save(challenge);
+        Challenge updated = challengeRepository.save(challenge);
+
+        System.out.println("🏆 Reto actualizado exitosamente:");
+        System.out.println("   • ID: " + updated.getId());
+        System.out.println("   • Título: " + updated.getTitle());
+        System.out.println("   • Tiene archivo: " + updated.hasFile());
+        System.out.println("   • Tiene URL: " + updated.hasExternalUrl());
+        System.out.println("   • Tipo de recurso: " + updated.getResourceType());
+
+        return updated;
     }
 
-    /**
-     * Eliminar reto (Profesor)
-     */
     @Transactional
     public void deleteChallenge(Long id, String teacherEmail) {
         Challenge challenge = challengeRepository.findById(id)
@@ -178,9 +236,6 @@ public class ChallengeService {
         challengeRepository.delete(challenge);
     }
 
-    /**
-     * Obtener archivo del reto
-     */
     public byte[] getChallengeFile(Long id, String userEmail) {
         Challenge challenge = getChallengeById(id, userEmail);
 

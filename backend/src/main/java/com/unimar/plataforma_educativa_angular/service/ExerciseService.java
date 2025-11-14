@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 @Service
@@ -25,8 +27,34 @@ public class ExerciseService {
         this.userRepository = userRepository;
     }
 
+    private void validateUrl(String url) {
+        if (url == null || url.trim().isEmpty()) {
+            return; // URL opcional
+        }
+
+        String urlTrimmed = url.trim();
+
+        // Validar que sea una URL válida
+        try {
+            new URL(urlTrimmed);
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("La URL proporcionada no es válida: " + urlTrimmed);
+        }
+
+        // Validar longitud
+        if (urlTrimmed.length() > 500) {
+            throw new RuntimeException("La URL es demasiado larga (máximo 500 caracteres)");
+        }
+
+        // Validar que comience con http:// o https://
+        if (!urlTrimmed.startsWith("http://") && !urlTrimmed.startsWith("https://")) {
+            throw new RuntimeException("La URL debe comenzar con http:// o https://");
+        }
+    }
+
     @Transactional
-    public Exercise createExercise(Exercise exercise, Long courseId, String teacherEmail, MultipartFile file) {
+    public Exercise createExercise(Exercise exercise, Long courseId, String teacherEmail,
+            MultipartFile file, String externalUrl) {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new RuntimeException("Curso no encontrado"));
 
@@ -37,19 +65,40 @@ public class ExerciseService {
             throw new RuntimeException("No tienes permiso para agregar ejercicios a este curso");
         }
 
+        if (externalUrl != null && !externalUrl.trim().isEmpty()) {
+            validateUrl(externalUrl);
+            exercise.setExternalUrl(externalUrl.trim());
+            System.out.println("✅ URL externa guardada: " + externalUrl.trim());
+        }
+
         // Guardar archivo como bytes en la base de datos
         if (file != null && !file.isEmpty()) {
             try {
                 exercise.setFileData(file.getBytes());
                 exercise.setFileName(file.getOriginalFilename());
                 exercise.setFileType(file.getContentType());
+                System.out.println("✅ Archivo guardado: " + file.getOriginalFilename());
             } catch (IOException e) {
                 throw new RuntimeException("Error al procesar el archivo: " + e.getMessage());
             }
         }
 
+        if (!exercise.hasFile() && !exercise.hasExternalUrl()) {
+            System.out.println("⚠️ Advertencia: Ejercicio sin recursos (archivo o URL)");
+            // Nota: Esto es válido, algunos ejercicios pueden ser solo descripción
+        }
+
         exercise.setCourse(course);
-        return exerciseRepository.save(exercise);
+        Exercise saved = exerciseRepository.save(exercise);
+
+        System.out.println("📝 Ejercicio creado exitosamente:");
+        System.out.println("   • ID: " + saved.getId());
+        System.out.println("   • Título: " + saved.getTitle());
+        System.out.println("   • Tiene archivo: " + saved.hasFile());
+        System.out.println("   • Tiene URL: " + saved.hasExternalUrl());
+        System.out.println("   • Tipo de recurso: " + saved.getResourceType());
+
+        return saved;
     }
 
     public List<Exercise> getExercisesByCourse(Long courseId, String userEmail) {
@@ -88,7 +137,8 @@ public class ExerciseService {
     }
 
     @Transactional
-    public Exercise updateExercise(Long id, Exercise exerciseData, String teacherEmail, MultipartFile file) {
+    public Exercise updateExercise(Long id, Exercise exerciseData, String teacherEmail,
+            MultipartFile file, String externalUrl) {
         Exercise exercise = exerciseRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Ejercicio no encontrado"));
 
@@ -103,6 +153,18 @@ public class ExerciseService {
         exercise.setDescription(exerciseData.getDescription());
         exercise.setDifficulty(exerciseData.getDifficulty());
         exercise.setDeadline(exerciseData.getDeadline());
+        if (externalUrl != null) {
+            if (externalUrl.trim().isEmpty()) {
+                // Si se envía vacío, eliminar la URL
+                exercise.setExternalUrl(null);
+                System.out.println("🗑️ URL externa eliminada");
+            } else {
+                // Si se envía una URL, validarla y guardarla
+                validateUrl(externalUrl);
+                exercise.setExternalUrl(externalUrl.trim());
+                System.out.println("✅ URL externa actualizada: " + externalUrl.trim());
+            }
+        }
 
         // Actualizar archivo si se proporciona
         if (file != null && !file.isEmpty()) {
@@ -110,12 +172,22 @@ public class ExerciseService {
                 exercise.setFileData(file.getBytes());
                 exercise.setFileName(file.getOriginalFilename());
                 exercise.setFileType(file.getContentType());
+                System.out.println("✅ Archivo actualizado: " + file.getOriginalFilename());
             } catch (IOException e) {
                 throw new RuntimeException("Error al actualizar el archivo: " + e.getMessage());
             }
         }
 
-        return exerciseRepository.save(exercise);
+        Exercise updated = exerciseRepository.save(exercise);
+
+        System.out.println("📝 Ejercicio actualizado exitosamente:");
+        System.out.println("   • ID: " + updated.getId());
+        System.out.println("   • Título: " + updated.getTitle());
+        System.out.println("   • Tiene archivo: " + updated.hasFile());
+        System.out.println("   • Tiene URL: " + updated.hasExternalUrl());
+        System.out.println("   • Tipo de recurso: " + updated.getResourceType());
+
+        return updated;
     }
 
     @Transactional
@@ -133,11 +205,9 @@ public class ExerciseService {
         exerciseRepository.delete(exercise);
     }
 
-    // Obtener archivo del ejercicio
     public byte[] getExerciseFile(Long id, String userEmail) {
         Exercise exercise = getExerciseById(id, userEmail);
 
-        // ✅ CORRECCIÓN: Usar el método hasFile() en lugar de acceder directamente
         if (!exercise.hasFile()) {
             throw new RuntimeException("Este ejercicio no tiene archivo adjunto");
         }

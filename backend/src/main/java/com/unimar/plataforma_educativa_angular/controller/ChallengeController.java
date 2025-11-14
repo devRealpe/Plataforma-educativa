@@ -23,9 +23,6 @@ public class ChallengeController {
     @Autowired
     private ChallengeService challengeService;
 
-    /**
-     * Publicar reto (Profesor)
-     */
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> createChallenge(
             @RequestParam("title") String title,
@@ -35,8 +32,21 @@ public class ChallengeController {
             @RequestParam("courseId") Long courseId,
             @RequestParam(value = "deadline", required = false) String deadline,
             @RequestParam(value = "file", required = false) MultipartFile file,
+            @RequestParam(value = "externalUrl", required = false) String externalUrl, // ✅ NUEVO
             Authentication auth) {
         try {
+            System.out.println("\n========================================");
+            System.out.println("🏆 CREANDO RETO");
+            System.out.println("========================================");
+            System.out.println("   • Título: " + title);
+            System.out.println("   • Dificultad: " + difficulty);
+            System.out.println("   • Bonificación máxima: " + maxBonusPoints + " XP");
+            System.out.println("   • Curso ID: " + courseId);
+            System.out.println("   • Archivo: " + (file != null ? file.getOriginalFilename() : "No"));
+            System.out.println(
+                    "   • URL externa: " + (externalUrl != null && !externalUrl.isEmpty() ? externalUrl : "No"));
+            System.out.println("========================================\n");
+
             Challenge challenge = new Challenge();
             challenge.setTitle(title);
             challenge.setDescription(description);
@@ -47,17 +57,21 @@ public class ChallengeController {
                 challenge.setDeadline(java.time.LocalDateTime.parse(deadline));
             }
 
-            Challenge created = challengeService.createChallenge(challenge, courseId, auth.getName(), file);
+            Challenge created = challengeService.createChallenge(
+                    challenge,
+                    courseId,
+                    auth.getName(),
+                    file,
+                    externalUrl // ✅ NUEVO parámetro
+            );
 
             return ResponseEntity.ok(new ChallengeDTO(created));
         } catch (RuntimeException e) {
+            System.err.println("❌ Error al crear reto: " + e.getMessage());
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
 
-    /**
-     * Obtener retos de un curso
-     */
     @GetMapping("/course/{courseId}")
     public ResponseEntity<?> getChallengesByCourse(
             @PathVariable Long courseId,
@@ -75,9 +89,6 @@ public class ChallengeController {
         }
     }
 
-    /**
-     * Obtener reto por ID
-     */
     @GetMapping("/{id}")
     public ResponseEntity<?> getChallengeById(
             @PathVariable Long id,
@@ -90,9 +101,6 @@ public class ChallengeController {
         }
     }
 
-    /**
-     * Editar reto (Profesor)
-     */
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> updateChallenge(
             @PathVariable Long id,
@@ -103,8 +111,18 @@ public class ChallengeController {
             @RequestParam(value = "deadline", required = false) String deadline,
             @RequestParam(value = "active", required = false) Boolean active,
             @RequestParam(value = "file", required = false) MultipartFile file,
+            @RequestParam(value = "externalUrl", required = false) String externalUrl, // ✅ NUEVO
             Authentication auth) {
         try {
+            System.out.println("\n========================================");
+            System.out.println("✏️ ACTUALIZANDO RETO");
+            System.out.println("========================================");
+            System.out.println("   • ID: " + id);
+            System.out.println("   • Título: " + title);
+            System.out.println("   • Archivo: " + (file != null ? file.getOriginalFilename() : "No"));
+            System.out.println("   • URL externa: " + (externalUrl != null ? externalUrl : "No especificada"));
+            System.out.println("========================================\n");
+
             Challenge challenge = new Challenge();
             challenge.setTitle(title);
             challenge.setDescription(description);
@@ -116,17 +134,20 @@ public class ChallengeController {
                 challenge.setDeadline(java.time.LocalDateTime.parse(deadline));
             }
 
-            Challenge updated = challengeService.updateChallenge(id, challenge, auth.getName(), file);
+            Challenge updated = challengeService.updateChallenge(
+                    id,
+                    challenge,
+                    auth.getName(),
+                    file,
+                    externalUrl);
 
             return ResponseEntity.ok(new ChallengeDTO(updated));
         } catch (RuntimeException e) {
+            System.err.println("❌ Error al actualizar reto: " + e.getMessage());
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
 
-    /**
-     * Eliminar reto (Profesor)
-     */
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteChallenge(
             @PathVariable Long id,
@@ -139,9 +160,6 @@ public class ChallengeController {
         }
     }
 
-    /**
-     * Descargar archivo del reto
-     */
     @GetMapping("/{id}/download")
     public ResponseEntity<byte[]> downloadChallenge(
             @PathVariable Long id,

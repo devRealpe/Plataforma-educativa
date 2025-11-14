@@ -30,6 +30,9 @@ public class Exercise {
     @Column(nullable = false)
     private String difficulty;
 
+    @Column(name = "external_url", length = 500)
+    private String externalUrl;
+
     @Lob
     @Column(name = "file_data", columnDefinition = "LONGBLOB")
     private byte[] fileData;
@@ -65,5 +68,25 @@ public class Exercise {
 
     public boolean hasFile() {
         return fileData != null && fileData.length > 0;
+    }
+
+    public boolean hasExternalUrl() {
+        return externalUrl != null && !externalUrl.trim().isEmpty();
+    }
+
+    public boolean hasResource() {
+        return hasFile() || hasExternalUrl();
+    }
+
+    public String getResourceType() {
+        if (hasFile() && hasExternalUrl()) {
+            return "BOTH"; // Tiene ambos
+        } else if (hasFile()) {
+            return "FILE";
+        } else if (hasExternalUrl()) {
+            return "URL";
+        } else {
+            return "NONE";
+        }
     }
 }

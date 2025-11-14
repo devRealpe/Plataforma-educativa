@@ -8,7 +8,7 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { CourseModalComponent } from '../../modals/course-modal/course-modal.component';
 import { EditCourseModalComponent } from '../../modals/edit-course-modal/edit-course-modal.component';
 import { ConfirmationModalComponent } from '../../../../shared/components/confirmation-modal/confirmation-modal.component';
-import { ManageStudentsModalComponent } from '../manage-students-modal/manage-students-modal.component';
+import { ManageStudentsModalComponent } from '../../modals/manage-students-modal/manage-students-modal.component';
 
 @Component({
   selector: 'app-teacher-dashboard',

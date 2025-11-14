@@ -31,8 +31,20 @@ public class ExerciseController {
             @RequestParam("courseId") Long courseId,
             @RequestParam(value = "deadline", required = false) String deadline,
             @RequestParam(value = "file", required = false) MultipartFile file,
+            @RequestParam(value = "externalUrl", required = false) String externalUrl, // ✅ NUEVO
             Authentication auth) {
         try {
+            System.out.println("\n========================================");
+            System.out.println("📝 CREANDO EJERCICIO");
+            System.out.println("========================================");
+            System.out.println("   • Título: " + title);
+            System.out.println("   • Dificultad: " + difficulty);
+            System.out.println("   • Curso ID: " + courseId);
+            System.out.println("   • Archivo: " + (file != null ? file.getOriginalFilename() : "No"));
+            System.out.println(
+                    "   • URL externa: " + (externalUrl != null && !externalUrl.isEmpty() ? externalUrl : "No"));
+            System.out.println("========================================\n");
+
             Exercise exercise = new Exercise();
             exercise.setTitle(title);
             exercise.setDescription(description);
@@ -42,10 +54,16 @@ public class ExerciseController {
                 exercise.setDeadline(java.time.LocalDateTime.parse(deadline));
             }
 
-            Exercise created = exerciseService.createExercise(exercise, courseId, auth.getName(), file);
+            Exercise created = exerciseService.createExercise(
+                    exercise,
+                    courseId,
+                    auth.getName(),
+                    file,
+                    externalUrl);
 
             return ResponseEntity.ok(new ExerciseDTO(created));
         } catch (RuntimeException e) {
+            System.err.println("❌ Error al crear ejercicio: " + e.getMessage());
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
@@ -87,8 +105,18 @@ public class ExerciseController {
             @RequestParam("difficulty") String difficulty,
             @RequestParam(value = "deadline", required = false) String deadline,
             @RequestParam(value = "file", required = false) MultipartFile file,
+            @RequestParam(value = "externalUrl", required = false) String externalUrl, // ✅ NUEVO
             Authentication auth) {
         try {
+            System.out.println("\n========================================");
+            System.out.println("✏️ ACTUALIZANDO EJERCICIO");
+            System.out.println("========================================");
+            System.out.println("   • ID: " + id);
+            System.out.println("   • Título: " + title);
+            System.out.println("   • Archivo: " + (file != null ? file.getOriginalFilename() : "No"));
+            System.out.println("   • URL externa: " + (externalUrl != null ? externalUrl : "No especificada"));
+            System.out.println("========================================\n");
+
             Exercise exercise = new Exercise();
             exercise.setTitle(title);
             exercise.setDescription(description);
@@ -98,10 +126,17 @@ public class ExerciseController {
                 exercise.setDeadline(java.time.LocalDateTime.parse(deadline));
             }
 
-            Exercise updated = exerciseService.updateExercise(id, exercise, auth.getName(), file);
+            Exercise updated = exerciseService.updateExercise(
+                    id,
+                    exercise,
+                    auth.getName(),
+                    file,
+                    externalUrl // ✅ NUEVO parámetro
+            );
 
             return ResponseEntity.ok(new ExerciseDTO(updated));
         } catch (RuntimeException e) {
+            System.err.println("❌ Error al actualizar ejercicio: " + e.getMessage());
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
