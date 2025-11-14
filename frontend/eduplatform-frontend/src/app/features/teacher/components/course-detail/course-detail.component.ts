@@ -407,4 +407,31 @@ openExternalUrl(url: string) {
     });
   }
 }
+
+// ========== NUEVO: Descargar archivo de reto ==========
+downloadChallenge(challenge: Challenge) {
+  if (!challenge.id || !challenge.fileName) {
+    this.snackBar.open('❌ No hay archivo disponible', 'Cerrar', { duration: 3000 });
+    return;
+  }
+
+  this.challengeService.downloadChallenge(challenge.id).subscribe({
+    next: (blob) => {
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = challenge.fileName || 'reto.pdf';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+      
+      this.snackBar.open('✅ Archivo descargado', 'Cerrar', { duration: 2000 });
+    },
+    error: (error) => {
+      console.error('❌ Error al descargar:', error);
+      this.snackBar.open('Error al descargar archivo', 'Cerrar', { duration: 3000 });
+    }
+  });
+}
 }

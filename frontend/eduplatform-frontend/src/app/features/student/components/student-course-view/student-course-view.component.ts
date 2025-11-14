@@ -3,19 +3,32 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { CourseService, Course } from '../../../../core/services/course.service';
-import { ExerciseService, Exercise, Hint, Submission } from '../../../../core/services/exercise.service';
+import {
+  CourseService,
+  Course,
+} from '../../../../core/services/course.service';
+import {
+  ExerciseService,
+  Exercise,
+  Hint,
+  Submission,
+} from '../../../../core/services/exercise.service';
 import { ConfirmationModalComponent } from '../../../../shared/components/confirmation-modal/confirmation-modal.component';
 import { PodiumComponent } from '../../../../shared/components/podium/podium.component';
 import { ChallengesViewComponent } from '../challenges-view/challenges-view.component';
 
-
 @Component({
   selector: 'app-student-course-view',
   standalone: true,
-  imports: [CommonModule, FormsModule, PodiumComponent, ChallengesViewComponent, ConfirmationModalComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    PodiumComponent,
+    ChallengesViewComponent,
+    ConfirmationModalComponent,
+  ],
   templateUrl: './student-course-view.component.html',
-  styleUrls: ['./student-course-view.component.scss']
+  styleUrls: ['./student-course-view.component.scss'],
 })
 export class StudentCourseViewComponent implements OnInit {
   courseId!: number;
@@ -23,10 +36,10 @@ export class StudentCourseViewComponent implements OnInit {
   exercises: Exercise[] = [];
   submissions: Submission[] = [];
   exerciseHints: { [key: number]: Hint[] } = {};
-  
+
   isLoading = true;
   showHints: { [key: number]: boolean } = {};
-  
+
   // Upload/Edit modal
   showUploadModal = false;
   selectedExercise: Exercise | null = null;
@@ -34,7 +47,7 @@ export class StudentCourseViewComponent implements OnInit {
   isSubmitting = false;
   isEditMode = false;
 
-    // Delete confirmation modal
+  // Delete confirmation modal
   showDeleteModal = false;
   exerciseToDelete: Exercise | null = null;
   submissionToDelete: Submission | null = null;
@@ -47,89 +60,94 @@ export class StudentCourseViewComponent implements OnInit {
     private snackBar: MatSnackBar
   ) {}
 
-    // Tab Navigation
-  activeTab: 'exercises' | 'challenges' | 'podium' = 'exercises'; 
+  // Tab Navigation
+  activeTab: 'exercises' | 'challenges' | 'podium' = 'exercises';
 
+  /**
+   * Inicia el proceso de eliminación de una entrega
+   */
+  deleteSubmission(exercise: Exercise) {
+    const submission = this.getSubmission(exercise);
 
-/**
- * Inicia el proceso de eliminación de una entrega
- */
-deleteSubmission(exercise: Exercise) {
-  const submission = this.getSubmission(exercise);
-  
-  if (!submission?.id) {
-    this.snackBar.open('No se encontró tu entrega', 'Cerrar', { duration: 3000 });
-    return;
-  }
-
-  if (submission.status === 'GRADED') {
-    this.snackBar.open(
-      '🚫 No puedes eliminar una entrega calificada',
-      'Cerrar',
-      { duration: 4000, panelClass: ['error-snackbar'] }
-    );
-    return;
-  }
-
-  this.exerciseToDelete = exercise;
-  this.submissionToDelete = submission;
-  this.showDeleteModal = true;
-}
-
-/**
- * Confirma la eliminación de la entrega
- */
-confirmDeleteSubmission() {
-  if (!this.submissionToDelete?.id) return;
-
-  const submissionId = this.submissionToDelete.id;
-  const exerciseTitle = this.exerciseToDelete?.title || 'el ejercicio';
-
-  this.showDeleteModal = false;
-
-  this.exerciseService.deleteSubmission(submissionId).subscribe({
-    next: () => {
-      // Eliminar de la lista local
-      this.submissions = this.submissions.filter(s => s.id !== submissionId);
-      
-      this.snackBar.open(
-        `✅ Entrega de "${exerciseTitle}" eliminada`,
-        'Cerrar',
-        { duration: 3000, panelClass: ['success-snackbar'] }
-      );
-      
-      this.exerciseToDelete = null;
-      this.submissionToDelete = null;
-    },
-    error: (error) => {
-      console.error('❌ Error al eliminar entrega:', error);
-      this.snackBar.open(
-        error.error?.error || 'Error al eliminar la entrega',
-        'Cerrar',
-        { duration: 3000, panelClass: ['error-snackbar'] }
-      );
-      
-      this.exerciseToDelete = null;
-      this.submissionToDelete = null;
+    if (!submission?.id) {
+      this.snackBar.open('No se encontró tu entrega', 'Cerrar', {
+        duration: 3000,
+      });
+      return;
     }
-  });
-}
 
-/**
- * Cancela la eliminación de la entrega
- */
-cancelDeleteSubmission() {
-  this.showDeleteModal = false;
-  this.exerciseToDelete = null;
-  this.submissionToDelete = null;
-}
+    if (submission.status === 'GRADED') {
+      this.snackBar.open(
+        '🚫 No puedes eliminar una entrega calificada',
+        'Cerrar',
+        { duration: 4000, panelClass: ['error-snackbar'] }
+      );
+      return;
+    }
 
-/**
- * Genera el mensaje para el modal de confirmación
- */
-getDeleteSubmissionMessage(): string {
-  return `¿Estás seguro de que deseas eliminar tu entrega para "${this.exerciseToDelete?.title || 'este ejercicio'}"?\n\nEsta acción no se puede deshacer.`;
-}
+    this.exerciseToDelete = exercise;
+    this.submissionToDelete = submission;
+    this.showDeleteModal = true;
+  }
+
+  /**
+   * Confirma la eliminación de la entrega
+   */
+  confirmDeleteSubmission() {
+    if (!this.submissionToDelete?.id) return;
+
+    const submissionId = this.submissionToDelete.id;
+    const exerciseTitle = this.exerciseToDelete?.title || 'el ejercicio';
+
+    this.showDeleteModal = false;
+
+    this.exerciseService.deleteSubmission(submissionId).subscribe({
+      next: () => {
+        // Eliminar de la lista local
+        this.submissions = this.submissions.filter(
+          (s) => s.id !== submissionId
+        );
+
+        this.snackBar.open(
+          `✅ Entrega de "${exerciseTitle}" eliminada`,
+          'Cerrar',
+          { duration: 3000, panelClass: ['success-snackbar'] }
+        );
+
+        this.exerciseToDelete = null;
+        this.submissionToDelete = null;
+      },
+      error: (error) => {
+        console.error('❌ Error al eliminar entrega:', error);
+        this.snackBar.open(
+          error.error?.error || 'Error al eliminar la entrega',
+          'Cerrar',
+          { duration: 3000, panelClass: ['error-snackbar'] }
+        );
+
+        this.exerciseToDelete = null;
+        this.submissionToDelete = null;
+      },
+    });
+  }
+
+  /**
+   * Cancela la eliminación de la entrega
+   */
+  cancelDeleteSubmission() {
+    this.showDeleteModal = false;
+    this.exerciseToDelete = null;
+    this.submissionToDelete = null;
+  }
+
+  /**
+   * Genera el mensaje para el modal de confirmación
+   */
+  getDeleteSubmissionMessage(): string {
+    return `¿Estás seguro de que deseas eliminar tu entrega para "${
+      this.exerciseToDelete?.title || 'este ejercicio'
+    }"?\n\nEsta acción no se puede deshacer.`;
+  }
 
   ngOnInit() {
     this.courseId = Number(this.route.snapshot.paramMap.get('id'));
@@ -138,25 +156,29 @@ getDeleteSubmissionMessage(): string {
 
   loadCourseData() {
     this.isLoading = true;
-    
+
     this.courseService.getEnrolledCourses().subscribe({
       next: (courses) => {
-        this.course = courses.find(c => c.id === this.courseId) || null;
-        
+        this.course = courses.find((c) => c.id === this.courseId) || null;
+
         if (!this.course) {
-          this.snackBar.open('Curso no encontrado', 'Cerrar', { duration: 3000 });
+          this.snackBar.open('Curso no encontrado', 'Cerrar', {
+            duration: 3000,
+          });
           this.router.navigate(['/student-dashboard']);
           return;
         }
-        
+
         this.loadExercises();
         this.loadMySubmissions();
       },
       error: (error) => {
         console.error('❌ Error al cargar curso:', error);
         this.isLoading = false;
-        this.snackBar.open('Error al cargar el curso', 'Cerrar', { duration: 3000 });
-      }
+        this.snackBar.open('Error al cargar el curso', 'Cerrar', {
+          duration: 3000,
+        });
+      },
     });
   }
 
@@ -165,8 +187,8 @@ getDeleteSubmissionMessage(): string {
       next: (exercises) => {
         this.exercises = exercises;
         this.isLoading = false;
-        
-        exercises.forEach(exercise => {
+
+        exercises.forEach((exercise) => {
           if (exercise.id) {
             this.loadHints(exercise.id);
           }
@@ -175,8 +197,10 @@ getDeleteSubmissionMessage(): string {
       error: (error) => {
         console.error('❌ Error al cargar ejercicios:', error);
         this.isLoading = false;
-        this.snackBar.open('Error al cargar ejercicios', 'Cerrar', { duration: 3000 });
-      }
+        this.snackBar.open('Error al cargar ejercicios', 'Cerrar', {
+          duration: 3000,
+        });
+      },
     });
   }
 
@@ -187,7 +211,7 @@ getDeleteSubmissionMessage(): string {
       },
       error: (error) => {
         console.error('❌ Error al cargar pistas:', error);
-      }
+      },
     });
   }
 
@@ -199,12 +223,12 @@ getDeleteSubmissionMessage(): string {
       },
       error: (error) => {
         console.error('❌ Error al cargar entregas:', error);
-      }
+      },
     });
   }
 
   getHints(exercise: Exercise): Hint[] {
-    return exercise.id ? (this.exerciseHints[exercise.id] || []) : [];
+    return exercise.id ? this.exerciseHints[exercise.id] || [] : [];
   }
 
   toggleHints(exerciseId: number) {
@@ -224,13 +248,17 @@ getDeleteSubmissionMessage(): string {
         a.click();
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
-        
-        this.snackBar.open('✅ Archivo descargado', 'Cerrar', { duration: 2000 });
+
+        this.snackBar.open('✅ Archivo descargado', 'Cerrar', {
+          duration: 2000,
+        });
       },
       error: (error) => {
         console.error('❌ Error al descargar:', error);
-        this.snackBar.open('Error al descargar archivo', 'Cerrar', { duration: 3000 });
-      }
+        this.snackBar.open('Error al descargar archivo', 'Cerrar', {
+          duration: 3000,
+        });
+      },
     });
   }
 
@@ -247,28 +275,31 @@ getDeleteSubmissionMessage(): string {
         a.click();
         document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
-        
-        this.snackBar.open('✅ Tu entrega descargada', 'Cerrar', { duration: 2000 });
+
+        this.snackBar.open('✅ Tu entrega descargada', 'Cerrar', {
+          duration: 2000,
+        });
       },
       error: (error) => {
         console.error('❌ Error al descargar entrega:', error);
-        this.snackBar.open('Error al descargar tu entrega', 'Cerrar', { duration: 3000 });
-      }
+        this.snackBar.open('Error al descargar tu entrega', 'Cerrar', {
+          duration: 3000,
+        });
+      },
     });
   }
 
   openUploadModal(exercise: Exercise) {
     console.log('📤 Abriendo modal para SUBIR entrega:', exercise.title);
-    
+
     if (exercise.deadline && new Date() > new Date(exercise.deadline)) {
-      this.snackBar.open(
-        '⏰ El plazo de entrega ha expirado',
-        'Cerrar',
-        { duration: 4000, panelClass: ['error-snackbar'] }
-      );
+      this.snackBar.open('⏰ El plazo de entrega ha expirado', 'Cerrar', {
+        duration: 4000,
+        panelClass: ['error-snackbar'],
+      });
       return;
     }
-    
+
     this.selectedExercise = exercise;
     this.selectedFile = null;
     this.isEditMode = false;
@@ -277,11 +308,13 @@ getDeleteSubmissionMessage(): string {
 
   openEditModal(exercise: Exercise) {
     console.log('✏️ Abriendo modal para EDITAR entrega:', exercise.title);
-    
+
     const submission = this.getSubmission(exercise);
-    
+
     if (!submission) {
-      this.snackBar.open('No se encontró tu entrega', 'Cerrar', { duration: 3000 });
+      this.snackBar.open('No se encontró tu entrega', 'Cerrar', {
+        duration: 3000,
+      });
       return;
     }
 
@@ -293,15 +326,14 @@ getDeleteSubmissionMessage(): string {
           { duration: 4000, panelClass: ['error-snackbar'] }
         );
       } else {
-        this.snackBar.open(
-          '⏰ El plazo de entrega ha expirado',
-          'Cerrar',
-          { duration: 4000, panelClass: ['error-snackbar'] }
-        );
+        this.snackBar.open('⏰ El plazo de entrega ha expirado', 'Cerrar', {
+          duration: 4000,
+          panelClass: ['error-snackbar'],
+        });
       }
       return;
     }
-    
+
     this.selectedExercise = exercise;
     this.selectedFile = null;
     this.isEditMode = true;
@@ -319,7 +351,9 @@ getDeleteSubmissionMessage(): string {
     const file = event.target.files[0];
     if (file) {
       if (file.size > 10 * 1024 * 1024) {
-        this.snackBar.open('El archivo no debe superar 10MB', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('El archivo no debe superar 10MB', 'Cerrar', {
+          duration: 3000,
+        });
         return;
       }
       this.selectedFile = file;
@@ -342,74 +376,80 @@ getDeleteSubmissionMessage(): string {
       // EDITAR
       const submission = this.getSubmission(this.selectedExercise);
       if (!submission?.id) {
-        this.snackBar.open('No se encontró la entrega', 'Cerrar', { duration: 3000 });
+        this.snackBar.open('No se encontró la entrega', 'Cerrar', {
+          duration: 3000,
+        });
         this.isSubmitting = false;
         return;
       }
 
-      this.exerciseService.updateSubmission(submission.id, this.selectedFile).subscribe({
-        next: (updated) => {
-          this.loadMySubmissions();
-          const index = this.submissions.findIndex(s => s.id === updated.id);
-          if (index !== -1) {
-            this.submissions[index] = updated;
-          }
-          
-          this.snackBar.open(
-            '✅ Entrega actualizada exitosamente',
-            'Cerrar',
-            { duration: 3000, panelClass: ['success-snackbar'] }
-          );
-          
-          this.closeUploadModal();
-          this.isSubmitting = false;
-        },
-        error: (error) => {
-          console.error('❌ Error al editar:', error);
-          this.snackBar.open(
-            error.error?.error || 'Error al editar entrega',
-            'Cerrar',
-            { duration: 3000, panelClass: ['error-snackbar'] }
-          );
-          this.isSubmitting = false;
-        }
-      });
+      this.exerciseService
+        .updateSubmission(submission.id, this.selectedFile)
+        .subscribe({
+          next: (updated) => {
+            this.loadMySubmissions();
+            const index = this.submissions.findIndex(
+              (s) => s.id === updated.id
+            );
+            if (index !== -1) {
+              this.submissions[index] = updated;
+            }
+
+            this.snackBar.open(
+              '✅ Entrega actualizada exitosamente',
+              'Cerrar',
+              { duration: 3000, panelClass: ['success-snackbar'] }
+            );
+
+            this.closeUploadModal();
+            this.isSubmitting = false;
+          },
+          error: (error) => {
+            console.error('❌ Error al editar:', error);
+            this.snackBar.open(
+              error.error?.error || 'Error al editar entrega',
+              'Cerrar',
+              { duration: 3000, panelClass: ['error-snackbar'] }
+            );
+            this.isSubmitting = false;
+          },
+        });
     } else {
       // CREAR
-      this.exerciseService.submitExercise(this.selectedExercise.id, this.selectedFile).subscribe({
-        next: (submission) => {
+      this.exerciseService
+        .submitExercise(this.selectedExercise.id, this.selectedFile)
+        .subscribe({
+          next: (submission) => {
+            this.loadMySubmissions();
 
-          this.loadMySubmissions();
-          
-          this.snackBar.open(
-            '✅ Entrega subida exitosamente. El profesor ya puede verla.',
-            'Cerrar',
-            { duration: 4000, panelClass: ['success-snackbar'] }
-          );
-          
-          this.closeUploadModal();
-          this.isSubmitting = false;
-        },
-        error: (error) => {
-          console.error('❌ Error al subir:', error);
-          this.snackBar.open(
-            error.error?.error || 'Error al subir entrega',
-            'Cerrar',
-            { duration: 3000, panelClass: ['error-snackbar'] }
-          );
-          this.isSubmitting = false;
-        }
-      });
+            this.snackBar.open(
+              '✅ Entrega subida exitosamente. El profesor ya puede verla.',
+              'Cerrar',
+              { duration: 4000, panelClass: ['success-snackbar'] }
+            );
+
+            this.closeUploadModal();
+            this.isSubmitting = false;
+          },
+          error: (error) => {
+            console.error('❌ Error al subir:', error);
+            this.snackBar.open(
+              error.error?.error || 'Error al subir entrega',
+              'Cerrar',
+              { duration: 3000, panelClass: ['error-snackbar'] }
+            );
+            this.isSubmitting = false;
+          },
+        });
     }
   }
 
-
   hasSubmission(exercise: Exercise): boolean {
-    return this.submissions.some(s => s.exerciseId === exercise.id);
+    return this.submissions.some((s) => s.exerciseId === exercise.id);
   }
 
   getSubmission(exercise: Exercise): Submission | undefined {
-    return this.submissions.find(s => s.exerciseId === exercise.id);
+    return this.submissions.find((s) => s.exerciseId === exercise.id);
   }
 
   getSubmissionStatusText(exercise: Exercise): string {
@@ -421,19 +461,19 @@ getDeleteSubmissionMessage(): string {
 
   getDaysUntilDeadline(exercise: Exercise): number | null {
     if (!exercise.deadline) return null;
-    
+
     const now = new Date();
     const deadline = new Date(exercise.deadline);
-    
+
     if (now > deadline) return 0;
-    
+
     const diff = deadline.getTime() - now.getTime();
     return Math.ceil(diff / (1000 * 60 * 60 * 24));
   }
 
   getDeadlineMessage(exercise: Exercise): string {
     const days = this.getDaysUntilDeadline(exercise);
-    
+
     if (days === null) return '';
     if (days === 0) return '⏰ Plazo vencido';
     if (days === 1) return '⚠️ Último día';
@@ -443,10 +483,10 @@ getDeleteSubmissionMessage(): string {
 
   getDifficultyColor(difficulty: string): string {
     const colors: { [key: string]: string } = {
-      'Principiante': '#10b981',
-      'Intermedio': '#f59e0b',
-      'Avanzado': '#ef4444',
-      'Experto': '#8b5cf6'
+      Principiante: '#10b981',
+      Intermedio: '#f59e0b',
+      Avanzado: '#ef4444',
+      Experto: '#8b5cf6',
     };
     return colors[difficulty] || '#6b7280';
   }
@@ -457,5 +497,36 @@ getDeleteSubmissionMessage(): string {
 
   setActiveTab(tab: 'exercises' | 'challenges' | 'podium') {
     this.activeTab = tab;
+  }
+
+  // ========== NUEVO MÉTODO: Abrir URL Externa ==========
+  openExternalUrl(url: string) {
+    if (!url) {
+      this.snackBar.open('❌ No hay URL disponible', 'Cerrar', {
+        duration: 3000,
+      });
+      return;
+    }
+
+    // Validar que la URL sea válida
+    try {
+      const urlObj = new URL(url);
+
+      // Abrir en nueva pestaña con seguridad
+      window.open(url, '_blank', 'noopener,noreferrer');
+
+      this.snackBar.open('🔗 Abriendo enlace externo...', '', {
+        duration: 2000,
+        panelClass: ['success-snackbar'],
+      });
+
+      console.log('✅ Abriendo URL:', url);
+    } catch (error) {
+      console.error('❌ URL inválida:', url, error);
+      this.snackBar.open('❌ URL inválida', 'Cerrar', {
+        duration: 3000,
+        panelClass: ['error-snackbar'],
+      });
+    }
   }
 }
