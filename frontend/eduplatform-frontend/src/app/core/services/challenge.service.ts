@@ -13,13 +13,17 @@ export interface Challenge {
   description: string;
   difficulty: string; // BASICO, INTERMEDIO, AVANZADO
   maxBonusPoints: number; // 1-10 XP
+  externalUrl?: string; // ✅ NUEVO: URL externa opcional
   fileName?: string;
   fileType?: string;
   deadline?: string;
   createdAt?: string;
   active?: boolean;
   courseId?: number;
-  hasFile?: boolean;
+  hasFile?: boolean; // ✅ Indica si tiene archivo
+  hasExternalUrl?: boolean; // ✅ NUEVO: Indica si tiene URL
+  hasResource?: boolean; // ✅ NUEVO: Indica si tiene algún recurso
+  resourceType?: string; // ✅ NUEVO: "FILE", "URL", "BOTH", "NONE"
   submissionsCount?: number;
 }
 
@@ -70,6 +74,7 @@ export class ChallengeService {
 
   /**
    * Crear reto (Profesor)
+   * ✅ Ahora incluye externalUrl
    */
   createChallenge(challenge: Challenge, courseId: number, file?: File): Observable<Challenge> {
     const formData = new FormData();
@@ -83,9 +88,20 @@ export class ChallengeService {
       formData.append('deadline', challenge.deadline);
     }
 
+    // ✅ NUEVO: Agregar URL externa si existe
+    if (challenge.externalUrl && challenge.externalUrl.trim()) {
+      formData.append('externalUrl', challenge.externalUrl.trim());
+    }
+
     if (file) {
       formData.append('file', file, file.name);
     }
+
+    console.log('🏆 Creando reto con:', {
+      title: challenge.title,
+      hasFile: !!file,
+      hasUrl: !!challenge.externalUrl
+    });
 
     return this.http.post<Challenge>(this.apiUrl, formData);
   }
@@ -106,6 +122,7 @@ export class ChallengeService {
 
   /**
    * Actualizar reto (Profesor)
+   * ✅ Ahora incluye externalUrl
    */
   updateChallenge(id: number, challenge: Challenge, file?: File): Observable<Challenge> {
     const formData = new FormData();
@@ -122,9 +139,20 @@ export class ChallengeService {
       formData.append('active', challenge.active.toString());
     }
 
+    // ✅ NUEVO: Agregar URL externa (o vacío para eliminarla)
+    if (challenge.externalUrl !== undefined) {
+      formData.append('externalUrl', challenge.externalUrl.trim());
+    }
+
     if (file) {
       formData.append('file', file, file.name);
     }
+
+    console.log('✏️ Actualizando reto con:', {
+      title: challenge.title,
+      hasFile: !!file,
+      hasUrl: !!challenge.externalUrl
+    });
 
     return this.http.put<Challenge>(`${this.apiUrl}/${id}`, formData);
   }
@@ -157,10 +185,6 @@ export class ChallengeService {
     formData.append('challengeId', challengeId.toString());
     formData.append('file', file, file.name);
 
-    console.log('📤 Enviando solución de reto a:', this.submissionUrl);
-    console.log('   Challenge ID:', challengeId);
-    console.log('   File:', file.name);
-
     return this.http.post<ChallengeSubmission>(this.submissionUrl, formData);
   }
 
@@ -170,8 +194,6 @@ export class ChallengeService {
   updateChallengeSubmission(submissionId: number, file: File): Observable<ChallengeSubmission> {
     const formData = new FormData();
     formData.append('file', file, file.name);
-
-    console.log('✏️ Actualizando solución de reto:', submissionId);
 
     return this.http.put<ChallengeSubmission>(`${this.submissionUrl}/${submissionId}`, formData);
   }
@@ -197,10 +219,12 @@ export class ChallengeService {
     return this.http.get<ChallengeSubmission>(`${this.submissionUrl}/${id}`);
   }
 
-
-deleteChallengeSubmission(submissionId: number): Observable<void> {
-  return this.http.delete<void>(`${this.submissionUrl}/${submissionId}`);
-}
+  /**
+   * Eliminar solución de reto (Estudiante)
+   */
+  deleteChallengeSubmission(submissionId: number): Observable<void> {
+    return this.http.delete<void>(`${this.submissionUrl}/${submissionId}`);
+  }
 
   // ========================================
   // PODIO
@@ -227,36 +251,36 @@ deleteChallengeSubmission(submissionId: number): Observable<void> {
     return this.http.get<PodiumEntry>(`${this.podiumUrl}/my-position/${courseId}`);
   }
 
-/**
- * Obtiene todas las soluciones de un reto específico (CORREGIDO)
- */
-getChallengeSubmissions(challengeId: number): Observable<ChallengeSubmission[]> {
-  return this.http.get<ChallengeSubmission[]>(
-    `${this.submissionUrl}/challenge/${challengeId}` // ✅ Ahora usa submissionUrl
-  );
-}
+  /**
+   * Obtiene todas las soluciones de un reto específico
+   */
+  getChallengeSubmissions(challengeId: number): Observable<ChallengeSubmission[]> {
+    return this.http.get<ChallengeSubmission[]>(
+      `${this.submissionUrl}/challenge/${challengeId}`
+    );
+  }
 
-/**
- * Descarga el archivo de una solución de reto (CORREGIDO)
- */
-downloadChallengeSubmission(submissionId: number): Observable<Blob> {
-  return this.http.get(
-    `${this.submissionUrl}/${submissionId}/download`, // ✅ Ahora usa submissionUrl
-    { responseType: 'blob' }
-  );
-}
+  /**
+   * Descarga el archivo de una solución de reto
+   */
+  downloadChallengeSubmission(submissionId: number): Observable<Blob> {
+    return this.http.get(
+      `${this.submissionUrl}/${submissionId}/download`,
+      { responseType: 'blob' }
+    );
+  }
 
-/**
- * Revisa una solución de reto (CORREGIDO)
- */
-reviewChallengeSubmission(
-  submissionId: number,
-  bonusPoints: number,
-  feedback: string
-): Observable<ChallengeSubmission> {
-  return this.http.post<ChallengeSubmission>(
-    `${this.submissionUrl}/${submissionId}/review`, // ✅ Ahora usa submissionUrl
-    { bonusPoints, feedback }
-  );
-}
+  /**
+   * Revisa una solución de reto
+   */
+  reviewChallengeSubmission(
+    submissionId: number,
+    bonusPoints: number,
+    feedback: string
+  ): Observable<ChallengeSubmission> {
+    return this.http.post<ChallengeSubmission>(
+      `${this.submissionUrl}/${submissionId}/review`,
+      { bonusPoints, feedback }
+    );
+  }
 }

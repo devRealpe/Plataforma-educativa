@@ -26,7 +26,8 @@ export class ChallengeModalComponent implements OnInit {
     difficulty: '',
     maxBonusPoints: 5,
     deadline: '',
-    active: true
+    active: true,
+    externalUrl: '' // ✅ Campo para URL externa
   };
 
   constructor(
@@ -37,9 +38,16 @@ export class ChallengeModalComponent implements OnInit {
   ngOnInit() {
     if (this.editingChallenge) {
       this.challengeForm = { ...this.editingChallenge };
+      
+      // Formatear fecha para datetime-local
       if (this.challengeForm.deadline) {
         const date = new Date(this.challengeForm.deadline);
         this.challengeForm.deadline = date.toISOString().slice(0, 16);
+      }
+
+      // ✅ Asegurar que externalUrl tenga valor
+      if (!this.challengeForm.externalUrl) {
+        this.challengeForm.externalUrl = '';
       }
     }
   }
@@ -47,11 +55,13 @@ export class ChallengeModalComponent implements OnInit {
   onFileSelected(event: any) {
     const file = event.target.files[0];
     if (file) {
+      // Validar tamaño
       if (file.size > 10 * 1024 * 1024) {
         this.snackBar.open('El archivo no debe superar 10MB', 'Cerrar', { duration: 3000 });
         return;
       }
       this.selectedFile = file;
+      console.log('📁 Archivo seleccionado:', file.name);
     }
   }
 
@@ -63,7 +73,7 @@ export class ChallengeModalComponent implements OnInit {
   }
 
   isFormValid(): boolean {
-    return !!(
+    const hasBasicInfo = !!(
       this.challengeForm.title &&
       this.challengeForm.description &&
       this.challengeForm.difficulty &&
@@ -71,6 +81,16 @@ export class ChallengeModalComponent implements OnInit {
       this.challengeForm.maxBonusPoints >= 1 &&
       this.challengeForm.maxBonusPoints <= 10
     );
+
+    // ✅ Validar URL si está presente
+    if (this.challengeForm.externalUrl && this.challengeForm.externalUrl.trim()) {
+      const urlPattern = /^https?:\/\/.+/;
+      if (!urlPattern.test(this.challengeForm.externalUrl.trim())) {
+        return false; // URL inválida
+      }
+    }
+
+    return hasBasicInfo;
   }
 
   onSubmit() {
@@ -78,6 +98,21 @@ export class ChallengeModalComponent implements OnInit {
 
     this.isSubmitting = true;
     this.challengeForm.courseId = this.courseId;
+
+    // ✅ Limpiar URL si está vacía
+    if (this.challengeForm.externalUrl) {
+      this.challengeForm.externalUrl = this.challengeForm.externalUrl.trim();
+      if (!this.challengeForm.externalUrl) {
+        this.challengeForm.externalUrl = undefined;
+      }
+    }
+
+    console.log('🏆 Enviando reto:', {
+      title: this.challengeForm.title,
+      hasFile: !!this.selectedFile,
+      hasUrl: !!this.challengeForm.externalUrl,
+      externalUrl: this.challengeForm.externalUrl
+    });
 
     const request$ = this.editingChallenge?.id
       ? this.challengeService.updateChallenge(
@@ -93,23 +128,45 @@ export class ChallengeModalComponent implements OnInit {
 
     request$.subscribe({
       next: (challenge) => {
-        this.snackBar.open(
-          this.editingChallenge ? '✅ Reto actualizado' : '✅ Reto publicado', 
-          'Cerrar', 
-          {
-            duration: 3000,
-            panelClass: ['success-snackbar']
-          }
-        );
+        console.log('✅ Reto guardado:', challenge);
+        
+        const action = this.editingChallenge ? 'actualizado' : 'publicado';
+        let message = `✅ Reto "${challenge.title}" ${action}`;
+        
+        // ✅ Mensaje informativo según recursos
+        if (challenge.hasFile && challenge.hasExternalUrl) {
+          message += ' (con archivo y enlace)';
+        } else if (challenge.hasFile) {
+          message += ' (con archivo)';
+        } else if (challenge.hasExternalUrl) {
+          message += ' (con enlace externo)';
+        }
+        
+        this.snackBar.open(message, 'Cerrar', {
+          duration: 4000,
+          panelClass: ['success-snackbar']
+        });
+        
         this.challengeCreated.emit(challenge);
         this.close();
       },
       error: (error) => {
-        console.error('❌ Error:', error);
-        this.snackBar.open('Error al guardar el reto', 'Cerrar', {
-          duration: 3000,
+        console.error('❌ Error al guardar reto:', error);
+        
+        let errorMessage = 'Error al guardar el reto';
+        
+        // ✅ Mensaje específico para error de URL
+        if (error.error?.error?.includes('URL')) {
+          errorMessage = '❌ URL inválida. Debe comenzar con http:// o https://';
+        } else if (error.error?.error) {
+          errorMessage = error.error.error;
+        }
+        
+        this.snackBar.open(errorMessage, 'Cerrar', {
+          duration: 4000,
           panelClass: ['error-snackbar']
         });
+        
         this.isSubmitting = false;
       }
     });
@@ -122,6 +179,16 @@ export class ChallengeModalComponent implements OnInit {
   onBackdropClick(event: MouseEvent) {
     if ((event.target as HTMLElement).classList.contains('modal-overlay')) {
       this.close();
+    }
+  }
+
+  // ✅ Método auxiliar para validar URL
+  isValidUrl(url: string): boolean {
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
     }
   }
 }

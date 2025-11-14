@@ -150,10 +150,10 @@
             required
             placeholder="1-10 XP"
           />
-          <small class="input-hint"
-            >Los estudiantes pueden ganar entre 0 y
-            {{ challengeForm.maxBonusPoints }} XP</small
-          >
+          <small class="input-hint">
+            Los estudiantes pueden ganar entre 0 y
+            {{ challengeForm.maxBonusPoints }} XP
+          </small>
         </div>
       </div>
 
@@ -184,6 +184,41 @@
         />
       </div>
 
+      <!-- ✅ NUEVO: URL Externa -->
+      <div class="form-group">
+        <label for="externalUrl">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"
+            />
+            <path
+              d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"
+            />
+          </svg>
+          Enlace Externo (Opcional)
+        </label>
+        <input
+          type="url"
+          id="externalUrl"
+          class="form-input"
+          [(ngModel)]="challengeForm.externalUrl"
+          name="externalUrl"
+          placeholder="https://ejemplo.com/reto"
+          pattern="https?://.+"
+        />
+        <small class="input-hint">
+          🔗 Si el reto está en otra plataforma (ej: Kaggle, GitHub), pega el
+          enlace aquí
+        </small>
+      </div>
+
       <!-- Archivo -->
       <div class="form-group">
         <label>
@@ -199,7 +234,7 @@
             <polyline points="17 8 12 3 7 8" />
             <line x1="12" y1="3" x2="12" y2="15" />
           </svg>
-          Archivo del Reto {{ editingChallenge ? "(Opcional)" : "" }}
+          Archivo del Reto (Opcional)
         </label>
 
         <div
@@ -267,7 +302,7 @@
         </div>
       </div>
 
-      <!-- Info Box -->
+      <!-- ✅ Info Box Actualizado -->
       <div class="info-box">
         <svg
           width="20"
@@ -282,9 +317,12 @@
           <line x1="12" y1="8" x2="12.01" y2="8" />
         </svg>
         <div>
-          <strong>Sobre los retos:</strong> Los retos son desafíos opcionales
-          que permiten a los estudiantes ganar puntos de bonificación (XP) para
-          destacarse en el podio del curso.
+          <strong>💡 Opciones de recursos:</strong>
+          <ul style="margin: 0.5rem 0 0 1rem; padding: 0">
+            <li>Puedes subir un archivo (PDF, ZIP, etc.)</li>
+            <li>O pegar un enlace a una plataforma externa</li>
+            <li>¡O ambos si lo prefieres!</li>
+          </ul>
         </div>
       </div>
 

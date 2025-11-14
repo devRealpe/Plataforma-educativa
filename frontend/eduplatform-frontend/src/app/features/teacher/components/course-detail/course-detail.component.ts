@@ -378,4 +378,33 @@ export class CourseDetailComponent implements OnInit {
   getDeleteChallengeMessage(): string {
     return `¿Estás seguro de que deseas eliminar el reto "${this.challengeToDelete?.title || ''}"?\n\nEsta acción eliminará:\n• El reto y sus archivos\n• Todas las soluciones enviadas\n• Las bonificaciones otorgadas\n\nEsta acción no se puede deshacer.`;
   }
+
+// ========== NUEVO MÉTODO: Abrir URL Externa ==========
+openExternalUrl(url: string) {
+  if (!url) {
+    this.snackBar.open('❌ No hay URL disponible', 'Cerrar', { duration: 3000 });
+    return;
+  }
+  
+  // Validar que la URL sea válida
+  try {
+    const urlObj = new URL(url);
+    
+    // Abrir en nueva pestaña con seguridad
+    window.open(url, '_blank', 'noopener,noreferrer');
+    
+    this.snackBar.open('🔗 Abriendo enlace externo...', '', { 
+      duration: 2000,
+      panelClass: ['success-snackbar']
+    });
+    
+    console.log('✅ Abriendo URL:', url);
+  } catch (error) {
+    console.error('❌ URL inválida:', url, error);
+    this.snackBar.open('❌ URL inválida', 'Cerrar', { 
+      duration: 3000,
+      panelClass: ['error-snackbar']
+    });
+  }
+}
 }

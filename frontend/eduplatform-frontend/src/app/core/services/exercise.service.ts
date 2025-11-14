@@ -12,12 +12,16 @@ export interface Exercise {
   title: string;
   description: string;
   difficulty: string;
+  externalUrl?: string; // ✅ NUEVO: URL externa opcional
   fileName?: string;
   fileType?: string;
   deadline?: string;
   createdAt?: string;
   courseId?: number;
   hasFile?: boolean;
+  hasExternalUrl?: boolean; // ✅ NUEVO: Indica si tiene URL
+  hasResource?: boolean; // ✅ NUEVO: Indica si tiene algún recurso
+  resourceType?: string; // ✅ NUEVO: "FILE", "URL", "BOTH", "NONE"
   hints?: Hint[];
 }
 
@@ -54,9 +58,8 @@ export interface Submission {
   providedIn: 'root'
 })
 export class ExerciseService {
-  // 🔥 CORREGIDO: Rutas según el controlador real
   private apiUrl = `${environment.apiUrl}/exercises`;
-  private submissionUrl = `${environment.apiUrl}/submissions`; // ← Ruta correcta
+  private submissionUrl = `${environment.apiUrl}/submissions`;
 
   constructor(private http: HttpClient) {}
 
@@ -66,6 +69,7 @@ export class ExerciseService {
 
   /**
    * Crear ejercicio (Profesor)
+   * ✅ Ahora incluye externalUrl
    */
   createExercise(exercise: Exercise, courseId: number, file?: File): Observable<Exercise> {
     const formData = new FormData();
@@ -78,9 +82,20 @@ export class ExerciseService {
       formData.append('deadline', exercise.deadline);
     }
 
+    // ✅ NUEVO: Agregar URL externa si existe
+    if (exercise.externalUrl && exercise.externalUrl.trim()) {
+      formData.append('externalUrl', exercise.externalUrl.trim());
+    }
+
     if (file) {
       formData.append('file', file, file.name);
     }
+
+    console.log('📝 Creando ejercicio con:', {
+      title: exercise.title,
+      hasFile: !!file,
+      hasUrl: !!exercise.externalUrl
+    });
 
     return this.http.post<Exercise>(this.apiUrl, formData);
   }
@@ -101,6 +116,7 @@ export class ExerciseService {
 
   /**
    * Actualizar ejercicio (Profesor)
+   * ✅ Ahora incluye externalUrl
    */
   updateExercise(id: number, exercise: Exercise, file?: File): Observable<Exercise> {
     const formData = new FormData();
@@ -112,9 +128,20 @@ export class ExerciseService {
       formData.append('deadline', exercise.deadline);
     }
 
+    // ✅ NUEVO: Agregar URL externa (o vacío para eliminarla)
+    if (exercise.externalUrl !== undefined) {
+      formData.append('externalUrl', exercise.externalUrl.trim());
+    }
+
     if (file) {
       formData.append('file', file, file.name);
     }
+
+    console.log('✏️ Actualizando ejercicio con:', {
+      title: exercise.title,
+      hasFile: !!file,
+      hasUrl: !!exercise.externalUrl
+    });
 
     return this.http.put<Exercise>(`${this.apiUrl}/${id}`, formData);
   }
@@ -171,38 +198,28 @@ export class ExerciseService {
 
   // ========================================
   // ENTREGAS (SUBMISSIONS)
-  // 🔥 CORREGIDO: Usar /api/submissions según el controlador
   // ========================================
 
   /**
    * Subir entrega (Estudiante)
-   * La entrega queda inmediatamente visible para el profesor
    */
   submitExercise(exerciseId: number, file: File): Observable<Submission> {
     const formData = new FormData();
     formData.append('exerciseId', exerciseId.toString());
     formData.append('file', file, file.name);
 
-    console.log('📤 Enviando entrega a:', this.submissionUrl);
-    console.log('   Exercise ID:', exerciseId);
-    console.log('   File:', file.name);
-
     return this.http.post<Submission>(this.submissionUrl, formData);
   }
 
   /**
    * Editar entrega (Estudiante)
-   * Solo si no está calificada y dentro del plazo
    */
   updateSubmission(submissionId: number, file: File): Observable<Submission> {
     const formData = new FormData();
     formData.append('file', file, file.name);
 
-    console.log('✏️ Actualizando entrega:', submissionId);
-
     return this.http.put<Submission>(`${this.submissionUrl}/${submissionId}`, formData);
   }
-
 
   /**
    * Obtener entregas de un ejercicio (Profesor)
