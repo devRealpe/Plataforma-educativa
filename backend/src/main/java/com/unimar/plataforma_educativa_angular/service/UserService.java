@@ -26,7 +26,6 @@ public class UserService {
         }
         user.setEmail(emailNormalized);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        // asegúrate de que role no sea null antes de guardar
         return userRepository.save(user);
     }
 
@@ -54,4 +53,38 @@ public class UserService {
         return userRepository.findByEmail(email);
     }
 
+    // ========================================
+    // ✅ NUEVO: Actualizar nombre del usuario
+    // ========================================
+    public User updateUserName(String email, String newName) throws Exception {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new Exception("Usuario no encontrado"));
+
+        user.setNombre(newName);
+        return userRepository.save(user);
+    }
+
+    // ========================================
+    // ✅ NUEVO: Cambiar contraseña
+    // ========================================
+    public void changePassword(String email, String currentPassword, String newPassword) throws Exception {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new Exception("Usuario no encontrado"));
+
+        // Verificar que la contraseña actual sea correcta
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            throw new Exception("La contraseña actual es incorrecta");
+        }
+
+        // Validar que la nueva contraseña sea diferente
+        if (passwordEncoder.matches(newPassword, user.getPassword())) {
+            throw new Exception("La nueva contraseña debe ser diferente a la actual");
+        }
+
+        // Actualizar contraseña
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        logger.info("Contraseña actualizada exitosamente para: {}", email);
+    }
 }

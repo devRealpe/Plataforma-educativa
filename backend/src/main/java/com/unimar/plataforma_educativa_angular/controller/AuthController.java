@@ -63,9 +63,76 @@ public class AuthController {
                     resp.put("email", user.getEmail());
                     resp.put("name", user.getNombre());
                     resp.put("role", user.getRole());
-                    // agrega aquí más campos públicos si los tienes (ubicacion, bio, etc.)
                     return ResponseEntity.ok(resp);
                 })
                 .orElseGet(() -> ResponseEntity.status(404).body(Map.of("message", "Usuario no encontrado")));
+    }
+
+    // ========================================
+    // ✅ NUEVO: Actualizar nombre de perfil
+    // ========================================
+    @PutMapping("/profile")
+    public ResponseEntity<?> updateProfile(
+            @RequestBody Map<String, String> updateData,
+            Authentication authentication) {
+        try {
+            String email = authentication.getName();
+            String nombre = updateData.get("nombre");
+
+            if (nombre == null || nombre.trim().isEmpty()) {
+                return ResponseEntity.badRequest()
+                        .body(Map.of("error", "El nombre es requerido"));
+            }
+
+            if (nombre.trim().length() < 3) {
+                return ResponseEntity.badRequest()
+                        .body(Map.of("error", "El nombre debe tener al menos 3 caracteres"));
+            }
+
+            User updatedUser = userService.updateUserName(email, nombre.trim());
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("message", "Perfil actualizado exitosamente");
+            response.put("name", updatedUser.getNombre());
+
+            return ResponseEntity.ok(response);
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    // ========================================
+    // ✅ NUEVO: Cambiar contraseña
+    // ========================================
+    @PutMapping("/change-password")
+    public ResponseEntity<?> changePassword(
+            @RequestBody Map<String, String> passwordData,
+            Authentication authentication) {
+        try {
+            String email = authentication.getName();
+            String currentPassword = passwordData.get("currentPassword");
+            String newPassword = passwordData.get("newPassword");
+
+            if (currentPassword == null || currentPassword.isEmpty()) {
+                return ResponseEntity.badRequest()
+                        .body(Map.of("error", "La contraseña actual es requerida"));
+            }
+
+            if (newPassword == null || newPassword.length() < 6) {
+                return ResponseEntity.badRequest()
+                        .body(Map.of("error", "La nueva contraseña debe tener al menos 6 caracteres"));
+            }
+
+            userService.changePassword(email, currentPassword, newPassword);
+
+            return ResponseEntity.ok(Map.of(
+                    "message", "Contraseña actualizada exitosamente"));
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("error", e.getMessage()));
+        }
     }
 }
