@@ -1,0 +1,667 @@
+// ==========================================
+// 🎮 COURSE HEADER - VARIABLES
+// ==========================================
+
+$primary-blue: #2563eb;
+$primary-blue-dark: #1d4ed8;
+$primary-blue-light: #3b82f6;
+$neon-cyan: #06b6d4;
+$neon-purple: #8b5cf6;
+$neon-pink: #ec4899;
+$neon-yellow: #fbbf24;
+$neon-green: #10b981;
+$success-green: #10b981;
+$warning-orange: #f59e0b;
+$danger-red: #ef4444;
+
+$gray-50: #f9fafb;
+$gray-100: #f3f4f6;
+$gray-200: #e5e7eb;
+$gray-300: #d1d5db;
+$gray-400: #9ca3af;
+$gray-500: #6b7280;
+$gray-600: #4b5563;
+$gray-700: #374151;
+$gray-800: #1f2937;
+$gray-900: #111827;
+
+$spacing-xs: 0.25rem;
+$spacing-sm: 0.5rem;
+$spacing-md: 1rem;
+$spacing-lg: 1.5rem;
+$spacing-xl: 2rem;
+$spacing-2xl: 3rem;
+
+$radius-sm: 8px;
+$radius-md: 12px;
+$radius-lg: 16px;
+$radius-xl: 20px;
+
+$shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+$shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+$shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+$shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+
+$transition-fast: 0.15s ease;
+$transition-base: 0.2s ease;
+$transition-slow: 0.3s ease;
+
+// ==========================================
+// 🌐 WRAPPER PRINCIPAL
+// ==========================================
+
+:host {
+  display: block;
+}
+
+.course-detail-wrapper {
+  min-height: 100vh;
+  position: relative;
+}
+
+.background-gradient {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    oklch(0.96 0.04 260) 0%,
+    oklch(0.98 0.02 180) 50%,
+    oklch(0.94 0.06 300) 100%
+  );
+  z-index: -2;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+      radial-gradient(circle at 20% 30%, rgba(37, 99, 235, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.08) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: -1;
+  }
+}
+
+// ==========================================
+// 📄 MAIN CONTENT
+// ==========================================
+
+.main-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: $spacing-xl;
+  position: relative;
+  z-index: 1;
+}
+
+// ==========================================
+// 💡 MOTIVATIONAL BANNER
+// ==========================================
+
+.motivational-banner {
+  display: flex;
+  align-items: center;
+  gap: $spacing-lg;
+  padding: $spacing-xl;
+  background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(6, 182, 212, 0.1));
+  border: 2px solid rgba(16, 185, 129, 0.2);
+  border-radius: $radius-lg;
+  margin-bottom: $spacing-xl;
+  box-shadow: $shadow-md;
+  animation: fadeInUp 0.6s ease 0.3s both;
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    animation: shimmer 3s infinite;
+  }
+
+  .banner-icon {
+    flex-shrink: 0;
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, $neon-green, $neon-cyan);
+    border-radius: 50%;
+    box-shadow: 0 4px 16px rgba(16, 185, 129, 0.4);
+
+    svg {
+      color: white;
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+    }
+  }
+
+  .banner-text {
+    flex: 1;
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: $gray-700;
+    line-height: 1.6;
+    margin: 0;
+  }
+}
+
+@keyframes shimmer {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+// ==========================================
+// 🎯 HEADER
+// ==========================================
+
+.header {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 2px solid transparent;
+  border-image: linear-gradient(90deg, $primary-blue, $neon-purple) 1;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  transition: all $transition-base;
+}
+
+.header-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: $spacing-xl;
+  position: relative;
+  z-index: 1;
+}
+
+// ==========================================
+// 🔙 BACK BUTTON
+// ==========================================
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-md $spacing-lg;
+  background: linear-gradient(135deg, $gray-100, $gray-50);
+  color: $gray-700;
+  border: 2px solid $gray-200;
+  border-radius: $radius-md;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all $transition-base;
+  margin-bottom: $spacing-lg;
+  box-shadow: $shadow-sm;
+
+  svg {
+    transition: transform $transition-base;
+    flex-shrink: 0;
+  }
+
+  span {
+    transition: color $transition-base;
+  }
+
+  &:hover {
+    background: linear-gradient(135deg, $gray-200, $gray-100);
+    border-color: $gray-300;
+    transform: translateX(-4px);
+    box-shadow: $shadow-md;
+
+    svg {
+      transform: translateX(-4px);
+    }
+  }
+
+  &:active {
+    transform: translateX(-4px) scale(0.98);
+  }
+}
+
+// ==========================================
+// 📚 COURSE HEADER
+// ==========================================
+
+.course-header {
+  margin-bottom: $spacing-lg;
+}
+
+.course-header-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: $spacing-xl;
+  margin-bottom: $spacing-lg;
+  flex-wrap: wrap;
+}
+
+.course-title-section {
+  flex: 1;
+  min-width: 300px;
+}
+
+.course-title {
+  font-size: 2.25rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, $primary-blue, $neon-purple);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 0 $spacing-md 0;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  animation: fadeInUp 0.6s ease;
+}
+
+.course-description {
+  font-size: 1.05rem;
+  color: $gray-600;
+  line-height: 1.6;
+  margin: 0;
+  animation: fadeInUp 0.6s ease 0.1s both;
+}
+
+.course-meta-badges {
+  display: flex;
+  gap: $spacing-md;
+  flex-wrap: wrap;
+}
+
+.meta-badge {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-md $spacing-lg;
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(139, 92, 246, 0.1));
+  border: 2px solid rgba(37, 99, 235, 0.2);
+  border-radius: $radius-md;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: $gray-700;
+  box-shadow: $shadow-sm;
+  transition: all $transition-base;
+
+  svg {
+    color: $primary-blue;
+    transition: all $transition-base;
+    flex-shrink: 0;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
+    border-color: $primary-blue;
+
+    svg {
+      transform: scale(1.1);
+    }
+  }
+
+  &.level {
+    background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(16, 185, 129, 0.1));
+    border-color: rgba(6, 182, 212, 0.2);
+
+    svg {
+      color: $neon-cyan;
+    }
+  }
+
+  &.students {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.1));
+    border-color: rgba(139, 92, 246, 0.2);
+
+    svg {
+      color: $neon-purple;
+    }
+  }
+}
+
+// ==========================================
+// 🎮 ACTION BUTTONS
+// ==========================================
+
+.header-actions {
+  display: flex;
+  gap: $spacing-md;
+  flex-wrap: wrap;
+  animation: fadeInUp 0.6s ease 0.2s both;
+}
+
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-md $spacing-xl;
+  border: none;
+  border-radius: $radius-md;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all $transition-base;
+  position: relative;
+  overflow: hidden;
+  box-shadow: $shadow-md;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+  }
+
+  &:hover::before {
+    width: 300px;
+    height: 300px;
+  }
+
+  svg {
+    position: relative;
+    z-index: 1;
+    transition: transform $transition-base;
+    flex-shrink: 0;
+  }
+
+  span {
+    position: relative;
+    z-index: 1;
+  }
+
+  &:hover {
+    transform: translateY(-3px);
+
+    svg {
+      transform: scale(1.1) rotate(5deg);
+    }
+  }
+
+  &:active {
+    transform: translateY(-1px);
+  }
+
+  &.primary {
+    background: linear-gradient(135deg, $primary-blue, $primary-blue-light);
+    color: white;
+    box-shadow: 0 4px 16px rgba(37, 99, 235, 0.4);
+
+    &:hover {
+      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.5);
+    }
+
+    &.challenge {
+      background: linear-gradient(135deg, $neon-yellow, #f59e0b);
+      box-shadow: 0 4px 16px rgba(251, 191, 36, 0.4);
+
+      &:hover {
+        box-shadow: 0 8px 24px rgba(251, 191, 36, 0.5);
+      }
+    }
+
+    &.exercise {
+      background: linear-gradient(135deg, $neon-purple, #a855f7);
+      box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4);
+
+      &:hover {
+        box-shadow: 0 8px 24px rgba(139, 92, 246, 0.5);
+      }
+    }
+  }
+
+  &.secondary {
+    background: white;
+    color: $gray-700;
+    border: 2px solid $gray-200;
+
+    &:hover {
+      background: $gray-50;
+      border-color: $primary-blue;
+      color: $primary-blue;
+    }
+  }
+}
+
+// ==========================================
+// 📑 TAB NAVIGATION
+// ==========================================
+
+.tabs-navigation {
+  display: flex;
+  gap: $spacing-sm;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(8px);
+  padding: $spacing-sm;
+  border-radius: $radius-lg;
+  margin-top: $spacing-lg;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.05);
+  overflow-x: auto;
+  scrollbar-width: thin;
+
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $gray-300;
+    border-radius: 3px;
+  }
+}
+
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-md $spacing-xl;
+  background: transparent;
+  color: $gray-600;
+  border: 2px solid transparent;
+  border-radius: $radius-md;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all $transition-base;
+  white-space: nowrap;
+  position: relative;
+
+  svg {
+    transition: all $transition-base;
+    flex-shrink: 0;
+  }
+
+  .tab-label {
+    transition: all $transition-base;
+  }
+
+  .tab-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px;
+    padding: 0 $spacing-sm;
+    background: $gray-200;
+    color: $gray-700;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    transition: all $transition-base;
+  }
+
+  &:hover {
+    color: $primary-blue;
+    background: rgba(37, 99, 235, 0.08);
+
+    svg {
+      transform: translateY(-2px);
+    }
+
+    .tab-count {
+      background: $primary-blue;
+      color: white;
+      transform: scale(1.1);
+    }
+  }
+
+  &.active {
+    color: white;
+    background: linear-gradient(135deg, $primary-blue, $neon-purple);
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+
+    svg {
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+    }
+
+    .tab-count {
+      background: rgba(255, 255, 255, 0.25);
+      color: white;
+      backdrop-filter: blur(8px);
+    }
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+    }
+  }
+}
+
+// ==========================================
+// 🎭 ANIMATIONS
+// ==========================================
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ==========================================
+// 📱 RESPONSIVE
+// ==========================================
+
+@media (max-width: 1024px) {
+  .course-header-main {
+    flex-direction: column;
+  }
+
+  .header-actions {
+    width: 100%;
+    
+    .action-btn {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .header-content {
+    padding: $spacing-lg;
+  }
+
+  .course-title {
+    font-size: 1.75rem;
+  }
+
+  .course-description {
+    font-size: 0.95rem;
+  }
+
+  .tabs-navigation {
+    padding: $spacing-xs;
+    gap: $spacing-xs;
+  }
+
+  .tab-btn {
+    padding: $spacing-sm $spacing-md;
+    font-size: 0.875rem;
+
+    .tab-label {
+      display: none;
+    }
+
+    .tab-count {
+      margin-left: 0;
+    }
+  }
+
+  .header-actions {
+    flex-direction: column;
+
+    .action-btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .course-title {
+    font-size: 1.5rem;
+  }
+
+  .meta-badge {
+    font-size: 0.8rem;
+    padding: $spacing-sm $spacing-md;
+  }
+
+  .action-btn {
+    padding: $spacing-sm $spacing-md;
+    font-size: 0.875rem;
+
+    span {
+      display: none;
+    }
+  }
+
+  .back-btn {
+    span {
+      display: none;
+    }
+  }
+}
+
+// ==========================================
+// 🌟 ACCESSIBILITY
+// ==========================================
+
+button:focus-visible {
+  outline: 3px solid $primary-blue;
+  outline-offset: 2px;
+  border-radius: $radius-sm;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
