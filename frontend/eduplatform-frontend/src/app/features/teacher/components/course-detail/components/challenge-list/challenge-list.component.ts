@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Challenge } from '../../../../../core/services/challenge.service';
+import { Challenge } from '../../../../../../core/services/challenge.service';
 
 @Component({
   selector: 'app-challenge-list',

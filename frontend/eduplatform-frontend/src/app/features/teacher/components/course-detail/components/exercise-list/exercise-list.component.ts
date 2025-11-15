@@ -1,6 +1,6 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Exercise } from '../../../../../core/services/exercise.service';
+import { Exercise } from '../../../../../../core/services/exercise.service';
 
 @Component({
   selector: 'app-exercise-list',

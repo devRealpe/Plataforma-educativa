@@ -6,7 +6,7 @@ import { LandingComponent } from './common/components/landing/landing.component'
 import { AuthGuard } from './core/guards/auth.guard';
 import { TeacherDashboardComponent } from './features/teacher/components/teacher-dashboard/teacher-dashboard.component';
 import { StudentDashboardComponent } from './features/student/components/student-dashboard/student-dashboard.component';
-import { CourseHeaderComponent } from './shared/components/course-detail/components/course-header/course-header.component';
+import { CourseHeaderComponent } from './features/teacher/components/course-detail/components/course-header/course-header.component';
 import { StudentCourseViewComponent } from './features/student/components/student-course-view/student-course-view.component';
 
 export const routes: Routes = [

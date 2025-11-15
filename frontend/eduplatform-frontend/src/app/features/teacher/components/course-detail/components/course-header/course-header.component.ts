@@ -4,21 +4,21 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 // Services
-import { CourseService, Course } from '../../../../../core/services/course.service';
-import { ExerciseService, Exercise } from '../../../../../core/services/exercise.service';
-import { ChallengeService, Challenge } from '../../../../../core/services/challenge.service';
+import { CourseService, Course } from '../../../../../../core/services/course.service';
+import { ExerciseService, Exercise } from '../../../../../../core/services/exercise.service';
+import { ChallengeService, Challenge } from '../../../../../../core/services/challenge.service';
 
 // Modales
-import { ExerciseModalComponent } from '../../../../../features/teacher/modals/exercise-modal/exercise-modal.component';
-import { HintModalComponent } from '../../../../../features/teacher/modals/hint-modal/hint-modal.component';
-import { ManageStudentsModalComponent } from '../../../../../features/teacher/modals/manage-students-modal/manage-students-modal.component';
-import { ConfirmationModalComponent } from '../../../../../shared/components/confirmation-modal/confirmation-modal.component';
-import { SubmissionsModalComponent } from '../../../../../features/teacher/modals/submissions-modal/submissions-modal.component';
-import { ChallengeModalComponent } from '../../../../../features/teacher/modals/challenge-modal/challenge-modal.component';
-import { ChallengeSubmissionsListModalComponent } from '../../../../../features/teacher/modals/challenge-submissions-list-modal/challenge-submissions-list-modal.component';
+import { ExerciseModalComponent } from '../../../../modals/exercise-modal/exercise-modal.component';
+import { HintModalComponent } from '../../../../modals/hint-modal/hint-modal.component';
+import { ManageStudentsModalComponent } from '../../../../modals/manage-students-modal/manage-students-modal.component';
+import { ConfirmationModalComponent } from '../../../../../../shared/components/confirmation-modal/confirmation-modal.component';
+import { SubmissionsModalComponent } from '../../../../modals/submissions-modal/submissions-modal.component';
+import { ChallengeModalComponent } from '../../../../modals/challenge-modal/challenge-modal.component';
+import { ChallengeSubmissionsListModalComponent } from '../../../../modals/challenge-submissions-list-modal/challenge-submissions-list-modal.component';
 
 // Componentes de presentación
-import { PodiumComponent } from '../../../../../shared/components/podium/podium.component';
+import { PodiumComponent } from '../../../../../../shared/components/podium/podium.component';
 import { ExerciseListComponent } from '../exercise-list/exercise-list.component';
 import { ChallengeListComponent } from '../challenge-list/challenge-list.component';
 
@@ -89,6 +89,17 @@ export class CourseHeaderComponent implements OnInit {
   // NAVEGACIÓN
   // ==========================================
   activeTab: 'exercises' | 'challenges' | 'podium' = 'exercises';
+
+  // ==========================================
+  // 🆕 GETTERS PARA LAS PROPIEDADES FALTANTES
+  // ==========================================
+  get exerciseCount(): number {
+    return this.exercises.length;
+  }
+
+  get challengeCount(): number {
+    return this.challenges.length;
+  }
 
   constructor(
     private route: ActivatedRoute,
@@ -180,6 +191,12 @@ export class CourseHeaderComponent implements OnInit {
     this.router.navigate(['/teacher-dashboard']);
   }
 
+  // 🆕 MÉTODO FALTANTE: onTabChange
+  onTabChange(tab: 'exercises' | 'challenges' | 'podium') {
+    this.activeTab = tab;
+    console.log('📑 Tab cambiado a:', tab);
+  }
+
   setActiveTab(tab: 'exercises' | 'challenges' | 'podium') {
     this.activeTab = tab;
   }
@@ -187,6 +204,11 @@ export class CourseHeaderComponent implements OnInit {
   // ==========================================
   // 👥 GESTIÓN DE ESTUDIANTES
   // ==========================================
+
+  // 🆕 MÉTODO RENOMBRADO: onManageStudents
+  onManageStudents() {
+    this.openManageStudents();
+  }
 
   openManageStudents() {
     this.showStudentsModal = true;
@@ -201,6 +223,11 @@ export class CourseHeaderComponent implements OnInit {
   // ==========================================
   // 📝 GESTIÓN DE EJERCICIOS
   // ==========================================
+
+  // 🆕 MÉTODO RENOMBRADO: onCreateExercise
+  onCreateExercise() {
+    this.openCreateExercise();
+  }
 
   openCreateExercise() {
     this.editingExercise = null;
@@ -372,6 +399,11 @@ export class CourseHeaderComponent implements OnInit {
   // ==========================================
   // 🏆 GESTIÓN DE RETOS
   // ==========================================
+
+  // 🆕 MÉTODO RENOMBRADO: onCreateChallenge
+  onCreateChallenge() {
+    this.openCreateChallenge();
+  }
 
   openCreateChallenge() {
     this.editingChallenge = null;

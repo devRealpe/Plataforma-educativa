@@ -224,4 +224,113 @@
       </nav>
     </div>
   </header>
+
+  <!-- ============================================ -->
+  <!-- 🆕 CONTENIDO DINÁMICO SEGÚN TAB ACTIVO -->
+  <!-- ============================================ -->
+  <main class="main-content">
+    <!-- Tab: Ejercicios -->
+    <app-exercise-list
+      *ngIf="activeTab === 'exercises'"
+      [exercises]="exercises"
+      [isLoading]="isLoading"
+      (createExercise)="openCreateExercise()"
+      (editExercise)="openEditExercise($event)"
+      (deleteExercise)="openDeleteExercise($event)"
+      (manageHints)="openManageHints($event)"
+      (downloadExercise)="downloadExercise($event)"
+      (viewSubmissions)="viewExerciseSubmissions($event)"
+      (openExternalUrl)="openExternalUrl($event)"
+    ></app-exercise-list>
+
+    <!-- Tab: Retos -->
+    <app-challenge-list
+      *ngIf="activeTab === 'challenges'"
+      [challenges]="challenges"
+      [isLoading]="isLoadingChallenges"
+      (createChallenge)="openCreateChallenge()"
+      (editChallenge)="openEditChallenge($event)"
+      (deleteChallenge)="openDeleteChallenge($event)"
+      (downloadChallenge)="downloadChallenge($event)"
+      (viewSubmissions)="viewChallengeSubmissions($event)"
+      (openExternalUrl)="openExternalUrl($event)"
+    ></app-challenge-list>
+
+    <!-- Tab: Podio -->
+    <app-podium
+      *ngIf="activeTab === 'podium'"
+      [courseId]="courseId"
+    ></app-podium>
+  </main>
 </div>
+
+<!-- ============================================ -->
+<!-- 🆕 MODALES -->
+<!-- ============================================ -->
+
+<!-- Modal: Crear/Editar Ejercicio -->
+<app-exercise-modal
+  *ngIf="showExerciseModal"
+  [courseId]="courseId"
+  [editingExercise]="editingExercise"
+  (exerciseCreated)="handleExerciseCreated($event)"
+  (closeModal)="closeExerciseModal()"
+></app-exercise-modal>
+
+<!-- Modal: Gestionar Pistas -->
+<app-hint-modal
+  *ngIf="showHintModal && selectedExercise"
+  [exerciseId]="selectedExercise!.id!"
+  [exerciseTitle]="selectedExercise!.title"
+  (closeModal)="closeHintModal()"
+></app-hint-modal>
+
+<!-- Modal: Gestionar Estudiantes -->
+<app-manage-students-modal
+  *ngIf="showStudentsModal"
+  [courseId]="courseId"
+  [courseTitle]="course?.title || ''"
+  (closeModal)="closeStudentsModal()"
+></app-manage-students-modal>
+
+<!-- Modal: Confirmación Eliminar Ejercicio -->
+<app-confirmation-modal
+  *ngIf="showDeleteConfirmModal"
+  [message]="getDeleteExerciseMessage()"
+  (confirm)="confirmDeleteExercise()"
+  (cancel)="cancelDeleteExercise()"
+></app-confirmation-modal>
+
+<!-- Modal: Ver Entregas de Ejercicio -->
+<app-submissions-modal
+  *ngIf="showSubmissionsModal && selectedExercise"
+  [exerciseId]="selectedExercise!.id!"
+  [exerciseTitle]="selectedExercise!.title"
+  (closeModal)="closeSubmissionsModal()"
+></app-submissions-modal>
+
+<!-- Modal: Crear/Editar Reto -->
+<app-challenge-modal
+  *ngIf="showChallengeModal"
+  [courseId]="courseId"
+  [editingChallenge]="editingChallenge"
+  (challengeCreated)="handleChallengeCreated($event)"
+  (closeModal)="closeChallengeModal()"
+></app-challenge-modal>
+
+<!-- Modal: Ver Soluciones de Reto -->
+<app-challenge-submissions-list-modal
+  *ngIf="showChallengeSubmissionsModal && selectedChallenge"
+  [challengeId]="selectedChallenge!.id!"
+  [challengeTitle]="selectedChallenge!.title"
+  [maxBonusPoints]="selectedChallenge!.maxBonusPoints || 10"
+  (closeModal)="closeChallengeSubmissionsModal()"
+></app-challenge-submissions-list-modal>
+
+<!-- Modal: Confirmación Eliminar Reto -->
+<app-confirmation-modal
+  *ngIf="showDeleteChallengeModal"
+  [message]="getDeleteChallengeMessage()"
+  (confirm)="confirmDeleteChallenge()"
+  (cancel)="cancelDeleteChallenge()"
+></app-confirmation-modal>
