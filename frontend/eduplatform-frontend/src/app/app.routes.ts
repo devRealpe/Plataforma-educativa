@@ -7,7 +7,7 @@ import { AuthGuard } from './core/guards/auth.guard';
 import { TeacherDashboardComponent } from './features/teacher/components/teacher-dashboard/teacher-dashboard.component';
 import { StudentDashboardComponent } from './features/student/components/student-dashboard/student-dashboard.component';
 import { CourseHeaderComponent } from './features/teacher/components/course-detail/components/course-header/course-header.component';
-import { StudentCourseViewComponent } from './features/student/components/student-course-view/student-course-view.component';
+import { CourseHeaderComponentStudent } from './features/student/components/course-detail/components/course-header/course-header.component';
 
 export const routes: Routes = [
   { path: 'landing', component: LandingComponent },
@@ -17,7 +17,7 @@ export const routes: Routes = [
   { path: 'teacher-dashboard', component: TeacherDashboardComponent, canActivate: [AuthGuard] },
   { path: 'student-dashboard', component: StudentDashboardComponent, canActivate: [AuthGuard] },
   { path: 'course/:id', component: CourseHeaderComponent, canActivate: [AuthGuard] },
-  { path: 'student/course/:id', component: StudentCourseViewComponent, canActivate: [AuthGuard] },
+  { path: 'student/course/:id', component: CourseHeaderComponentStudent, canActivate: [AuthGuard] },
   { path: '', redirectTo: 'landing', pathMatch: 'full' },
   { path: '**', redirectTo: 'landing' },
 ];

@@ -1,0 +1,706 @@
+// ==========================================
+// 🎮 STUDENT COURSE HEADER - VARIABLES
+// ==========================================
+
+$primary-blue: #2563eb;
+$primary-blue-dark: #1d4ed8;
+$primary-blue-light: #3b82f6;
+$neon-cyan: #06b6d4;
+$neon-purple: #8b5cf6;
+$neon-pink: #ec4899;
+$neon-yellow: #fbbf24;
+$neon-green: #10b981;
+$success-green: #10b981;
+$warning-orange: #f59e0b;
+$danger-red: #ef4444;
+
+$gray-50: #f9fafb;
+$gray-100: #f3f4f6;
+$gray-200: #e5e7eb;
+$gray-300: #d1d5db;
+$gray-400: #9ca3af;
+$gray-500: #6b7280;
+$gray-600: #4b5563;
+$gray-700: #374151;
+$gray-800: #1f2937;
+$gray-900: #111827;
+
+$spacing-xs: 0.25rem;
+$spacing-sm: 0.5rem;
+$spacing-md: 1rem;
+$spacing-lg: 1.5rem;
+$spacing-xl: 2rem;
+$spacing-2xl: 3rem;
+
+$radius-sm: 8px;
+$radius-md: 12px;
+$radius-lg: 16px;
+$radius-xl: 20px;
+
+$shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+$shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+$shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+$shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+
+$transition-fast: 0.15s ease;
+$transition-base: 0.2s ease;
+$transition-slow: 0.3s ease;
+
+// ==========================================
+// 🌐 WRAPPER PRINCIPAL
+// ==========================================
+
+:host {
+  display: block;
+}
+
+.course-detail-wrapper {
+  min-height: 100vh;
+  position: relative;
+}
+
+.background-gradient {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    oklch(0.96 0.04 260) 0%,
+    oklch(0.98 0.02 180) 50%,
+    oklch(0.94 0.06 300) 100%
+  );
+  z-index: -2;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+      radial-gradient(circle at 20% 30%, rgba(37, 99, 235, 0.08) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.08) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: -1;
+  }
+}
+
+// ==========================================
+// 📄 MAIN CONTENT
+// ==========================================
+
+.main-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: $spacing-xl;
+  position: relative;
+  z-index: 1;
+}
+
+// ==========================================
+// 🎯 HEADER
+// ==========================================
+
+.header {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 2px solid transparent;
+  border-image: linear-gradient(90deg, $primary-blue, $neon-purple) 1;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  transition: all $transition-base;
+}
+
+.header-content {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: $spacing-xl;
+  position: relative;
+  z-index: 1;
+}
+
+// ==========================================
+// 🔙 BACK BUTTON
+// ==========================================
+
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-md $spacing-lg;
+  background: linear-gradient(135deg, $gray-100, $gray-50);
+  color: $gray-700;
+  border: 2px solid $gray-200;
+  border-radius: $radius-md;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all $transition-base;
+  margin-bottom: $spacing-lg;
+  box-shadow: $shadow-sm;
+
+  svg {
+    transition: transform $transition-base;
+    flex-shrink: 0;
+  }
+
+  span {
+    transition: color $transition-base;
+  }
+
+  &:hover {
+    background: linear-gradient(135deg, $gray-200, $gray-100);
+    border-color: $gray-300;
+    transform: translateX(-4px);
+    box-shadow: $shadow-md;
+
+    svg {
+      transform: translateX(-4px);
+    }
+  }
+
+  &:active {
+    transform: translateX(-4px) scale(0.98);
+  }
+}
+
+// ==========================================
+// 📚 COURSE HEADER
+// ==========================================
+
+.course-header {
+  margin-bottom: $spacing-lg;
+}
+
+.course-header-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: $spacing-xl;
+  margin-bottom: $spacing-lg;
+  flex-wrap: wrap;
+}
+
+.course-title-section {
+  flex: 1;
+  min-width: 300px;
+}
+
+.course-title {
+  font-size: 2.25rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, $primary-blue, $neon-purple);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 0 $spacing-md 0;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  animation: fadeInUp 0.6s ease;
+}
+
+.course-description {
+  font-size: 1.05rem;
+  color: $gray-600;
+  line-height: 1.6;
+  margin: 0;
+  animation: fadeInUp 0.6s ease 0.1s both;
+}
+
+.course-meta-badges {
+  display: flex;
+  gap: $spacing-md;
+  flex-wrap: wrap;
+}
+
+.meta-badge {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-md $spacing-lg;
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(139, 92, 246, 0.1));
+  border: 2px solid rgba(37, 99, 235, 0.2);
+  border-radius: $radius-md;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: $gray-700;
+  box-shadow: $shadow-sm;
+  transition: all $transition-base;
+
+  svg {
+    color: $primary-blue;
+    transition: all $transition-base;
+    flex-shrink: 0;
+  }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: $shadow-md;
+    border-color: $primary-blue;
+
+    svg {
+      transform: scale(1.1);
+    }
+  }
+
+  &.level {
+    background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(16, 185, 129, 0.1));
+    border-color: rgba(6, 182, 212, 0.2);
+
+    svg {
+      color: $neon-cyan;
+    }
+  }
+
+  &.teacher {
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.1));
+    border-color: rgba(139, 92, 246, 0.2);
+
+    svg {
+      color: $neon-purple;
+    }
+  }
+}
+
+// ==========================================
+// 📑 TAB NAVIGATION
+// ==========================================
+
+.tabs-navigation {
+  display: flex;
+  gap: $spacing-sm;
+  background: rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(8px);
+  padding: $spacing-sm;
+  border-radius: $radius-lg;
+  margin-top: $spacing-lg;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.05);
+  overflow-x: auto;
+  scrollbar-width: thin;
+
+  &::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: $gray-300;
+    border-radius: 3px;
+  }
+}
+
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: $spacing-sm;
+  padding: $spacing-md $spacing-xl;
+  background: transparent;
+  color: $gray-600;
+  border: 2px solid transparent;
+  border-radius: $radius-md;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all $transition-base;
+  white-space: nowrap;
+  position: relative;
+
+  svg {
+    transition: all $transition-base;
+    flex-shrink: 0;
+  }
+
+  .tab-label {
+    transition: all $transition-base;
+  }
+
+  .tab-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px;
+    padding: 0 $spacing-sm;
+    background: $gray-200;
+    color: $gray-700;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    transition: all $transition-base;
+  }
+
+  &:hover {
+    color: $primary-blue;
+    background: rgba(37, 99, 235, 0.08);
+
+    svg {
+      transform: translateY(-2px);
+    }
+
+    .tab-count {
+      background: $primary-blue;
+      color: white;
+      transform: scale(1.1);
+    }
+  }
+
+  &.active {
+    color: white;
+    background: linear-gradient(135deg, $primary-blue, $neon-purple);
+    border-color: transparent;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+
+    svg {
+      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+    }
+
+    .tab-count {
+      background: rgba(255, 255, 255, 0.25);
+      color: white;
+      backdrop-filter: blur(8px);
+    }
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+    }
+  }
+}
+
+// ==========================================
+// 🎭 MODAL
+// ==========================================
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-container {
+  background: white;
+  border-radius: 16px;
+  width: 100%;
+  max-width: 540px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.75rem 2rem;
+  border-bottom: 1px solid $gray-200;
+  background: linear-gradient(to bottom, white 0%, $gray-50 100%);
+
+  h3 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: $gray-900;
+    margin: 0;
+  }
+}
+
+.close-btn {
+  background: $gray-100;
+  border: none;
+  padding: 0.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  color: $gray-600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: $gray-200;
+    color: $gray-900;
+  }
+}
+
+.modal-content {
+  padding: 2rem;
+}
+
+.modal-description {
+  color: $gray-700;
+  line-height: 1.6;
+  margin: 0 0 1.75rem 0;
+  font-size: 0.9375rem;
+
+  strong {
+    color: $gray-900;
+    font-weight: 600;
+  }
+
+  .edit-warning {
+    display: block;
+    margin-top: 0.75rem;
+    padding: 0.75rem;
+    background: #fef3c7;
+    border-left: 4px solid $warning-orange;
+    border-radius: 6px;
+    color: #92400e;
+    font-size: 0.875rem;
+  }
+}
+
+.file-upload-area {
+  position: relative;
+}
+
+.file-input {
+  display: none;
+}
+
+.file-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  border: 2px dashed $gray-300;
+  border-radius: 12px;
+  background: $gray-50;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: $primary-blue;
+    background: #eff6ff;
+  }
+
+  svg {
+    color: $primary-blue;
+    margin-bottom: 1rem;
+  }
+
+  span:first-of-type {
+    font-weight: 600;
+    color: $gray-700;
+    margin-bottom: 0.5rem;
+    font-size: 1rem;
+  }
+
+  .file-hint {
+    font-size: 0.875rem;
+    color: $gray-600;
+  }
+}
+
+.file-selected {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem;
+  background: #eff6ff;
+  border: 2px solid $primary-blue;
+  border-radius: 10px;
+
+  .file-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: $gray-700;
+    font-weight: 500;
+
+    svg {
+      color: $primary-blue;
+      flex-shrink: 0;
+    }
+  }
+}
+
+.remove-file-btn {
+  background: rgba(220, 38, 38, 0.1);
+  border: none;
+  padding: 0.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  color: $danger-red;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: $danger-red;
+    color: white;
+  }
+}
+
+.modal-footer {
+  display: flex;
+  gap: 1rem;
+  padding: 1.5rem 2rem;
+  border-top: 1px solid $gray-200;
+  background: $gray-50;
+}
+
+.btn-cancel, .btn-submit {
+  flex: 1;
+  padding: 0.875rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 0.9375rem;
+}
+
+.btn-cancel {
+  background: white;
+  color: $gray-700;
+  border: 2px solid $gray-200;
+
+  &:hover {
+    background: $gray-50;
+    border-color: $gray-300;
+  }
+}
+
+.btn-submit {
+  background: $primary-blue;
+  color: white;
+
+  &:hover:not(:disabled) {
+    background: #1d4ed8;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+// ==========================================
+// 🎭 ANIMATIONS
+// ==========================================
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ==========================================
+// 📱 RESPONSIVE
+// ==========================================
+
+@media (max-width: 1024px) {
+  .course-header-main {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 768px) {
+  .header-content {
+    padding: $spacing-lg;
+  }
+
+  .course-title {
+    font-size: 1.75rem;
+  }
+
+  .course-description {
+    font-size: 0.95rem;
+  }
+
+  .tabs-navigation {
+    padding: $spacing-xs;
+    gap: $spacing-xs;
+  }
+
+  .tab-btn {
+    padding: $spacing-sm $spacing-md;
+    font-size: 0.875rem;
+
+    .tab-label {
+      display: none;
+    }
+
+    .tab-count {
+      margin-left: 0;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .course-title {
+    font-size: 1.5rem;
+  }
+
+  .meta-badge {
+    font-size: 0.8rem;
+    padding: $spacing-sm $spacing-md;
+  }
+
+  .back-btn {
+    span {
+      display: none;
+    }
+  }
+}
+
+// ==========================================
+// 🌟 ACCESSIBILITY
+// ==========================================
+
+button:focus-visible {
+  outline: 3px solid $primary-blue;
+  outline-offset: 2px;
+  border-radius: $radius-sm;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
