@@ -16,7 +16,7 @@ import { PodiumComponent } from '../../../../../../shared/components/podium/podi
 import { ExerciseListComponent } from '../exercise-list/exercise-list.component';
 import { ChallengeListComponent } from '../challenge-list/challenge-list.component';
 
-// whatsapp
+// 🆕 WhatsApp Button Component - IMPORTANTE: Verificar que esté correctamente importado
 import { WhatsappButtonComponent } from '../../../../components/whatsapp-button/whatsapp-button.component';
 
 /**
@@ -38,7 +38,7 @@ import { WhatsappButtonComponent } from '../../../../components/whatsapp-button/
     PodiumComponent,
     ExerciseListComponent,
     ChallengeListComponent,
-    WhatsappButtonComponent
+    WhatsappButtonComponent // ✅ CRÍTICO: Debe estar aquí
   ],
   templateUrl: './course-header.component.html',
   styleUrls: ['./course-header.component.scss']
@@ -110,7 +110,7 @@ export class CourseHeaderComponentStudent implements OnInit {
       return;
     }
 
-    console.log('🚀 Inicializando Course Header con ID:', this.courseId);
+    console.log('🚀 Inicializando Course Header (STUDENT) con ID:', this.courseId);
     this.loadCourseData();
   }
 
@@ -132,6 +132,8 @@ export class CourseHeaderComponentStudent implements OnInit {
         }
         
         console.log('✅ Curso cargado:', this.course.title);
+        console.log('🔍 WhatsApp Link:', this.course.whatsappLink || 'No configurado');
+        
         this.loadExercises();
         this.loadChallenges();
         this.loadMySubmissions();

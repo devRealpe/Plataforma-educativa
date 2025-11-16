@@ -11,7 +11,7 @@ import { CourseService } from '../../../../core/services/course.service';
   selector: 'app-whatsapp-button',
   standalone: true,
   imports: [CommonModule],
-  template: './whatsapp-button.component.html',
+  templateUrl: './whatsapp-button.component.html',
   styleUrls: ['./whatsapp-button.component.scss']
 })
 export class WhatsappButtonComponent implements OnInit {
