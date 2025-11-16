@@ -3,11 +3,13 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { forkJoin } from 'rxjs';
+
 import { CourseService, Course, JoinCourseResponse } from '../../../../core/services/course.service';
+import { StatsService, StudentStats, CourseProgress } from '../../../../core/services/stats.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { ConfirmationModalComponent } from '../../../../shared/components/confirmation-modal/confirmation-modal.component';
 
-// Interface para cursos con progreso del estudiante
 interface EnrolledCourse extends Course {
   progress: number;
   completedActivities: number;
@@ -15,6 +17,15 @@ interface EnrolledCourse extends Course {
   totalExercises: number;
   totalChallenges: number;
   earnedXP: number;
+}
+
+interface StatCard {
+  title: string;
+  value: string;
+  icon: string;
+  bgGradient: string;
+  textColor: string;
+  isLoading?: boolean;
 }
 
 @Component({
@@ -25,93 +36,161 @@ interface EnrolledCourse extends Course {
   styleUrls: ['./student-dashboard.component.scss'],
 })
 export class StudentDashboardComponent implements OnInit {
-  // Estado
   showLogoutConfirmModal = false;
   isJoining = false;
   inviteCode = '';
+  isLoadingStats = true;
 
-  // Datos
   enrolledCourses: EnrolledCourse[] = [];
   courseToLeave: Course | null = null;
   showLeaveConfirmModal = false;
   
-  stats = [
-    { title: 'Cursos Activos', value: '0', icon: '📚', bgColor: '#3b82f6' },
-    { title: 'XP Total', value: '0', icon: '⭐', bgColor: '#10b981' },
-    { title: 'Ejercicios Completados', value: '0', icon: '✅', bgColor: '#f59e0b' },
-    { title: 'Retos Superados', value: '0', icon: '🏆', bgColor: '#8b5cf6' },
+  stats: StatCard[] = [
+    { 
+      title: 'Cursos Activos', 
+      value: '0', 
+      icon: '📚', 
+      bgGradient: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+      textColor: '#ffffff',
+      isLoading: true
+    },
+    { 
+      title: 'XP Total', 
+      value: '0', 
+      icon: '⭐', 
+      bgGradient: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+      textColor: '#ffffff',
+      isLoading: true
+    },
+    { 
+      title: 'Ejercicios Completados', 
+      value: '0', 
+      icon: '✅', 
+      bgGradient: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+      textColor: '#ffffff',
+      isLoading: true
+    },
+    { 
+      title: 'Retos Superados', 
+      value: '0', 
+      icon: '🏆', 
+      bgGradient: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+      textColor: '#ffffff',
+      isLoading: true
+    }
   ];
 
   constructor(
     private courseService: CourseService,
+    private statsService: StatsService,
     private authService: AuthService,
     private router: Router,
     private snackBar: MatSnackBar
   ) {}
 
   ngOnInit() {
-    this.loadEnrolledCourses();
+    this.loadDashboardData();
   }
 
   /**
-   * Carga los cursos en los que el estudiante está inscrito
+   * ✅ Cargar datos del dashboard: estadísticas generales y cursos con progreso
    */
-  loadEnrolledCourses() {
-    this.courseService.getEnrolledCourses().subscribe({
-      next: (courses) => {
-        // Aquí simulo datos de progreso. En producción vendrían del backend
-        this.enrolledCourses = courses.map(course => ({
-          ...course,
-          progress: Math.floor(Math.random() * 100),
-          completedActivities: Math.floor(Math.random() * 20),
-          totalActivities: 20,
-          totalExercises: Math.floor(Math.random() * 15) + 5,
-          totalChallenges: Math.floor(Math.random() * 5) + 1,
-          earnedXP: Math.floor(Math.random() * 500)
-        }));
+  loadDashboardData() {
+    this.isLoadingStats = true;
+
+    forkJoin({
+      stats: this.statsService.getStudentStats(),
+      courses: this.courseService.getEnrolledCourses()
+    }).subscribe({
+      next: ({ stats, courses }) => {
+        this.updateStatsFromAPI(stats);
+        this.loadCoursesWithProgress(courses);
+        this.isLoadingStats = false;
         
-        this.updateStats();
-        console.log('✅ Cursos cargados:', this.enrolledCourses);
+        console.log('✅ Dashboard cargado:', { stats, courses });
       },
       error: (error) => {
-        console.error('❌ Error al cargar cursos:', error);
-        this.snackBar.open('Error al cargar tus cursos', 'Cerrar', { 
+        console.error('❌ Error al cargar dashboard:', error);
+        this.isLoadingStats = false;
+        
+        this.snackBar.open('Error al cargar el dashboard', 'Cerrar', { 
           duration: 3000,
           panelClass: ['error-snackbar']
         });
-      },
+      }
     });
   }
 
   /**
-   * Actualiza las estadísticas del dashboard
+   * ✅ Actualizar estadísticas generales desde la API
    */
-  updateStats() {
-    this.stats[0].value = this.enrolledCourses.length.toString();
-    
-    const totalXP = this.enrolledCourses.reduce((sum, course) => sum + course.earnedXP, 0);
-    this.stats[1].value = totalXP.toString();
-    
-    const totalCompleted = this.enrolledCourses.reduce((sum, course) => sum + course.completedActivities, 0);
-    this.stats[2].value = totalCompleted.toString();
-    
-    // Simular retos completados
-    const totalChallenges = this.enrolledCourses.reduce((sum, course) => 
-      sum + Math.floor(course.totalChallenges * (course.progress / 100)), 0
-    );
-    this.stats[3].value = totalChallenges.toString();
+  updateStatsFromAPI(stats: StudentStats) {
+    this.stats[0].value = stats.enrolledCourses.toString();
+    this.stats[0].isLoading = false;
+
+    this.stats[1].value = stats.totalXP.toString();
+    this.stats[1].isLoading = false;
+
+    this.stats[2].value = stats.completedExercises.toString();
+    this.stats[2].isLoading = false;
+
+    this.stats[3].value = stats.completedChallenges.toString();
+    this.stats[3].isLoading = false;
   }
 
   /**
-   * Une al estudiante a un curso usando el código de invitación
+   * ✅ Cargar cursos con progreso individual desde la API
    */
+  loadCoursesWithProgress(courses: Course[]) {
+    if (courses.length === 0) {
+      this.enrolledCourses = [];
+      return;
+    }
+
+    const progressRequests = courses.map(course => 
+      this.statsService.getCourseProgress(course.id!)
+    );
+
+    forkJoin(progressRequests).subscribe({
+      next: (progressList: CourseProgress[]) => {
+        this.enrolledCourses = courses.map((course, index) => {
+          const progress = progressList[index];
+          
+          return {
+            ...course,
+            progress: progress.progressPercentage,
+            completedActivities: progress.completedActivities,
+            totalActivities: progress.totalActivities,
+            totalExercises: progress.totalExercises,
+            totalChallenges: progress.totalChallenges,
+            earnedXP: progress.earnedXP
+          };
+        });
+
+        console.log('✅ Cursos con progreso:', this.enrolledCourses);
+      },
+      error: (error) => {
+        console.error('❌ Error al cargar progreso:', error);
+        
+        // Fallback: mostrar cursos sin progreso detallado
+        this.enrolledCourses = courses.map(course => ({
+          ...course,
+          progress: 0,
+          completedActivities: 0,
+          totalActivities: 0,
+          totalExercises: 0,
+          totalChallenges: 0,
+          earnedXP: 0
+        }));
+      }
+    });
+  }
+
   joinCourse() {
     const code = this.inviteCode.trim().toUpperCase();
     
     if (!code) {
-      this.snackBar.open('Por favor ingresa un código', 'Cerrar', { 
-        duration: 2000 
-      });
+      this.snackBar.open('Por favor ingresa un código', 'Cerrar', { duration: 2000 });
       return;
     }
 
@@ -119,169 +198,70 @@ export class StudentDashboardComponent implements OnInit {
 
     this.courseService.joinCourseByCode(code).subscribe({
       next: (response: JoinCourseResponse) => {
-        console.log('✅ Respuesta completa del servidor:', response);
+        console.log('✅ Unido al curso:', response);
         
-        // Extraer el curso de la respuesta
-        const course = response.course;
-        
-        console.log('✅ Curso extraído:', course);
-        
-        // Validar que el curso tenga los datos necesarios
-        if (!course || !course.id || !course.title || !course.description) {
-          console.error('❌ Curso sin datos completos:', course);
-          console.warn('⚠️ Recargando lista de cursos...');
-          
-          // Si los datos no están completos, recargar la lista
-          this.loadEnrolledCourses();
-          this.inviteCode = '';
-          this.isJoining = false;
-          
-          this.snackBar.open(
-            '¡Te has unido al curso exitosamente!',
-            'Cerrar',
-            { 
-              duration: 5000,
-              panelClass: ['success-snackbar']
-            }
-          );
-          return;
-        }
-        
-        // Verificar si el curso ya existe en la lista (por si acaso)
-        const courseExists = this.enrolledCourses.some(c => c.id === course.id);
-        
-        if (courseExists) {
-          console.warn('⚠️ El curso ya existe en la lista');
-          this.inviteCode = '';
-          this.isJoining = false;
-          
-          this.snackBar.open(
-            'Ya estás inscrito en este curso',
-            'Cerrar',
-            { duration: 3000 }
-          );
-          return;
-        }
-        
-        // Agregar el curso a la lista local con datos iniciales de progreso
-        const enrolledCourse: EnrolledCourse = {
-          id: course.id,
-          title: course.title,
-          description: course.description,
-          level: course.level,
-          inviteCode: course.inviteCode,
-          progress: 0,
-          completedActivities: 0,
-          totalActivities: 20,
-          totalExercises: 0,
-          totalChallenges: 0,
-          earnedXP: 0
-        };
-        
-        console.log('✅ Curso formateado para agregar:', enrolledCourse);
-        
-        // Agregar al inicio de la lista para que sea visible inmediatamente
-        this.enrolledCourses.unshift(enrolledCourse);
-        this.updateStats();
-        
-        // Limpiar el input
         this.inviteCode = '';
         this.isJoining = false;
         
-        // Mostrar notificación de éxito
         this.snackBar.open(
-          `¡Bienvenido al curso "${course.title}"!`,
+          `✅ ¡Bienvenido al curso "${response.course.title}"!`,
           'Cerrar',
-          { 
-            duration: 5000,
-            panelClass: ['success-snackbar']
-          }
+          { duration: 5000, panelClass: ['success-snackbar'] }
         );
+
+        // Recargar dashboard
+        this.loadDashboardData();
       },
       error: (error) => {
-        console.error('❌ Error completo:', error);
-        console.error('❌ Error status:', error.status);
-        console.error('❌ Error body:', error.error);
-        
+        console.error('❌ Error al unirse:', error);
         this.isJoining = false;
         
         let errorMessage = 'No se pudo unir al curso';
         
         if (error.status === 404) {
-          errorMessage = 'Código inválido. Verifica con tu profesor';
-        } else if (error.status === 400) {
-          // Extraer mensaje de error del backend
-          const backendError = error.error?.error || error.error?.message;
-          if (backendError?.includes('Ya estás inscrito')) {
-            errorMessage = 'Ya estás inscrito en este curso';
-          } else if (backendError?.includes('Solo los estudiantes')) {
-            errorMessage = 'Solo los estudiantes pueden unirse a cursos';
-          } else if (backendError) {
-            errorMessage = backendError;
-          }
-        } else if (error.status === 409) {
-          errorMessage = 'Ya estás inscrito en este curso';
+          errorMessage = 'Código inválido';
+        } else if (error.status === 400 && error.error?.error) {
+          errorMessage = error.error.error;
         }
         
         this.snackBar.open(errorMessage, 'Cerrar', { 
           duration: 3000,
           panelClass: ['error-snackbar']
         });
-      },
+      }
     });
   }
 
-  /**
-   * Retorna el color del progreso según el porcentaje
-   */
   getProgressColor(progress: number): string {
-    if (progress < 30) return 'linear-gradient(to bottom, #ef4444, #dc2626)';
-    if (progress < 70) return 'linear-gradient(to bottom, #f59e0b, #d97706)';
-    return 'linear-gradient(to bottom, #10b981, #059669)';
+    if (progress < 30) return 'linear-gradient(to right, #f5576c, #fa709a)';
+    if (progress < 70) return 'linear-gradient(to right, #fa709a, #f093fb)';
+    return 'linear-gradient(to right, #43e97b, #38f9d7)';
   }
 
-  /**
-   * Navega al contenido del curso
-   */
-enterCourse(course: EnrolledCourse) {
-  if (!course.id) {
-    this.snackBar.open('❌ Error: el curso no tiene ID', 'Cerrar', { 
-      duration: 3000 
-    });
-    return;
+  enterCourse(course: EnrolledCourse) {
+    if (!course.id) {
+      this.snackBar.open('❌ Error: el curso no tiene ID', 'Cerrar', { duration: 3000 });
+      return;
+    }
+
+    console.log('📖 Entrando al curso:', course.title);
+    this.router.navigate(['/student/course', course.id]);
   }
 
-  console.log('📖 Entrando al curso:', course.title);
-  
-  // 🔥 ARREGLADO: Ahora sí navega
-  this.router.navigate(['/student/course', course.id]);
-}
-
-  /**
-   * Muestra el progreso detallado del curso
-   */
   viewProgress(course: EnrolledCourse) {
     console.log('📊 Viendo progreso de:', course.title);
-    // Aquí navegarías a la vista de progreso
-    // this.router.navigate(['/progress', course.id]);
     this.snackBar.open(
-      `Cargando progreso de ${course.title}...`,
+      `Progreso: ${Math.round(course.progress)}% completado`,
       'Cerrar',
-      { duration: 2000 }
+      { duration: 3000 }
     );
   }
 
-   /**
-   * Mostrar modal de confirmación para abandonar curso
-   */
   leaveCourse(course: Course) {
     this.courseToLeave = course;
     this.showLeaveConfirmModal = true;
   }
 
-  /**
-   * Confirmar abandono del curso
-   */
   confirmLeaveCourse() {
     if (!this.courseToLeave?.id) return;
 
@@ -290,14 +270,13 @@ enterCourse(course: EnrolledCourse) {
 
     this.showLeaveConfirmModal = false;
 
-    this.snackBar.open('⏳ Saliendo del curso...', '', { duration: 2000 });
-
     this.courseService.leaveCourse(courseId).subscribe({
       next: () => {
         this.enrolledCourses = this.enrolledCourses.filter(c => c.id !== courseId);
+        this.loadDashboardData(); // Recargar stats
 
         this.snackBar.open(
-          `✅ Has abandonado el curso "${courseTitle}"`,
+          `✅ Has abandonado "${courseTitle}"`,
           'Cerrar',
           { duration: 3000, panelClass: ['success-snackbar'] }
         );
@@ -305,10 +284,10 @@ enterCourse(course: EnrolledCourse) {
         this.courseToLeave = null;
       },
       error: (err) => {
-        console.error('❌ Error al salir del curso:', err);
+        console.error('❌ Error al salir:', err);
 
         this.snackBar.open(
-          '❌ Error al abandonar el curso. Intenta nuevamente.',
+          '❌ Error al abandonar el curso',
           'Cerrar',
           { duration: 3000, panelClass: ['error-snackbar'] }
         );
@@ -318,54 +297,31 @@ enterCourse(course: EnrolledCourse) {
     });
   }
 
-  /**
-   * Cancelar el abandono del curso
-   */
   cancelLeaveCourse() {
     this.showLeaveConfirmModal = false;
     this.courseToLeave = null;
   }
 
-  /**
-   * Muestra el modal de confirmación para cerrar sesión
-   */
   logout() {
     this.showLogoutConfirmModal = true;
   }
 
-  /**
-   * Confirma y ejecuta el cierre de sesión
-   */
   confirmLogout() {
     this.showLogoutConfirmModal = false;
-    
     this.authService.logout();
-    this.snackBar.open(
-      '👋 Sesión cerrada correctamente',
-      'Cerrar',
-      { duration: 2000 }
-    );
+    this.snackBar.open('👋 Sesión cerrada', 'Cerrar', { duration: 2000 });
     this.router.navigate(['/login']);
   }
 
-  /**
-   * Cancela el cierre de sesión
-   */
   cancelLogout() {
     this.showLogoutConfirmModal = false;
   }
 
-  /**
-   * Navega a la vista de perfil
-   */
   goToProfile() {
     this.router.navigate(['/profile']);
   }
 
-  /**
- * Mensaje dinámico para el modal de abandonar curso
- */
-get leaveConfirmMessage(): string {
-  return `¿Estás seguro de que deseas abandonar el curso "${this.courseToLeave?.title || ''}"? Perderás todo tu progreso.`;
-}
+  get leaveConfirmMessage(): string {
+    return `¿Abandonar "${this.courseToLeave?.title || ''}"? Perderás todo tu progreso.`;
+  }
 }
