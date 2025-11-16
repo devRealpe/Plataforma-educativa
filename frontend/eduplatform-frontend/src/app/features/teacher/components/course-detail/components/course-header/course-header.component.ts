@@ -589,4 +589,16 @@ export class CourseHeaderComponent implements OnInit {
     // Recargar datos del curso para reflejar cambios
     this.loadCourseData();
   }
+
+  /**
+ * 🔄 Maneja la actualización de un ejercicio cuando se califica
+ * @param exerciseId ID del ejercicio actualizado
+ */
+onExerciseUpdated(exerciseId: number) {
+  console.log('🔄 Ejercicio actualizado, recargando lista...', exerciseId);
+  
+  // Opción 1: Recarga completa (más simple)
+  this.loadExercises();
+
+}
 }

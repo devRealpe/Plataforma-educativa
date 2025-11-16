@@ -15,6 +15,7 @@ export class SubmissionsModalComponent implements OnInit {
   @Input() exerciseId!: number;
   @Input() exerciseTitle: string = '';
   @Output() closeModal = new EventEmitter<void>();
+  @Output() exerciseUpdated = new EventEmitter<number>();
 
   submissions: Submission[] = [];
   isLoading = true;
@@ -122,6 +123,7 @@ export class SubmissionsModalComponent implements OnInit {
           duration: 3000,
           panelClass: ['success-snackbar']
         });
+        this.exerciseUpdated.emit(this.exerciseId);
         
         this.cancelGrading();
       },
