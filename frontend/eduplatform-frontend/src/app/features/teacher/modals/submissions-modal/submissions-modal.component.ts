@@ -90,65 +90,62 @@ export class SubmissionsModalComponent implements OnInit {
     return !isNaN(grade) && grade >= 0 && grade <= 5.0;
   }
 
-  submitGrade() {
-    if (!this.gradingSubmission?.id || !this.isGradeValid()) {
-      this.snackBar.open('⚠️ La nota debe estar entre 0.0 y 5.0', 'Cerrar', { 
-        duration: 3000 
-      });
-      return;
-    }
-
-    // Convertir a número y redondear a 1 decimal
-    const gradeValue = Number(this.gradeForm.grade);
-    const roundedGrade = Math.round(gradeValue * 10) / 10;
-
-    console.log('📊 Enviando calificación:', {
-      original: this.gradeForm.grade,
-      converted: gradeValue,
-      rounded: roundedGrade
+submitGrade() {
+  if (!this.gradingSubmission?.id || !this.isGradeValid()) {
+    this.snackBar.open('⚠️ La nota debe estar entre 0.0 y 5.0', 'Cerrar', { 
+      duration: 3000 
     });
-
-    this.exerciseService.gradeSubmission(
-      this.gradingSubmission.id,
-      roundedGrade,
-      this.gradeForm.feedback
-    ).subscribe({
-      next: (updatedSubmission) => {
-        const index = this.submissions.findIndex(s => s.id === updatedSubmission.id);
-        if (index !== -1) {
-          this.submissions[index] = updatedSubmission;
-        }
-        
-        this.snackBar.open(`✅ Calificación guardada: ${roundedGrade}/5.0`, 'Cerrar', {
-          duration: 3000,
-          panelClass: ['success-snackbar']
-        });
-        this.exerciseUpdated.emit(this.exerciseId);
-        
-        this.cancelGrading();
-      },
-      error: (error) => {
-        console.error('❌ Error al calificar:', error);
-        console.error('Detalles del error:', {
-          message: error.message,
-          status: error.status,
-          error: error.error
-        });
-        
-        let errorMessage = 'Error al guardar calificación';
-        if (error.error?.message) {
-          errorMessage = error.error.message;
-        } else if (error.error?.error) {
-          errorMessage = error.error.error;
-        }
-        
-        this.snackBar.open(`❌ ${errorMessage}`, 'Cerrar', {
-          duration: 5000,
-          panelClass: ['error-snackbar']
-        });
-      }
-    });
+    return;
   }
+
+  const gradeValue = Number(this.gradeForm.grade);
+  const roundedGrade = Math.round(gradeValue * 10) / 10;
+
+  console.log('📊 Enviando calificación:', {
+    submissionId: this.gradingSubmission.id,
+    grade: roundedGrade,
+    feedback: this.gradeForm.feedback
+  });
+
+  this.exerciseService.gradeSubmission(
+    this.gradingSubmission.id,
+    roundedGrade,
+    this.gradeForm.feedback
+  ).subscribe({
+    next: (updatedSubmission) => {
+      console.log('✅ Calificación guardada, recargando entregas...');
+      
+      this.snackBar.open(`✅ Calificación guardada: ${roundedGrade}/5.0`, 'Cerrar', {
+        duration: 2000,
+        panelClass: ['success-snackbar']
+      });
+      
+      // 🆕 RECARGAR TODAS LAS ENTREGAS DESDE EL SERVIDOR
+      this.loadSubmissions();
+      
+      // Emitir evento al padre
+      this.exerciseUpdated.emit(this.exerciseId);
+      
+      // Cancelar modo edición
+      this.cancelGrading();
+    },
+    error: (error) => {
+      console.error('❌ Error al calificar:', error);
+      
+      let errorMessage = 'Error al guardar calificación';
+      if (error.error?.message) {
+        errorMessage = error.error.message;
+      } else if (error.error?.error) {
+        errorMessage = error.error.error;
+      }
+      
+      this.snackBar.open(`❌ ${errorMessage}`, 'Cerrar', {
+        duration: 5000,
+        panelClass: ['error-snackbar']
+      });
+    }
+  });
+}
 
   downloadSubmission(submission: Submission) {
     if (!submission.id) return;

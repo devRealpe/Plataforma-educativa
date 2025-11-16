@@ -247,6 +247,22 @@ export class CourseHeaderComponent implements OnInit {
   // ==========================================
   // 📝 GESTIÓN DE EJERCICIOS
   // ==========================================
+    /**
+   * 🔄 ACTUALIZACIÓN DE EJERCICIO
+   * Este método DEBE estar dentro de la clase
+   */
+  onExerciseUpdated(exerciseId: number) {
+    console.log('🔄 Ejercicio actualizado ID:', exerciseId);
+    console.log('📊 Recargando lista de ejercicios...');
+    
+    // Recargar la lista completa
+    this.loadExercises();
+    
+    // Mostrar notificación
+    this.snackBar.open('✅ Lista actualizada', '', {
+      duration: 1500,
+    });
+  }
 
   // 🆕 MÉTODO RENOMBRADO: onCreateExercise
   onCreateExercise() {
@@ -589,16 +605,4 @@ export class CourseHeaderComponent implements OnInit {
     // Recargar datos del curso para reflejar cambios
     this.loadCourseData();
   }
-
-  /**
- * 🔄 Maneja la actualización de un ejercicio cuando se califica
- * @param exerciseId ID del ejercicio actualizado
- */
-onExerciseUpdated(exerciseId: number) {
-  console.log('🔄 Ejercicio actualizado, recargando lista...', exerciseId);
-  
-  // Opción 1: Recarga completa (más simple)
-  this.loadExercises();
-
-}
 }
