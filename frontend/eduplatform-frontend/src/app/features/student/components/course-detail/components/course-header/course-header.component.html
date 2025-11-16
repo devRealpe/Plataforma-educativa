@@ -1,10 +1,14 @@
-<!-- Wrapper Principal -->
+<!-- ==========================================
+     📄 course-header.component.html (STUDENT)
+     Header con Reducción al Scroll
+     ========================================== -->
+
 <div class="course-detail-wrapper">
   <!-- Background Gradient -->
   <div class="background-gradient"></div>
 
-  <!-- Header Sticky -->
-  <header class="header">
+  <!-- ✅ Header Sticky con clase dinámica 'scrolled' -->
+  <header class="header" [class.scrolled]="isScrolled">
     <div class="header-content">
       <!-- Back Navigation -->
       <button
@@ -26,14 +30,18 @@
         <span>Volver al Dashboard</span>
       </button>
 
-      <!-- Course Header Info -->
+      <!-- ✅ Course Header Info con clase 'compact' cuando scrolled -->
       <div class="course-header" *ngIf="course">
         <div class="course-header-main">
           <div class="course-title-section">
             <h1 class="course-title">{{ course.title }}</h1>
-            <p class="course-description">{{ course.description }}</p>
+            <!-- ✅ Descripción oculta al hacer scroll -->
+            <p class="course-description" *ngIf="!isScrolled">
+              {{ course.description }}
+            </p>
           </div>
 
+          <!-- ✅ Meta Badges en línea cuando scrolled -->
           <div class="course-meta-badges">
             <div class="meta-badge level">
               <svg
@@ -68,6 +76,7 @@
         </div>
       </div>
 
+      <!-- ✅ WhatsApp Button -->
       <app-whatsapp-button
         [courseId]="courseId"
         *ngIf="course"
@@ -159,7 +168,7 @@
   </header>
 
   <!-- ============================================ -->
-  <!-- 🆕 CONTENIDO DINÁMICO SEGÚN TAB ACTIVO -->
+  <!-- CONTENIDO DINÁMICO SEGÚN TAB ACTIVO -->
   <!-- ============================================ -->
   <main class="main-content">
     <!-- Tab: Ejercicios -->
@@ -196,13 +205,12 @@
 </div>
 
 <!-- ============================================ -->
-<!-- 🆕 MODALES -->
+<!-- MODALES (sin cambios) -->
 <!-- ============================================ -->
 
 <!-- Modal: Subir/Editar Entrega -->
 <div *ngIf="showUploadModal" class="modal-overlay" (click)="closeUploadModal()">
   <div class="modal-container" (click)="$event.stopPropagation()">
-    <!-- Header -->
     <div class="modal-header">
       <h3>{{ isEditMode ? "✏️ Editar Entrega" : "📤 Subir Entrega" }}</h3>
       <button class="close-btn" (click)="closeUploadModal()">
@@ -220,7 +228,6 @@
       </button>
     </div>
 
-    <!-- Content -->
     <div class="modal-content">
       <p class="modal-description">
         <strong>Ejercicio:</strong> {{ selectedExercise?.title }}<br />
@@ -232,7 +239,6 @@
         </span>
       </p>
 
-      <!-- File Upload -->
       <div class="file-upload-area" *ngIf="!selectedFile">
         <input
           type="file"
@@ -259,7 +265,6 @@
         </label>
       </div>
 
-      <!-- Selected File -->
       <div *ngIf="selectedFile" class="file-selected">
         <div class="file-info">
           <svg
@@ -293,7 +298,6 @@
       </div>
     </div>
 
-    <!-- Footer -->
     <div class="modal-footer">
       <button class="btn-cancel" (click)="closeUploadModal()">Cancelar</button>
       <button

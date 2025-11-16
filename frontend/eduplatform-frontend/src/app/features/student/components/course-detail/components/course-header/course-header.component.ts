@@ -117,7 +117,6 @@ export class CourseHeaderComponentStudent implements OnInit {
   // ==========================================
   // 📊 CARGA DE DATOS
   // ==========================================
-  
 
   loadCourseData() {
     this.isLoading = true;
