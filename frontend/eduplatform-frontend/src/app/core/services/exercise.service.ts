@@ -114,37 +114,49 @@ export class ExerciseService {
     return this.http.get<Exercise>(`${this.apiUrl}/${id}`);
   }
 
-  /**
-   * Actualizar ejercicio (Profesor)
-   * ✅ Ahora incluye externalUrl
-   */
-  updateExercise(id: number, exercise: Exercise, file?: File): Observable<Exercise> {
-    const formData = new FormData();
-    formData.append('title', exercise.title);
-    formData.append('description', exercise.description);
-    formData.append('difficulty', exercise.difficulty);
+/**
+ * Actualizar ejercicio (Profesor)
+ * ✅ Ahora incluye removeFile para eliminar archivos
+ */
+updateExercise(
+  id: number, 
+  exercise: Exercise, 
+  file?: File, 
+  removeFile: boolean = false // ✅ NUEVO parámetro
+): Observable<Exercise> {
+  const formData = new FormData();
+  formData.append('title', exercise.title);
+  formData.append('description', exercise.description);
+  formData.append('difficulty', exercise.difficulty);
 
-    if (exercise.deadline) {
-      formData.append('deadline', exercise.deadline);
-    }
-
-    // ✅ NUEVO: Agregar URL externa (o vacío para eliminarla)
-    if (exercise.externalUrl !== undefined) {
-      formData.append('externalUrl', exercise.externalUrl.trim());
-    }
-
-    if (file) {
-      formData.append('file', file, file.name);
-    }
-
-    console.log('✏️ Actualizando ejercicio con:', {
-      title: exercise.title,
-      hasFile: !!file,
-      hasUrl: !!exercise.externalUrl
-    });
-
-    return this.http.put<Exercise>(`${this.apiUrl}/${id}`, formData);
+  if (exercise.deadline) {
+    formData.append('deadline', exercise.deadline);
   }
+
+  // ✅ NUEVO: Indicar si se debe eliminar el archivo
+  if (removeFile) {
+    formData.append('removeFile', 'true');
+    console.log('🗑️ Solicitando eliminación de archivo al backend');
+  }
+
+  // Agregar URL externa (o vacío para eliminarla)
+  if (exercise.externalUrl !== undefined) {
+    formData.append('externalUrl', exercise.externalUrl.trim());
+  }
+
+  if (file) {
+    formData.append('file', file, file.name);
+  }
+
+  console.log('✏️ Actualizando ejercicio con:', {
+    title: exercise.title,
+    hasFile: !!file,
+    hasUrl: !!exercise.externalUrl,
+    removeFile: removeFile
+  });
+
+  return this.http.put<Exercise>(`${this.apiUrl}/${id}`, formData);
+}
 
   /**
    * Eliminar ejercicio (Profesor)

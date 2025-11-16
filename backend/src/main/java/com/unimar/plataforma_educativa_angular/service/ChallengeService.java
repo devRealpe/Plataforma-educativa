@@ -156,7 +156,7 @@ public class ChallengeService {
 
     @Transactional
     public Challenge updateChallenge(Long id, Challenge challengeData, String teacherEmail,
-            MultipartFile file, String externalUrl) {
+            MultipartFile file, String externalUrl, Boolean removeFile) { // ✅ NUEVO
         Challenge challenge = challengeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Reto no encontrado"));
 
@@ -167,7 +167,6 @@ public class ChallengeService {
             throw new RuntimeException("No tienes permiso para editar este reto");
         }
 
-        // Validar bonificación
         if (challengeData.getMaxBonusPoints() != null) {
             if (challengeData.getMaxBonusPoints() < 1 || challengeData.getMaxBonusPoints() > 10) {
                 throw new RuntimeException("La bonificación debe estar entre 1 y 10 XP");
@@ -184,20 +183,25 @@ public class ChallengeService {
             challenge.setActive(challengeData.getActive());
         }
 
+        // ✅ NUEVO: Eliminar archivo si se solicita
+        if (removeFile != null && removeFile) {
+            System.out.println("🗑️ Eliminando archivo adjunto del reto");
+            challenge.setFileData(null);
+            challenge.setFileName(null);
+            challenge.setFileType(null);
+        }
+
         if (externalUrl != null) {
             if (externalUrl.trim().isEmpty()) {
-                // Si se envía vacío, eliminar la URL
                 challenge.setExternalUrl(null);
                 System.out.println("🗑️ URL externa eliminada");
             } else {
-                // Si se envía una URL, validarla y guardarla
                 validateUrl(externalUrl);
                 challenge.setExternalUrl(externalUrl.trim());
                 System.out.println("✅ URL externa actualizada: " + externalUrl.trim());
             }
         }
 
-        // Actualizar archivo si se proporciona
         if (file != null && !file.isEmpty()) {
             try {
                 challenge.setFileData(file.getBytes());

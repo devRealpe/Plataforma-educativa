@@ -105,7 +105,8 @@ public class ExerciseController {
             @RequestParam("difficulty") String difficulty,
             @RequestParam(value = "deadline", required = false) String deadline,
             @RequestParam(value = "file", required = false) MultipartFile file,
-            @RequestParam(value = "externalUrl", required = false) String externalUrl, // ✅ NUEVO
+            @RequestParam(value = "externalUrl", required = false) String externalUrl,
+            @RequestParam(value = "removeFile", required = false) Boolean removeFile, // ✅ NUEVO
             Authentication auth) {
         try {
             System.out.println("\n========================================");
@@ -115,6 +116,8 @@ public class ExerciseController {
             System.out.println("   • Título: " + title);
             System.out.println("   • Archivo: " + (file != null ? file.getOriginalFilename() : "No"));
             System.out.println("   • URL externa: " + (externalUrl != null ? externalUrl : "No especificada"));
+            System.out.println("   • Eliminar archivo: " + (removeFile != null && removeFile ? "SÍ" : "NO")); // ✅ NUEVO
+                                                                                                              // log
             System.out.println("========================================\n");
 
             Exercise exercise = new Exercise();
@@ -131,7 +134,8 @@ public class ExerciseController {
                     exercise,
                     auth.getName(),
                     file,
-                    externalUrl // ✅ NUEVO parámetro
+                    externalUrl,
+                    removeFile // ✅ NUEVO parámetro
             );
 
             return ResponseEntity.ok(new ExerciseDTO(updated));

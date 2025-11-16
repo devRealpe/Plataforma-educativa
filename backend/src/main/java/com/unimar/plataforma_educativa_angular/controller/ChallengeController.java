@@ -111,7 +111,8 @@ public class ChallengeController {
             @RequestParam(value = "deadline", required = false) String deadline,
             @RequestParam(value = "active", required = false) Boolean active,
             @RequestParam(value = "file", required = false) MultipartFile file,
-            @RequestParam(value = "externalUrl", required = false) String externalUrl, // ✅ NUEVO
+            @RequestParam(value = "externalUrl", required = false) String externalUrl,
+            @RequestParam(value = "removeFile", required = false) Boolean removeFile, // ✅ NUEVO
             Authentication auth) {
         try {
             System.out.println("\n========================================");
@@ -121,6 +122,7 @@ public class ChallengeController {
             System.out.println("   • Título: " + title);
             System.out.println("   • Archivo: " + (file != null ? file.getOriginalFilename() : "No"));
             System.out.println("   • URL externa: " + (externalUrl != null ? externalUrl : "No especificada"));
+            System.out.println("   • Eliminar archivo: " + (removeFile != null && removeFile ? "SÍ" : "NO")); // ✅ NUEVO
             System.out.println("========================================\n");
 
             Challenge challenge = new Challenge();
@@ -139,7 +141,9 @@ public class ChallengeController {
                     challenge,
                     auth.getName(),
                     file,
-                    externalUrl);
+                    externalUrl,
+                    removeFile // ✅ NUEVO
+            );
 
             return ResponseEntity.ok(new ChallengeDTO(updated));
         } catch (RuntimeException e) {

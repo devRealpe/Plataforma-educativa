@@ -1,30 +1,39 @@
 // ==========================================
-// 🎮 STUDENT COURSE HEADER - VARIABLES
+// 🎮 REDISEÑO APLICACIÓN EDUCATIVA - VARIABLES
 // ==========================================
 
-$primary-blue: #2563eb;
-$primary-blue-dark: #1d4ed8;
-$primary-blue-light: #3b82f6;
-$neon-cyan: #06b6d4;
-$neon-purple: #8b5cf6;
-$neon-pink: #ec4899;
-$neon-yellow: #fbbf24;
-$neon-green: #10b981;
-$success-green: #10b981;
-$warning-orange: #f59e0b;
-$danger-red: #ef4444;
+// PALETA PRINCIPAL
+$tango-orange: #F26B21;
+$source-blue: #68B8BE;
+$neutral-gray: #F0F0F0;
+$dark-gray: #4C4C4C;
+$pure-white: #FFFFFF;
 
-$gray-50: #f9fafb;
-$gray-100: #f3f4f6;
-$gray-200: #e5e7eb;
-$gray-300: #d1d5db;
-$gray-400: #9ca3af;
-$gray-500: #6b7280;
-$gray-600: #4b5563;
+// COLORES COMPLEMENTARIOS
+$tango-orange-dark: #D45A1A;
+$tango-orange-light: #F58A4D;
+$source-blue-dark: #5AA3A8;
+$source-blue-light: #87D0D5;
+
+// ESTADOS Y ALERTAS
+$success-green: #10B981;
+$warning-orange: #F59E0B;
+$danger-red: #EF4444;
+$info-blue: #3B82F6;
+
+// ESCALA DE GRISES
+$gray-50: #F9FAFB;
+$gray-100: #F3F4F6;
+$gray-200: #E5E7EB;
+$gray-300: #D1D5DB;
+$gray-400: #9CA3AF;
+$gray-500: #6B7280;
+$gray-600: #4B5563;
 $gray-700: #374151;
-$gray-800: #1f2937;
+$gray-800: #1F2937;
 $gray-900: #111827;
 
+// ESPACIADO
 $spacing-xs: 0.25rem;
 $spacing-sm: 0.5rem;
 $spacing-md: 1rem;
@@ -32,22 +41,29 @@ $spacing-lg: 1.5rem;
 $spacing-xl: 2rem;
 $spacing-2xl: 3rem;
 
-$radius-sm: 8px;
-$radius-md: 12px;
-$radius-lg: 16px;
-$radius-xl: 20px;
+// BORDES
+$radius-sm: 4px;
+$radius-md: 8px;
+$radius-lg: 12px;
+$radius-xl: 16px;
 
+// SOMBRAS
 $shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
 $shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
 $shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
 $shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
 
+// TRANSICIONES
 $transition-fast: 0.15s ease;
 $transition-base: 0.2s ease;
 $transition-slow: 0.3s ease;
 
+// TIPOGRAFÍA
+$font-heading: 'Poppins', 'Montserrat', sans-serif;
+$font-body: 'Roboto', 'Nunito', sans-serif;
+
 // ==========================================
-// 🌐 WRAPPER PRINCIPAL
+// 🌐 WRAPPER PRINCIPAL - REDISEÑADO
 // ==========================================
 
 :host {
@@ -56,6 +72,7 @@ $transition-slow: 0.3s ease;
 
 .course-detail-wrapper {
   min-height: 100vh;
+  background-color: $neutral-gray;
   position: relative;
 }
 
@@ -67,9 +84,9 @@ $transition-slow: 0.3s ease;
   bottom: 0;
   background: linear-gradient(
     135deg,
-    oklch(0.96 0.04 260) 0%,
-    oklch(0.98 0.02 180) 50%,
-    oklch(0.94 0.06 300) 100%
+    $neutral-gray 0%,
+    $pure-white 50%,
+    $gray-100 100%
   );
   z-index: -2;
 
@@ -81,8 +98,8 @@ $transition-slow: 0.3s ease;
     right: 0;
     bottom: 0;
     background: 
-      radial-gradient(circle at 20% 30%, rgba(37, 99, 235, 0.08) 0%, transparent 50%),
-      radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.08) 0%, transparent 50%);
+      radial-gradient(circle at 20% 30%, rgba($tango-orange, 0.05) 0%, transparent 50%),
+      radial-gradient(circle at 80% 70%, rgba($source-blue, 0.05) 0%, transparent 50%);
     pointer-events: none;
     z-index: -1;
   }
@@ -101,15 +118,13 @@ $transition-slow: 0.3s ease;
 }
 
 // ==========================================
-// 🎯 HEADER
+// 🎯 HEADER - REDISEÑADO
 // ==========================================
 
 .header {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(12px);
-  border-bottom: 2px solid transparent;
-  border-image: linear-gradient(90deg, $primary-blue, $neon-purple) 1;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  background: $pure-white;
+  border-bottom: 2px solid $gray-200;
+  box-shadow: $shadow-sm;
   position: sticky;
   top: 0;
   z-index: 100;
@@ -125,7 +140,7 @@ $transition-slow: 0.3s ease;
 }
 
 // ==========================================
-// 🔙 BACK BUTTON
+// 🔙 BACK BUTTON - REDISEÑADO
 // ==========================================
 
 .back-btn {
@@ -133,10 +148,11 @@ $transition-slow: 0.3s ease;
   align-items: center;
   gap: $spacing-sm;
   padding: $spacing-md $spacing-lg;
-  background: linear-gradient(135deg, $gray-100, $gray-50);
-  color: $gray-700;
-  border: 2px solid $gray-200;
+  background: $pure-white;
+  color: $dark-gray;
+  border: 2px solid $gray-300;
   border-radius: $radius-md;
+  font-family: $font-body;
   font-weight: 600;
   font-size: 0.9rem;
   cursor: pointer;
@@ -147,6 +163,7 @@ $transition-slow: 0.3s ease;
   svg {
     transition: transform $transition-base;
     flex-shrink: 0;
+    color: $dark-gray;
   }
 
   span {
@@ -154,23 +171,29 @@ $transition-slow: 0.3s ease;
   }
 
   &:hover {
-    background: linear-gradient(135deg, $gray-200, $gray-100);
-    border-color: $gray-300;
-    transform: translateX(-4px);
+    background: $gray-50;
+    border-color: $tango-orange;
+    transform: translateX(-2px);
     box-shadow: $shadow-md;
 
     svg {
-      transform: translateX(-4px);
+      transform: translateX(-2px);
+      color: $tango-orange;
     }
   }
 
   &:active {
-    transform: translateX(-4px) scale(0.98);
+    transform: translateX(-2px) scale(0.98);
+  }
+
+  &:focus-visible {
+    outline: 2px solid $source-blue;
+    outline-offset: 2px;
   }
 }
 
 // ==========================================
-// 📚 COURSE HEADER
+// 📚 COURSE HEADER - REDISEÑADO
 // ==========================================
 
 .course-header {
@@ -192,19 +215,18 @@ $transition-slow: 0.3s ease;
 }
 
 .course-title {
-  font-size: 2.25rem;
-  font-weight: 800;
-  background: linear-gradient(135deg, $primary-blue, $neon-purple);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-family: $font-heading;
+  font-size: 2rem;
+  font-weight: 700;
+  color: $dark-gray;
   margin: 0 0 $spacing-md 0;
   line-height: 1.2;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
   animation: fadeInUp 0.6s ease;
 }
 
 .course-description {
+  font-family: $font-body;
   font-size: 1.05rem;
   color: $gray-600;
   line-height: 1.6;
@@ -223,17 +245,18 @@ $transition-slow: 0.3s ease;
   align-items: center;
   gap: $spacing-sm;
   padding: $spacing-md $spacing-lg;
-  background: linear-gradient(135deg, rgba(37, 99, 235, 0.1), rgba(139, 92, 246, 0.1));
-  border: 2px solid rgba(37, 99, 235, 0.2);
+  background: $pure-white;
+  border: 2px solid $gray-200;
   border-radius: $radius-md;
+  font-family: $font-body;
   font-size: 0.9rem;
   font-weight: 600;
-  color: $gray-700;
+  color: $dark-gray;
   box-shadow: $shadow-sm;
   transition: all $transition-base;
 
   svg {
-    color: $primary-blue;
+    color: $source-blue;
     transition: all $transition-base;
     flex-shrink: 0;
   }
@@ -241,7 +264,7 @@ $transition-slow: 0.3s ease;
   &:hover {
     transform: translateY(-2px);
     box-shadow: $shadow-md;
-    border-color: $primary-blue;
+    border-color: $source-blue;
 
     svg {
       transform: scale(1.1);
@@ -249,37 +272,38 @@ $transition-slow: 0.3s ease;
   }
 
   &.level {
-    background: linear-gradient(135deg, rgba(6, 182, 212, 0.1), rgba(16, 185, 129, 0.1));
-    border-color: rgba(6, 182, 212, 0.2);
-
+    border-color: rgba($tango-orange, 0.3);
+    
     svg {
-      color: $neon-cyan;
+      color: $tango-orange;
+    }
+
+    &:hover {
+      border-color: $tango-orange;
     }
   }
 
   &.teacher {
-    background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(236, 72, 153, 0.1));
-    border-color: rgba(139, 92, 246, 0.2);
+    border-color: rgba($source-blue, 0.3);
 
-    svg {
-      color: $neon-purple;
+    &:hover {
+      border-color: $source-blue;
     }
   }
 }
 
 // ==========================================
-// 📑 TAB NAVIGATION
+// 📑 TAB NAVIGATION - REDISEÑADO
 // ==========================================
 
 .tabs-navigation {
   display: flex;
   gap: $spacing-sm;
-  background: rgba(255, 255, 255, 0.5);
-  backdrop-filter: blur(8px);
+  background: $pure-white;
   padding: $spacing-sm;
   border-radius: $radius-lg;
   margin-top: $spacing-lg;
-  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: $shadow-sm;
   overflow-x: auto;
   scrollbar-width: thin;
 
@@ -306,6 +330,7 @@ $transition-slow: 0.3s ease;
   color: $gray-600;
   border: 2px solid transparent;
   border-radius: $radius-md;
+  font-family: $font-body;
   font-weight: 600;
   font-size: 0.95rem;
   cursor: pointer;
@@ -316,6 +341,7 @@ $transition-slow: 0.3s ease;
   svg {
     transition: all $transition-base;
     flex-shrink: 0;
+    color: $gray-500;
   }
 
   .tab-label {
@@ -338,45 +364,47 @@ $transition-slow: 0.3s ease;
   }
 
   &:hover {
-    color: $primary-blue;
-    background: rgba(37, 99, 235, 0.08);
+    color: $tango-orange;
+    background: rgba($tango-orange, 0.05);
 
     svg {
-      transform: translateY(-2px);
+      color: $tango-orange;
+      transform: translateY(-1px);
     }
 
     .tab-count {
-      background: $primary-blue;
-      color: white;
-      transform: scale(1.1);
+      background: $tango-orange;
+      color: $pure-white;
+      transform: scale(1.05);
     }
   }
 
   &.active {
-    color: white;
-    background: linear-gradient(135deg, $primary-blue, $neon-purple);
+    color: $pure-white;
+    background: $tango-orange;
     border-color: transparent;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 4px 12px rgba($tango-orange, 0.3);
 
     svg {
+      color: $pure-white;
       filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
     }
 
     .tab-count {
-      background: rgba(255, 255, 255, 0.25);
-      color: white;
-      backdrop-filter: blur(8px);
+      background: rgba($pure-white, 0.25);
+      color: $pure-white;
     }
 
     &:hover {
+      background: $tango-orange-dark;
       transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+      box-shadow: 0 6px 16px rgba($tango-orange, 0.4);
     }
   }
 }
 
 // ==========================================
-// 🎭 MODAL
+// 🎭 MODAL - REDISEÑADO
 // ==========================================
 
 .modal-overlay {
@@ -385,7 +413,7 @@ $transition-slow: 0.3s ease;
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.6);
+  background: rgba($dark-gray, 0.6);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;
@@ -401,11 +429,12 @@ $transition-slow: 0.3s ease;
 }
 
 .modal-container {
-  background: white;
-  border-radius: 16px;
+  background: $pure-white;
+  border-radius: $radius-xl;
   width: 100%;
   max-width: 540px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  box-shadow: $shadow-xl;
+  border: 1px solid $gray-200;
   animation: slideUp 0.3s ease-out;
 }
 
@@ -426,12 +455,13 @@ $transition-slow: 0.3s ease;
   align-items: center;
   padding: 1.75rem 2rem;
   border-bottom: 1px solid $gray-200;
-  background: linear-gradient(to bottom, white 0%, $gray-50 100%);
+  background: $pure-white;
 
   h3 {
+    font-family: $font-heading;
     font-size: 1.5rem;
     font-weight: 700;
-    color: $gray-900;
+    color: $dark-gray;
     margin: 0;
   }
 }
@@ -440,17 +470,22 @@ $transition-slow: 0.3s ease;
   background: $gray-100;
   border: none;
   padding: 0.5rem;
-  border-radius: 6px;
+  border-radius: $radius-sm;
   cursor: pointer;
   color: $gray-600;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: all $transition-base;
 
   &:hover {
     background: $gray-200;
-    color: $gray-900;
+    color: $dark-gray;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $source-blue;
+    outline-offset: 2px;
   }
 }
 
@@ -459,13 +494,14 @@ $transition-slow: 0.3s ease;
 }
 
 .modal-description {
+  font-family: $font-body;
   color: $gray-700;
   line-height: 1.6;
   margin: 0 0 1.75rem 0;
   font-size: 0.9375rem;
 
   strong {
-    color: $gray-900;
+    color: $dark-gray;
     font-weight: 600;
   }
 
@@ -473,10 +509,10 @@ $transition-slow: 0.3s ease;
     display: block;
     margin-top: 0.75rem;
     padding: 0.75rem;
-    background: #fef3c7;
+    background: rgba($warning-orange, 0.1);
     border-left: 4px solid $warning-orange;
-    border-radius: 6px;
-    color: #92400e;
+    border-radius: $radius-sm;
+    color: darken($warning-orange, 30%);
     font-size: 0.875rem;
   }
 }
@@ -496,29 +532,31 @@ $transition-slow: 0.3s ease;
   justify-content: center;
   padding: 3rem 2rem;
   border: 2px dashed $gray-300;
-  border-radius: 12px;
+  border-radius: $radius-lg;
   background: $gray-50;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all $transition-base;
 
   &:hover {
-    border-color: $primary-blue;
-    background: #eff6ff;
+    border-color: $tango-orange;
+    background: rgba($tango-orange, 0.02);
   }
 
   svg {
-    color: $primary-blue;
+    color: $tango-orange;
     margin-bottom: 1rem;
   }
 
   span:first-of-type {
+    font-family: $font-body;
     font-weight: 600;
-    color: $gray-700;
+    color: $dark-gray;
     margin-bottom: 0.5rem;
     font-size: 1rem;
   }
 
   .file-hint {
+    font-family: $font-body;
     font-size: 0.875rem;
     color: $gray-600;
   }
@@ -529,39 +567,44 @@ $transition-slow: 0.3s ease;
   align-items: center;
   justify-content: space-between;
   padding: 1.25rem;
-  background: #eff6ff;
-  border: 2px solid $primary-blue;
-  border-radius: 10px;
+  background: rgba($tango-orange, 0.05);
+  border: 2px solid $tango-orange;
+  border-radius: $radius-md;
 
   .file-info {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    color: $gray-700;
+    color: $dark-gray;
     font-weight: 500;
 
     svg {
-      color: $primary-blue;
+      color: $tango-orange;
       flex-shrink: 0;
     }
   }
 }
 
 .remove-file-btn {
-  background: rgba(220, 38, 38, 0.1);
+  background: rgba($danger-red, 0.1);
   border: none;
   padding: 0.5rem;
-  border-radius: 6px;
+  border-radius: $radius-sm;
   cursor: pointer;
   color: $danger-red;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s ease;
+  transition: all $transition-base;
 
   &:hover {
     background: $danger-red;
-    color: white;
+    color: $pure-white;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $danger-red;
+    outline-offset: 2px;
   }
 }
 
@@ -571,48 +614,63 @@ $transition-slow: 0.3s ease;
   padding: 1.5rem 2rem;
   border-top: 1px solid $gray-200;
   background: $gray-50;
+  border-radius: 0 0 $radius-xl $radius-xl;
 }
 
 .btn-cancel, .btn-submit {
   flex: 1;
   padding: 0.875rem 1.5rem;
   border: none;
-  border-radius: 8px;
+  border-radius: $radius-md;
+  font-family: $font-body;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all $transition-base;
   font-size: 0.9375rem;
 }
 
 .btn-cancel {
-  background: white;
+  background: $pure-white;
   color: $gray-700;
-  border: 2px solid $gray-200;
+  border: 2px solid $gray-300;
 
   &:hover {
     background: $gray-50;
-    border-color: $gray-300;
+    border-color: $gray-400;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $source-blue;
+    outline-offset: 2px;
   }
 }
 
 .btn-submit {
-  background: $primary-blue;
-  color: white;
+  background: $tango-orange;
+  color: $pure-white;
+  border: 2px solid $tango-orange;
 
   &:hover:not(:disabled) {
-    background: #1d4ed8;
+    background: $tango-orange-dark;
+    border-color: $tango-orange-dark;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    box-shadow: 0 4px 12px rgba($tango-orange, 0.3);
   }
 
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+    transform: none !important;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $source-blue;
+    outline-offset: 2px;
   }
 }
 
 // ==========================================
-// 🎭 ANIMATIONS
+// 🎭 ANIMACIONES
 // ==========================================
 
 @keyframes fadeInUp {
@@ -666,6 +724,16 @@ $transition-slow: 0.3s ease;
       margin-left: 0;
     }
   }
+
+  .modal-container {
+    margin: 1rem;
+  }
+
+  .modal-header,
+  .modal-content,
+  .modal-footer {
+    padding: 1.25rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -683,14 +751,18 @@ $transition-slow: 0.3s ease;
       display: none;
     }
   }
+
+  .modal-footer {
+    flex-direction: column;
+  }
 }
 
 // ==========================================
-// 🌟 ACCESSIBILITY
+// 🌟 ACCESIBILIDAD
 // ==========================================
 
 button:focus-visible {
-  outline: 3px solid $primary-blue;
+  outline: 2px solid $source-blue;
   outline-offset: 2px;
   border-radius: $radius-sm;
 }
@@ -702,5 +774,98 @@ button:focus-visible {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+// ==========================================
+// 🎨 ESTILOS ADICIONALES PARA COMPONENTES
+// ==========================================
+
+// Mensajes motivacionales
+.motivational-message {
+  background: $pure-white;
+  border: 2px solid $tango-orange;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin: $spacing-lg 0;
+  box-shadow: $shadow-md;
+  
+  &.success {
+    border-color: $success-green;
+    
+    .message-icon {
+      color: $success-green;
+    }
+  }
+  
+  &.error {
+    border-color: $danger-red;
+    
+    .message-icon {
+      color: $danger-red;
+    }
+  }
+  
+  &.info {
+    border-color: $source-blue;
+    
+    .message-icon {
+      color: $source-blue;
+    }
+  }
+}
+
+// Cards de ejercicios y retos
+.exercise-card,
+.challenge-card {
+  background: $pure-white;
+  border: 1px solid $gray-200;
+  border-radius: $radius-lg;
+  padding: $spacing-lg;
+  margin-bottom: $spacing-md;
+  box-shadow: $shadow-sm;
+  transition: all $transition-base;
+  
+  &:hover {
+    border-color: $tango-orange;
+    box-shadow: $shadow-md;
+    transform: translateY(-2px);
+  }
+  
+  .card-header {
+    display: flex;
+    justify-content: between;
+    align-items: flex-start;
+    margin-bottom: $spacing-md;
+    
+    h4 {
+      font-family: $font-heading;
+      color: $dark-gray;
+      margin: 0;
+      flex: 1;
+    }
+  }
+}
+
+// Estados de progreso
+.progress-indicator {
+  background: $gray-200;
+  border-radius: $radius-xl;
+  height: 8px;
+  overflow: hidden;
+  
+  .progress-bar {
+    height: 100%;
+    background: $tango-orange;
+    border-radius: $radius-xl;
+    transition: width $transition-slow;
+    
+    &.completed {
+      background: $success-green;
+    }
+    
+    &.in-progress {
+      background: $source-blue;
+    }
   }
 }

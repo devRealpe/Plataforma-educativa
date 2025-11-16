@@ -138,7 +138,7 @@ public class ExerciseService {
 
     @Transactional
     public Exercise updateExercise(Long id, Exercise exerciseData, String teacherEmail,
-            MultipartFile file, String externalUrl) {
+            MultipartFile file, String externalUrl, Boolean removeFile) { // ✅ NUEVO parámetro
         Exercise exercise = exerciseRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Ejercicio no encontrado"));
 
@@ -153,20 +153,27 @@ public class ExerciseService {
         exercise.setDescription(exerciseData.getDescription());
         exercise.setDifficulty(exerciseData.getDifficulty());
         exercise.setDeadline(exerciseData.getDeadline());
+
+        // ✅ NUEVO: Manejar eliminación explícita de archivo
+        if (removeFile != null && removeFile) {
+            System.out.println("🗑️ Eliminando archivo adjunto del ejercicio");
+            exercise.setFileData(null);
+            exercise.setFileName(null);
+            exercise.setFileType(null);
+        }
+
         if (externalUrl != null) {
             if (externalUrl.trim().isEmpty()) {
-                // Si se envía vacío, eliminar la URL
                 exercise.setExternalUrl(null);
                 System.out.println("🗑️ URL externa eliminada");
             } else {
-                // Si se envía una URL, validarla y guardarla
                 validateUrl(externalUrl);
                 exercise.setExternalUrl(externalUrl.trim());
                 System.out.println("✅ URL externa actualizada: " + externalUrl.trim());
             }
         }
 
-        // Actualizar archivo si se proporciona
+        // Actualizar archivo si se proporciona (esto reemplaza el anterior)
         if (file != null && !file.isEmpty()) {
             try {
                 exercise.setFileData(file.getBytes());

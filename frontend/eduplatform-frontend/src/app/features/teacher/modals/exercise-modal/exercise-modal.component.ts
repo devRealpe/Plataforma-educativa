@@ -19,6 +19,7 @@ export class ExerciseModalComponent implements OnInit {
 
   isSubmitting = false;
   selectedFile: File | null = null;
+  fileRemoved = false;
 
   exerciseForm: Exercise = {
     title: '',
@@ -63,10 +64,15 @@ export class ExerciseModalComponent implements OnInit {
     }
   }
 
-  removeFile() {
+
+    removeFile() {
     this.selectedFile = null;
-    if (this.editingExercise) {
+    
+    // ✅ NUEVO: Marcar que el archivo fue eliminado intencionalmente
+    if (this.editingExercise && this.editingExercise.fileName) {
+      this.fileRemoved = true;
       this.editingExercise.fileName = undefined;
+      console.log('🗑️ Archivo marcado para eliminación');
     }
   }
 
@@ -88,13 +94,12 @@ export class ExerciseModalComponent implements OnInit {
     return hasBasicInfo;
   }
 
-  onSubmit() {
+onSubmit() {
     if (!this.isFormValid() || this.isSubmitting) return;
 
     this.isSubmitting = true;
     this.exerciseForm.courseId = this.courseId;
 
-    // ✅ NUEVO: Limpiar URL si está vacía
     if (this.exerciseForm.externalUrl) {
       this.exerciseForm.externalUrl = this.exerciseForm.externalUrl.trim();
       if (!this.exerciseForm.externalUrl) {
@@ -102,22 +107,24 @@ export class ExerciseModalComponent implements OnInit {
       }
     }
 
-    console.log('📤 Enviando ejercicio:', {
+    console.log('📝 Enviando ejercicio:', {
       title: this.exerciseForm.title,
       hasFile: !!this.selectedFile,
       hasUrl: !!this.exerciseForm.externalUrl,
+      fileRemoved: this.fileRemoved, // ✅ Log del estado
       externalUrl: this.exerciseForm.externalUrl
     });
 
     const request$ = this.editingExercise?.id
       ? this.exerciseService.updateExercise(
-          this.editingExercise.id, 
-          this.exerciseForm, 
-          this.selectedFile || undefined
+          this.editingExercise.id,
+          this.exerciseForm,
+          this.selectedFile || undefined,
+          this.fileRemoved // ✅ NUEVO: Pasar bandera de eliminación
         )
       : this.exerciseService.createExercise(
-          this.exerciseForm, 
-          this.courseId, 
+          this.exerciseForm,
+          this.courseId,
           this.selectedFile || undefined
         );
 
@@ -128,13 +135,14 @@ export class ExerciseModalComponent implements OnInit {
         const action = this.editingExercise ? 'actualizado' : 'creado';
         let message = `✅ Ejercicio "${exercise.title}" ${action}`;
         
-        // ✅ NUEVO: Mensaje informativo según recursos
         if (exercise.hasFile && exercise.hasExternalUrl) {
           message += ' (con archivo y enlace)';
         } else if (exercise.hasFile) {
           message += ' (con archivo)';
         } else if (exercise.hasExternalUrl) {
           message += ' (con enlace externo)';
+        } else if (this.fileRemoved) {
+          message += ' (archivo eliminado)'; // ✅ Mensaje específico
         }
         
         this.snackBar.open(message, 'Cerrar', {
@@ -150,7 +158,6 @@ export class ExerciseModalComponent implements OnInit {
         
         let errorMessage = 'Error al guardar el ejercicio';
         
-        // ✅ NUEVO: Mensaje específico para error de URL
         if (error.error?.error?.includes('URL')) {
           errorMessage = '❌ URL inválida. Debe comenzar con http:// o https://';
         } else if (error.error?.error) {

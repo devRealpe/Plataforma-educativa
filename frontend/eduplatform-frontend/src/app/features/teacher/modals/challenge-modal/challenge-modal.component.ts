@@ -19,6 +19,7 @@ export class ChallengeModalComponent implements OnInit {
 
   isSubmitting = false;
   selectedFile: File | null = null;
+  fileRemoved = false;
 
   challengeForm: Challenge = {
     title: '',
@@ -52,6 +53,17 @@ export class ChallengeModalComponent implements OnInit {
     }
   }
 
+    removeFile() {
+    this.selectedFile = null;
+    
+    // ✅ Marcar archivo para eliminación
+    if (this.editingChallenge && this.editingChallenge.fileName) {
+      this.fileRemoved = true;
+      this.editingChallenge.fileName = undefined;
+      console.log('🗑️ Archivo del reto marcado para eliminación');
+    }
+  }
+
   onFileSelected(event: any) {
     const file = event.target.files[0];
     if (file) {
@@ -62,13 +74,6 @@ export class ChallengeModalComponent implements OnInit {
       }
       this.selectedFile = file;
       console.log('📁 Archivo seleccionado:', file.name);
-    }
-  }
-
-  removeFile() {
-    this.selectedFile = null;
-    if (this.editingChallenge) {
-      this.editingChallenge.fileName = undefined;
     }
   }
 
@@ -93,13 +98,12 @@ export class ChallengeModalComponent implements OnInit {
     return hasBasicInfo;
   }
 
-  onSubmit() {
+ onSubmit() {
     if (!this.isFormValid() || this.isSubmitting) return;
 
     this.isSubmitting = true;
     this.challengeForm.courseId = this.courseId;
 
-    // ✅ Limpiar URL si está vacía
     if (this.challengeForm.externalUrl) {
       this.challengeForm.externalUrl = this.challengeForm.externalUrl.trim();
       if (!this.challengeForm.externalUrl) {
@@ -111,18 +115,20 @@ export class ChallengeModalComponent implements OnInit {
       title: this.challengeForm.title,
       hasFile: !!this.selectedFile,
       hasUrl: !!this.challengeForm.externalUrl,
+      fileRemoved: this.fileRemoved, // ✅ Log
       externalUrl: this.challengeForm.externalUrl
     });
 
     const request$ = this.editingChallenge?.id
       ? this.challengeService.updateChallenge(
-          this.editingChallenge.id, 
-          this.challengeForm, 
-          this.selectedFile || undefined
+          this.editingChallenge.id,
+          this.challengeForm,
+          this.selectedFile || undefined,
+          this.fileRemoved // ✅ Pasar bandera
         )
       : this.challengeService.createChallenge(
-          this.challengeForm, 
-          this.courseId, 
+          this.challengeForm,
+          this.courseId,
           this.selectedFile || undefined
         );
 
@@ -133,13 +139,14 @@ export class ChallengeModalComponent implements OnInit {
         const action = this.editingChallenge ? 'actualizado' : 'publicado';
         let message = `✅ Reto "${challenge.title}" ${action}`;
         
-        // ✅ Mensaje informativo según recursos
         if (challenge.hasFile && challenge.hasExternalUrl) {
           message += ' (con archivo y enlace)';
         } else if (challenge.hasFile) {
           message += ' (con archivo)';
         } else if (challenge.hasExternalUrl) {
           message += ' (con enlace externo)';
+        } else if (this.fileRemoved) {
+          message += ' (archivo eliminado)';
         }
         
         this.snackBar.open(message, 'Cerrar', {
@@ -155,7 +162,6 @@ export class ChallengeModalComponent implements OnInit {
         
         let errorMessage = 'Error al guardar el reto';
         
-        // ✅ Mensaje específico para error de URL
         if (error.error?.error?.includes('URL')) {
           errorMessage = '❌ URL inválida. Debe comenzar con http:// o https://';
         } else if (error.error?.error) {

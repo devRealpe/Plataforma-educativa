@@ -124,38 +124,53 @@ export class ChallengeService {
    * Actualizar reto (Profesor)
    * ✅ Ahora incluye externalUrl
    */
-  updateChallenge(id: number, challenge: Challenge, file?: File): Observable<Challenge> {
-    const formData = new FormData();
-    formData.append('title', challenge.title);
-    formData.append('description', challenge.description);
-    formData.append('difficulty', challenge.difficulty);
-    formData.append('maxBonusPoints', challenge.maxBonusPoints.toString());
+  /**
+ * Actualizar reto (Profesor)
+ * ✅ Ahora incluye removeFile
+ */
+updateChallenge(
+  id: number, 
+  challenge: Challenge, 
+  file?: File,
+  removeFile: boolean = false // ✅ NUEVO
+): Observable<Challenge> {
+  const formData = new FormData();
+  formData.append('title', challenge.title);
+  formData.append('description', challenge.description);
+  formData.append('difficulty', challenge.difficulty);
+  formData.append('maxBonusPoints', challenge.maxBonusPoints.toString());
 
-    if (challenge.deadline) {
-      formData.append('deadline', challenge.deadline);
-    }
-
-    if (challenge.active !== undefined) {
-      formData.append('active', challenge.active.toString());
-    }
-
-    // ✅ NUEVO: Agregar URL externa (o vacío para eliminarla)
-    if (challenge.externalUrl !== undefined) {
-      formData.append('externalUrl', challenge.externalUrl.trim());
-    }
-
-    if (file) {
-      formData.append('file', file, file.name);
-    }
-
-    console.log('✏️ Actualizando reto con:', {
-      title: challenge.title,
-      hasFile: !!file,
-      hasUrl: !!challenge.externalUrl
-    });
-
-    return this.http.put<Challenge>(`${this.apiUrl}/${id}`, formData);
+  if (challenge.deadline) {
+    formData.append('deadline', challenge.deadline);
   }
+
+  if (challenge.active !== undefined) {
+    formData.append('active', challenge.active.toString());
+  }
+
+  // ✅ NUEVO: Indicar eliminación de archivo
+  if (removeFile) {
+    formData.append('removeFile', 'true');
+    console.log('🗑️ Solicitando eliminación de archivo del reto');
+  }
+
+  if (challenge.externalUrl !== undefined) {
+    formData.append('externalUrl', challenge.externalUrl.trim());
+  }
+
+  if (file) {
+    formData.append('file', file, file.name);
+  }
+
+  console.log('✏️ Actualizando reto con:', {
+    title: challenge.title,
+    hasFile: !!file,
+    hasUrl: !!challenge.externalUrl,
+    removeFile: removeFile
+  });
+
+  return this.http.put<Challenge>(`${this.apiUrl}/${id}`, formData);
+}
 
   /**
    * Eliminar reto (Profesor)

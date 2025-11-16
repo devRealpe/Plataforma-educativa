@@ -5,6 +5,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { CourseService, Course } from '../../../../core/services/course.service';
 import { AuthService } from '../../../../core/services/auth.service';
+import { StatsService, TeacherStats } from '../../../../core/services/stats.service'; // ✅ NUEVO
 import { CourseModalComponent } from '../../modals/course-modal/course-modal.component';
 import { EditCourseModalComponent } from '../../modals/edit-course-modal/edit-course-modal.component';
 import { ConfirmationModalComponent } from '../../../../shared/components/confirmation-modal/confirmation-modal.component';
@@ -38,32 +39,75 @@ export class TeacherDashboardComponent implements OnInit {
   // Datos
   courses: Course[] = [];
   
+  // ✅ MEJORADO: Estructura inicial correcta
   stats = [
     { title: 'Total Cursos', value: '0', icon: '📚', bgColor: '#3b82f6' },
     { title: 'Estudiantes', value: '0', icon: '👥', bgColor: '#10b981' },
     { title: 'Ejercicios', value: '0', icon: '✏️', bgColor: '#f59e0b' },
     { title: 'Retos', value: '0', icon: '🏆', bgColor: '#8b5cf6' },
+    { title: 'Entregas Pendientes', value: '0', icon: '⏳', bgColor: '#ef4444' },
+    { title: 'Retos por Revisar', value: '0', icon: '🔍', bgColor: '#f97316' }
   ];
 
   deleteMessage = '';
+  isLoadingStats = false; // ✅ NUEVO: Para mostrar loading
 
   constructor(
     private courseService: CourseService,
     private authService: AuthService,
+    private statsService: StatsService, // ✅ NUEVO: Inyectar StatsService
     private router: Router,
     private snackBar: MatSnackBar
   ) {}
 
   ngOnInit() {
     this.loadCourses();
+    this.loadStats(); // ✅ NUEVO: Cargar estadísticas desde el backend
+  }
+
+  // ✅ NUEVO MÉTODO: Cargar estadísticas desde el backend
+  loadStats() {
+    this.isLoadingStats = true;
+    
+    this.statsService.getTeacherStats().subscribe({
+      next: (stats: TeacherStats) => {
+        console.log('📊 Estadísticas del profesor cargadas:', stats);
+        
+        // ✅ Actualizar las estadísticas con los datos reales del backend
+        this.stats[0].value = stats.totalCourses.toString();
+        this.stats[1].value = stats.totalStudents.toString(); // ✅ Sin duplicados
+        this.stats[2].value = stats.totalExercises.toString(); // ✅ Total real
+        this.stats[3].value = stats.totalChallenges.toString(); // ✅ Total real
+        this.stats[4].value = stats.pendingSubmissions.toString(); // ✅ Entregas pendientes
+        this.stats[5].value = stats.pendingChallengeReviews.toString(); // ✅ Retos por revisar
+        
+        this.isLoadingStats = false;
+        
+        console.log('✅ Estadísticas actualizadas en el dashboard');
+      },
+      error: (error) => {
+        console.error('❌ Error al cargar estadísticas:', error);
+        this.isLoadingStats = false;
+        
+        this.snackBar.open(
+          '⚠️ Error al cargar estadísticas. Los datos pueden estar desactualizados.',
+          'Cerrar',
+          { 
+            duration: 3000,
+            panelClass: ['warning-snackbar']
+          }
+        );
+      }
+    });
   }
 
   loadCourses() {
     this.courseService.getMyCourses().subscribe({
       next: (courses) => {
         this.courses = courses;
-        this.updateStats();
         console.log('✅ Cursos cargados:', courses);
+        
+        // ✅ Ya no necesitamos updateStats() aquí porque loadStats() se encarga
       },
       error: (error) => {
         console.error('❌ Error al cargar cursos:', error);
@@ -75,21 +119,8 @@ export class TeacherDashboardComponent implements OnInit {
     });
   }
 
-  updateStats() {
-    this.stats[0].value = this.courses.length.toString();
-
-    const totalStudents = this.courses.reduce(
-      (sum, course) => sum + (course.studentCount || 0),
-      0
-    );
-    this.stats[1].value = totalStudents.toString();
-
-    const totalExercises = 0;
-    this.stats[2].value = totalExercises.toString();
-
-    const totalChallenges = 0;
-    this.stats[3].value = totalChallenges.toString();
-  }
+  // ❌ MÉTODO ELIMINADO - Ya no es necesario
+  // updateStats() { ... }
 
   openModal() {
     this.showCreateModal = true;
@@ -103,7 +134,7 @@ export class TeacherDashboardComponent implements OnInit {
     console.log('✅ Curso creado exitosamente:', course);
     
     this.courses.push(course);
-    this.updateStats();
+    this.loadStats(); // ✅ ACTUALIZAR: Recargar estadísticas desde el backend
     
     this.closeModal();
     
@@ -184,7 +215,7 @@ export class TeacherDashboardComponent implements OnInit {
         console.log('✅ Curso eliminado:', courseTitle);
         
         this.courses = this.courses.filter(c => c.id !== courseId);
-        this.updateStats();
+        this.loadStats(); // ✅ ACTUALIZAR: Recargar estadísticas desde el backend
         
         this.courseToDelete = null;
         
@@ -237,7 +268,8 @@ export class TeacherDashboardComponent implements OnInit {
   closeStudentsModal() {
     this.showStudentsModal = false;
     this.selectedCourse = null;
-    this.loadCourses(); // Refrescar lista tras gestionar estudiantes
+    this.loadCourses();
+    this.loadStats(); // ✅ ACTUALIZAR: Recargar estadísticas tras gestionar estudiantes
   }
 
   copyToClipboard(code: string) {
@@ -292,6 +324,6 @@ export class TeacherDashboardComponent implements OnInit {
   }
 
   goToProfile() {
-  this.router.navigate(['/profile']);
+    this.router.navigate(['/profile']);
   }
 }
