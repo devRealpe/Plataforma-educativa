@@ -20,6 +20,12 @@ public class Course {
     @Column(unique = true, nullable = false)
     private String inviteCode;
 
+    // ========================================
+    // ✅ NUEVO: Enlace de grupo de WhatsApp
+    // ========================================
+    @Column(name = "whatsapp_link", length = 500)
+    private String whatsappLink;
+
     @ManyToOne
     @JoinColumn(name = "teacher_id")
     @JsonIgnoreProperties({ "password", "courses" })
@@ -30,7 +36,10 @@ public class Course {
     @JsonIgnoreProperties({ "password", "enrolledCourses" })
     private Set<User> students = new HashSet<>();
 
+    // ========================================
     // Getters y Setters
+    // ========================================
+
     public Long getId() {
         return id;
     }
@@ -71,6 +80,15 @@ public class Course {
         this.inviteCode = inviteCode;
     }
 
+    // ✅ NUEVO Getter/Setter
+    public String getWhatsappLink() {
+        return whatsappLink;
+    }
+
+    public void setWhatsappLink(String whatsappLink) {
+        this.whatsappLink = whatsappLink;
+    }
+
     public User getTeacher() {
         return teacher;
     }
@@ -85,5 +103,29 @@ public class Course {
 
     public void setStudents(Set<User> students) {
         this.students = students;
+    }
+
+    // ========================================
+    // ✅ NUEVO: Métodos de utilidad
+    // ========================================
+
+    /**
+     * Verifica si el curso tiene un enlace de WhatsApp configurado
+     */
+    public boolean hasWhatsappLink() {
+        return whatsappLink != null && !whatsappLink.trim().isEmpty();
+    }
+
+    /**
+     * Valida que el enlace sea de WhatsApp
+     */
+    public boolean isValidWhatsappLink() {
+        if (whatsappLink == null || whatsappLink.trim().isEmpty()) {
+            return false;
+        }
+
+        String link = whatsappLink.trim().toLowerCase();
+        return link.startsWith("https://chat.whatsapp.com/") ||
+                link.startsWith("https://wa.me/");
     }
 }

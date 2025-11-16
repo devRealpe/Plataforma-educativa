@@ -162,4 +162,84 @@ public class CourseController {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
+
+    // ========================================
+    // AGREGAR ESTOS MÉTODOS AL FINAL DE CourseController.java
+    // ========================================
+
+    // ========================================
+    // ✅ NUEVO: Endpoints para gestionar WhatsApp
+    // ========================================
+
+    /**
+     * Agregar o actualizar enlace de WhatsApp (Profesor)
+     * PUT /api/courses/{id}/whatsapp
+     * Body: { "whatsappLink": "https://chat.whatsapp.com/..." }
+     */
+    @PutMapping("/{id}/whatsapp")
+    public ResponseEntity<?> setWhatsappLink(
+            @PathVariable Long id,
+            @RequestBody Map<String, String> request,
+            Authentication auth) {
+        try {
+            String whatsappLink = request.get("whatsappLink");
+
+            if (whatsappLink == null || whatsappLink.trim().isEmpty()) {
+                return ResponseEntity.badRequest()
+                        .body(Map.of("error", "El enlace de WhatsApp es requerido"));
+            }
+
+            Course course = courseService.setWhatsappLink(id, whatsappLink, auth.getName());
+
+            return ResponseEntity.ok(Map.of(
+                    "message", "Enlace de WhatsApp configurado exitosamente",
+                    "course", new CourseDTO(course)));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    /**
+     * Eliminar enlace de WhatsApp (Profesor)
+     * DELETE /api/courses/{id}/whatsapp
+     */
+    @DeleteMapping("/{id}/whatsapp")
+    public ResponseEntity<?> removeWhatsappLink(
+            @PathVariable Long id,
+            Authentication auth) {
+        try {
+            Course course = courseService.removeWhatsappLink(id, auth.getName());
+
+            return ResponseEntity.ok(Map.of(
+                    "message", "Enlace de WhatsApp eliminado exitosamente",
+                    "course", new CourseDTO(course)));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    /**
+     * Obtener enlace de WhatsApp (Estudiante o Profesor)
+     * GET /api/courses/{id}/whatsapp
+     */
+    @GetMapping("/{id}/whatsapp")
+    public ResponseEntity<?> getWhatsappLink(
+            @PathVariable Long id,
+            Authentication auth) {
+        try {
+            String whatsappLink = courseService.getWhatsappLink(id, auth.getName());
+
+            if (whatsappLink == null) {
+                return ResponseEntity.ok(Map.of(
+                        "hasLink", false,
+                        "message", "Este curso no tiene un grupo de WhatsApp configurado"));
+            }
+
+            return ResponseEntity.ok(Map.of(
+                    "hasLink", true,
+                    "whatsappLink", whatsappLink));
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
 }

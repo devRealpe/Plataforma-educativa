@@ -16,6 +16,9 @@ import { PodiumComponent } from '../../../../../../shared/components/podium/podi
 import { ExerciseListComponent } from '../exercise-list/exercise-list.component';
 import { ChallengeListComponent } from '../challenge-list/challenge-list.component';
 
+// whatsapp
+import { WhatsappButtonComponent } from '../../../../components/whatsapp-button/whatsapp-button.component';
+
 /**
  * 🎯 ORQUESTADOR PRINCIPAL DE COURSE DETAIL - STUDENT
  * 
@@ -34,7 +37,8 @@ import { ChallengeListComponent } from '../challenge-list/challenge-list.compone
     ConfirmationModalComponent,
     PodiumComponent,
     ExerciseListComponent,
-    ChallengeListComponent
+    ChallengeListComponent,
+    WhatsappButtonComponent
   ],
   templateUrl: './course-header.component.html',
   styleUrls: ['./course-header.component.scss']

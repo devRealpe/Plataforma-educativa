@@ -8,9 +8,11 @@ public class CourseDTO {
     private String description;
     private String level;
     private String inviteCode;
+    private String whatsappLink; // ✅ NUEVO
     private String teacherName;
     private String teacherEmail;
     private int studentCount;
+    private boolean hasWhatsappLink; // ✅ NUEVO
 
     public CourseDTO() {
     }
@@ -21,19 +23,20 @@ public class CourseDTO {
         this.description = course.getDescription();
         this.level = course.getLevel();
         this.inviteCode = course.getInviteCode();
+        this.whatsappLink = course.getWhatsappLink(); // ✅ NUEVO
+        this.hasWhatsappLink = course.hasWhatsappLink(); // ✅ NUEVO
 
         if (course.getTeacher() != null) {
             this.teacherName = course.getTeacher().getNombre();
             this.teacherEmail = course.getTeacher().getEmail();
         }
 
-        // Contar estudiantes en el curso
         if (course.getStudents() != null) {
             this.studentCount = course.getStudents().size();
         }
     }
 
-    // Getters y Setters (asegúrate de tener todos)
+    // Getters y Setters
     public Long getId() {
         return id;
     }
@@ -72,6 +75,23 @@ public class CourseDTO {
 
     public void setInviteCode(String inviteCode) {
         this.inviteCode = inviteCode;
+    }
+
+    // ✅ NUEVO Getters/Setters
+    public String getWhatsappLink() {
+        return whatsappLink;
+    }
+
+    public void setWhatsappLink(String whatsappLink) {
+        this.whatsappLink = whatsappLink;
+    }
+
+    public boolean isHasWhatsappLink() {
+        return hasWhatsappLink;
+    }
+
+    public void setHasWhatsappLink(boolean hasWhatsappLink) {
+        this.hasWhatsappLink = hasWhatsappLink;
     }
 
     public String getTeacherName() {

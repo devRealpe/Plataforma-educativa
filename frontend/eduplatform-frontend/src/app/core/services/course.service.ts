@@ -11,6 +11,8 @@ export interface Course {
   teacherName?: string;
   teacherEmail?: string;
   studentCount?: number;
+  whatsappLink?: string; 
+  hasWhatsappLink?: boolean;
 }
 
 export interface JoinCourseResponse {
@@ -71,5 +73,37 @@ export class CourseService {
    */
   leaveCourse(courseId: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${courseId}/leave`);
+  }
+
+  // ========================================
+// AGREGAR AL FINAL DE course.service.ts
+// ========================================
+
+  // ========================================
+  // ✅ NUEVO: Gestión de enlace de WhatsApp
+  // ========================================
+
+  /**
+   * Configurar o actualizar enlace de WhatsApp (Profesor)
+   */
+  setWhatsappLink(courseId: number, whatsappLink: string): Observable<any> {
+    return this.http.put(
+      `${this.apiUrl}/${courseId}/whatsapp`,
+      { whatsappLink }
+    );
+  }
+
+  /**
+   * Eliminar enlace de WhatsApp (Profesor)
+   */
+  removeWhatsappLink(courseId: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${courseId}/whatsapp`);
+  }
+
+  /**
+   * Obtener enlace de WhatsApp (Estudiante o Profesor)
+   */
+  getWhatsappLink(courseId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/${courseId}/whatsapp`);
   }
 }

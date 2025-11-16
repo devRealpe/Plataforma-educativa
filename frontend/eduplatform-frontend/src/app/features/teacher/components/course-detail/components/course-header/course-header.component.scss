@@ -545,6 +545,39 @@ $transition-slow: 0.3s ease;
   }
 }
 
+.action-btn {
+  &.whatsapp {
+    position: relative;
+
+    &:hover {
+      border-color: #25D366;
+      color: #25D366;
+      background: rgba(37, 211, 102, 0.05);
+
+      svg {
+        filter: drop-shadow(0 0 8px rgba(37, 211, 102, 0.5));
+      }
+    }
+
+    .badge-indicator {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background: #25D366;
+      color: white;
+      font-size: 0.7rem;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid white;
+      font-weight: 700;
+    }
+  }
+}
+
 // ==========================================
 // 🎭 ANIMATIONS
 // ==========================================

@@ -68,6 +68,11 @@
         </div>
       </div>
 
+      <app-whatsapp-button
+        [courseId]="courseId"
+        *ngIf="course"
+      ></app-whatsapp-button>
+
       <!-- Tab Navigation -->
       <nav class="tabs-navigation" role="tablist">
         <button
