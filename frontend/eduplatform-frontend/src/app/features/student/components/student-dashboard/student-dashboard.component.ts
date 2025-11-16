@@ -26,6 +26,7 @@ interface StatCard {
   bgGradient: string;
   textColor: string;
   isLoading?: boolean;
+  bgColor?: string;
 }
 
 @Component({
