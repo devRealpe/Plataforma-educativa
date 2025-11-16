@@ -1,3 +1,7 @@
+// ========================================
+// whatsapp-modal.component.ts
+// ========================================
+
 import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -22,6 +26,9 @@ export class WhatsappModalComponent implements OnInit {
   isSubmitting: boolean = false;
   showError: boolean = false;
   errorMessage: string = '';
+  
+  // 🆕 Estado del modal de confirmación
+  showDeleteConfirmation: boolean = false;
 
   constructor(
     private courseService: CourseService,
@@ -82,11 +89,19 @@ export class WhatsappModalComponent implements OnInit {
     });
   }
 
-  deleteLink() {
-    if (!confirm('¿Estás seguro de que deseas eliminar el enlace de WhatsApp?\n\nLos estudiantes ya no podrán ver el enlace del grupo.')) {
-      return;
-    }
+  // 🆕 Abrir modal de confirmación
+  openDeleteConfirmation() {
+    this.showDeleteConfirmation = true;
+  }
 
+  // 🆕 Cancelar eliminación
+  cancelDelete() {
+    this.showDeleteConfirmation = false;
+  }
+
+  // 🆕 Confirmar eliminación
+  confirmDelete() {
+    this.showDeleteConfirmation = false;
     this.isSubmitting = true;
 
     this.courseService.removeWhatsappLink(this.courseId).subscribe({
