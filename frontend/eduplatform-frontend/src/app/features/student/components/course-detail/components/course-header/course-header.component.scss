@@ -1,3 +1,5 @@
+@use "sass:color";
+
 // ==========================================
 // 🎮 VARIABLES
 // ==========================================
@@ -547,7 +549,7 @@ $transition-slow: 0.3s ease;
     background: rgba($warning-orange, 0.1);
     border-left: 4px solid $warning-orange;
     border-radius: $radius-sm;
-    color: #92400e;
+    color: color.adjust($warning-orange, $lightness: -30%);
     font-size: 0.85rem;
   }
 }

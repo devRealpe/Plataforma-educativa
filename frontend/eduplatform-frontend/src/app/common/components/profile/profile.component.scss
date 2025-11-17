@@ -1,23 +1,33 @@
+// Variables según la paleta de colores proporcionada
+$primary-orange: #F26B21;
+$primary-orange-hover: #D45A1A;
+$secondary-blue: #68B8BE;
+$secondary-blue-hover: #5AA4A9;
+$neutral-gray: #F0F0F0;
+$dark-gray: #4C4C4C;
+$white: #FFFFFF;
+$border-gray: #DADADA;
+$error-red: #EF4444;
+$success-green: #10B981;
+
+// Variables adicionales para estados
+$hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+$card-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+$focus-shadow: 0 0 0 2px rgba(104, 184, 190, 0.3);
+
+// Transiciones
+$transition-fast: 0.2s ease;
+$transition-normal: 0.3s ease;
+
+// Funciones de color modernas
 @use "sass:color";
-
-
-$primary-blue: #2563eb;
-$primary-blue-hover: #1d4ed8;
-$success-green: #10b981;
-$danger-red: #ef4444;
-$gray-50: #f9fafb;
-$gray-100: #f3f4f6;
-$gray-200: #e5e7eb;
-$gray-300: #d1d5db;
-$gray-400: #9ca3af;
-$gray-600: #6b7280;
-$gray-700: #374151;
-$gray-900: #111827;
 
 .profile-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #eff6ff 0%, #f9fafb 100%);
+  background-color: $neutral-gray;
   padding: 2rem;
+  font-family: 'Roboto', 'Nunito', sans-serif;
+  color: $dark-gray;
 }
 
 // ===============================
@@ -30,34 +40,52 @@ $gray-900: #111827;
 .header-content {
   display: flex;
   flex-direction: column;
+  align-items: center; // ✅ Nuevo: centra todos los elementos horizontalmente
   gap: 1rem;
+  position: relative; // ✅ Para posicionar el botón de volver
 }
 
 .back-button {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: white;
-  border: 1px solid $gray-200;
+  padding: 0.75rem 1rem;
+  background: $white;
+  border: 1px solid $border-gray;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all $transition-normal;
   width: fit-content;
-  color: $gray-700;
+  color: $dark-gray;
   font-weight: 500;
+  font-family: 'Poppins', 'Montserrat', sans-serif;
+  box-shadow: $card-shadow;
+  align-self: flex-start; // ✅ Nuevo: mantiene el botón a la izquierda
+  position: absolute; // ✅ Nuevo: posicionamiento absoluto
+  left: 0; // ✅ Nuevo: lo coloca a la izquierda
+  top: 0; // ✅ Nuevo: lo coloca en la parte superior
 
   &:hover {
-    background: $gray-50;
+    background: color.adjust($white, $lightness: -2%);
     transform: translateX(-2px);
+    border-color: $primary-orange;
+    box-shadow: $hover-shadow;
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: $focus-shadow;
   }
 }
 
 .page-title {
   font-size: 2rem;
   font-weight: 700;
-  color: $gray-900;
+  color: $dark-gray;
   margin: 0;
+  font-family: 'Poppins', 'Montserrat', sans-serif;
+  text-align: center; // ✅ Nuevo: centra el texto
+  width: 100%; // ✅ Nuevo: ocupa todo el ancho para centrarse correctamente
 }
 
 // ===============================
@@ -75,15 +103,22 @@ $gray-900: #111827;
 // USER CARD
 // ===============================
 .user-card {
-  background: white;
-  border-radius: 16px;
+  background: $white;
+  border-radius: 12px;
   padding: 2rem;
-  border: 1px solid $gray-200;
+  border: 1px solid $border-gray;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
   gap: 1.5rem;
+  box-shadow: $card-shadow;
+  transition: all $transition-normal;
+
+  &:hover {
+    border-color: $primary-orange;
+    box-shadow: $hover-shadow;
+  }
 }
 
 .user-avatar {
@@ -94,15 +129,16 @@ $gray-900: #111827;
   width: 120px;
   height: 120px;
   border-radius: 50%;
-  background: linear-gradient(135deg, $primary-blue 0%, #8b5cf6 100%);
-  color: white;
+  background: linear-gradient(135deg, $primary-orange 0%, color.adjust($primary-orange, $lightness: 10%) 100%);
+  color: $white;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 2.5rem;
   font-weight: 700;
-  border: 4px solid white;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 4px solid $white;
+  box-shadow: 0 4px 12px rgba(242, 107, 33, 0.3);
+  font-family: 'Poppins', 'Montserrat', sans-serif;
 }
 
 .role-badge {
@@ -114,17 +150,18 @@ $gray-900: #111827;
   border-radius: 20px;
   font-size: 0.875rem;
   font-weight: 600;
-  border: 2px solid white;
+  border: 2px solid $white;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  font-family: 'Poppins', 'Montserrat', sans-serif;
 
   &.teacher {
-    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-    color: white;
+    background: linear-gradient(135deg, $secondary-blue 0%, color.adjust($secondary-blue, $lightness: -10%) 100%);
+    color: $white;
   }
 
   &.student {
-    background: linear-gradient(135deg, $primary-blue 0%, #1d4ed8 100%);
-    color: white;
+    background: linear-gradient(135deg, $primary-orange 0%, $primary-orange-hover 100%);
+    color: $white;
   }
 }
 
@@ -135,13 +172,14 @@ $gray-900: #111827;
 .user-name {
   font-size: 1.75rem;
   font-weight: 700;
-  color: $gray-900;
+  color: $dark-gray;
   margin: 0 0 0.5rem 0;
+  font-family: 'Poppins', 'Montserrat', sans-serif;
 }
 
 .user-email {
   font-size: 1rem;
-  color: $gray-600;
+  color: color.adjust($dark-gray, $lightness: 20%);
   margin: 0;
 }
 
@@ -149,10 +187,17 @@ $gray-900: #111827;
 // FORM SECTIONS
 // ===============================
 .form-section {
-  background: white;
-  border-radius: 16px;
+  background: $white;
+  border-radius: 12px;
   padding: 2rem;
-  border: 1px solid $gray-200;
+  border: 1px solid $border-gray;
+  box-shadow: $card-shadow;
+  transition: all $transition-normal;
+
+  &:hover {
+    border-color: $border-gray;
+    box-shadow: $hover-shadow;
+  }
 }
 
 .section-header {
@@ -161,25 +206,26 @@ $gray-900: #111827;
   gap: 1rem;
   margin-bottom: 1.5rem;
   padding-bottom: 1rem;
-  border-bottom: 2px solid $gray-100;
+  border-bottom: 2px solid $neutral-gray;
 }
 
 .section-icon {
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, $primary-blue 0%, #1d4ed8 100%);
-  border-radius: 12px;
+  background: linear-gradient(135deg, $primary-orange 0%, $primary-orange-hover 100%);
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: $white;
 }
 
 .section-title {
   font-size: 1.25rem;
   font-weight: 700;
-  color: $gray-900;
+  color: $dark-gray;
   margin: 0;
+  font-family: 'Poppins', 'Montserrat', sans-serif;
 }
 
 // ===============================
@@ -199,8 +245,9 @@ $gray-900: #111827;
 
   label {
     font-weight: 600;
-    color: $gray-700;
+    color: $dark-gray;
     font-size: 0.95rem;
+    font-family: 'Poppins', 'Montserrat', sans-serif;
   }
 }
 
@@ -214,25 +261,29 @@ $gray-900: #111827;
 .form-input {
   width: 100%;
   padding: 0.875rem 1rem;
-  border: 2px solid $gray-200;
-  border-radius: 10px;
+  border: 2px solid $border-gray;
+  border-radius: 8px;
   font-size: 1rem;
-  transition: all 0.2s;
-  background: white;
+  transition: all $transition-normal;
+  background: $white;
+  font-family: 'Roboto', 'Nunito', sans-serif;
+  color: $dark-gray;
+  box-sizing: border-box;
 
   &:focus {
     outline: none;
-    border-color: $primary-blue;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    border-color: $secondary-blue;
+    box-shadow: $focus-shadow;
   }
 
   &.readonly {
-    background: $gray-50;
+    background: $neutral-gray;
     cursor: not-allowed;
+    color: color.adjust($dark-gray, $lightness: 30%);
   }
 
   &::placeholder {
-    color: $gray-400;
+    color: color.adjust($dark-gray, $lightness: 40%);
   }
 }
 
@@ -240,27 +291,40 @@ $gray-900: #111827;
   width: 40px;
   height: 40px;
   border: none;
-  background: $gray-100;
-  border-radius: 10px;
+  background: $neutral-gray;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s;
-  color: $gray-600;
+  transition: all $transition-normal;
+  color: $dark-gray;
   flex-shrink: 0;
 
   &:hover {
-    background: $primary-blue;
-    color: white;
+    background: $primary-orange;
+    color: $white;
     transform: scale(1.05);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: $focus-shadow;
   }
 }
 
 .form-error {
-  color: $danger-red;
+  color: $error-red;
   font-size: 0.875rem;
   margin-top: 0.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+
+  &::before {
+    content: "⚠";
+    font-size: 0.75rem;
+  }
 }
 
 // ===============================
@@ -276,65 +340,79 @@ $gray-900: #111827;
   flex: 1;
   padding: 0.875rem 1.5rem;
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   font-weight: 600;
   font-size: 0.95rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all $transition-normal;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
+  font-family: 'Poppins', 'Montserrat', sans-serif;
 
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+    transform: none !important;
   }
 
   &:not(:disabled):hover {
-    transform: translateY(-1px);
+    transform: translateY(-2px);
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: $focus-shadow;
   }
 }
 
 .btn-primary {
-  background: $primary-blue;
-  color: white;
+  background: $primary-orange;
+  color: $white;
+  box-shadow: 0 2px 4px rgba(242, 107, 33, 0.2);
 
-  &:hover {
-    background: $primary-blue-hover;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+  &:hover:not(:disabled) {
+    background: $primary-orange-hover;
+    box-shadow: 0 4px 12px rgba(242, 107, 33, 0.3);
   }
 }
 
 .btn-secondary {
-  background: $gray-100;
-  color: $gray-700;
+  background: $white;
+  border: 2px solid $secondary-blue;
+  color: $secondary-blue;
+  box-shadow: 0 2px 4px rgba(104, 184, 190, 0.1);
 
-  &:hover {
-    background: $gray-200;
+  &:hover:not(:disabled) {
+    background: $secondary-blue;
+    color: $white;
+    box-shadow: 0 4px 12px rgba(104, 184, 190, 0.2);
   }
 }
 
 .btn-outline {
-  background: white;
-  border: 2px solid $primary-blue;
-  color: $primary-blue;
+  background: $white;
+  border: 2px solid $primary-orange;
+  color: $primary-orange;
   width: 100%;
+  box-shadow: 0 2px 4px rgba(242, 107, 33, 0.1);
 
   &:hover {
-    background: $primary-blue;
-    color: white;
+    background: $primary-orange;
+    color: $white;
+    box-shadow: 0 4px 12px rgba(242, 107, 33, 0.2);
   }
 }
 
 .btn-danger {
-  background: $danger-red;
-  color: white;
+  background: $error-red;
+  color: $white;
   width: 100%;
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
 
   &:hover {
-    background: color.adjust($danger-red, $lightness: -5%);
-
+    background: color.adjust($error-red, $lightness: -10%);
     box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
   }
 }
@@ -344,22 +422,47 @@ $gray-900: #111827;
 // ===============================
 .alert {
   padding: 1rem;
-  border-radius: 10px;
+  border-radius: 8px;
   font-size: 0.95rem;
   font-weight: 500;
   margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border: 1px solid;
+  animation: fadeIn 0.3s ease;
 }
 
 .alert-success {
-  background: #d1fae5;
-  color: #065f46;
-  border: 1px solid #6ee7b7;
+  background: color.adjust($success-green, $lightness: 45%);
+  color: color.adjust($success-green, $lightness: -20%);
+  border-color: $success-green;
+
+  .alert-icon {
+    color: $success-green;
+  }
 }
 
 .alert-error {
-  background: #fee2e2;
-  color: #991b1b;
-  border: 1px solid #fca5a5;
+  background: color.adjust($error-red, $lightness: 40%);
+  color: color.adjust($error-red, $lightness: -20%);
+  border-color: $error-red;
+
+  .alert-icon {
+    color: $error-red;
+  }
+}
+
+.alert-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 // ===============================
@@ -369,7 +472,7 @@ $gray-900: #111827;
   width: 20px;
   height: 20px;
   border: 3px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
+  border-top-color: $white;
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
 }
@@ -383,6 +486,11 @@ $gray-900: #111827;
 // ===============================
 .logout-section {
   margin-top: 1rem;
+  padding: 1.5rem;
+  background: $white;
+  border-radius: 12px;
+  border: 1px solid $border-gray;
+  box-shadow: $card-shadow;
 }
 
 // ===============================
@@ -395,6 +503,19 @@ $gray-900: #111827;
 
   .page-title {
     font-size: 1.75rem;
+    margin-top: 2.5rem; // ✅ Nuevo: espacio para el botón en móvil
+  }
+
+  .back-button {
+    position: relative; // ✅ Cambio: posición relativa en móvil
+    align-self: center; // ✅ Cambio: centrado en móvil
+    margin-bottom: 0.5rem; // ✅ Nuevo: espacio debajo del botón
+    left: auto; // ✅ Reset
+    top: auto; // ✅ Reset
+  }
+
+  .header-content {
+    align-items: center; // ✅ Asegura centrado en móvil
   }
 
   .user-card {
@@ -429,8 +550,13 @@ $gray-900: #111827;
     padding: 0.75rem;
   }
 
-  .page-title {
+   .page-title {
     font-size: 1.5rem;
+    margin-top: 0; // ✅ Reset en pantallas muy pequeñas
+  }
+
+  .back-button {
+    margin-bottom: 1rem; // ✅ Más espacio en pantallas pequeñas
   }
 
   .avatar-circle {
@@ -446,5 +572,9 @@ $gray-900: #111827;
 
   .section-title {
     font-size: 1.125rem;
+  }
+
+  .form-section {
+    padding: 1rem;
   }
 }
