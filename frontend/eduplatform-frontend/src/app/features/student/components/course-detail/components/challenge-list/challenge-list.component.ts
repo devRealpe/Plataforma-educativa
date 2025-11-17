@@ -3,11 +3,14 @@ import { CommonModule } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ChallengeService, Challenge, ChallengeSubmission } from '../../../../../../core/services/challenge.service';
 import { ConfirmationModalComponent } from '../../../../../../shared/components/confirmation-modal/confirmation-modal.component';
+// ✅ AGREGADO: Importar MotivationalMessagesComponent
+import { MotivationalMessagesComponent } from '../../../motivational-messages/motivational-messages.component';
 
 @Component({
   selector: 'app-challenge-list',
   standalone: true,
-  imports: [CommonModule, ConfirmationModalComponent],
+  // ✅ AGREGADO: MotivationalMessagesComponent en imports
+  imports: [CommonModule, ConfirmationModalComponent, MotivationalMessagesComponent],
   templateUrl: './challenge-list.component.html',
   styleUrls: ['./challenge-list.component.scss']
 })
@@ -17,7 +20,6 @@ export class ChallengeListComponent implements OnInit {
   @Input() submissions: ChallengeSubmission[] = [];
   @Input() isLoading = false;
 
-  // ✅ CORRECCIÓN: Este Output debe emitir un objeto, NO un evento nativo
   @Output() openSubmissionModalEvent = new EventEmitter<{
     challenge: Challenge;
     existingSubmission?: ChallengeSubmission;
@@ -66,18 +68,9 @@ export class ChallengeListComponent implements OnInit {
     return !!this.getMySubmission(challengeId);
   }
 
-  // ==========================================
-  // 🚨 MÉTODO CORREGIDO - CRÍTICO
-  // ==========================================
-  
-  /**
-   * ✅ Este método DEBE emitir un objeto con challenge y existingSubmission
-   * NO debe manejar el modal aquí, solo emitir el evento
-   */
   openSubmissionModal(challenge: Challenge, existingSubmission?: ChallengeSubmission) {
     const submission = existingSubmission || this.getMySubmission(challenge.id!);
     
-    // Validar si puede editar
     if (submission && !submission.canBeEdited) {
       this.snackBar.open(
         '⚠️ Esta solución ya no puede ser editada',
@@ -87,16 +80,12 @@ export class ChallengeListComponent implements OnInit {
       return;
     }
 
-    // ✅ EMITIR EL EVENTO CON LA ESTRUCTURA CORRECTA
     this.openSubmissionModalEvent.emit({
       challenge: challenge,
       existingSubmission: submission
     });
   }
 
-  // Los métodos del modal integrado ya no se usan si el modal está en course-header
-  // Si quieres mantener el modal interno, estos métodos son correctos
-  
   closeSubmissionModal() {
     this.showSubmissionModal = false;
     this.selectedChallenge = null;
@@ -170,10 +159,6 @@ export class ChallengeListComponent implements OnInit {
     });
   }
 
-  // ==========================================
-  // UTILIDADES DEL MODAL
-  // ==========================================
-
   getDaysUntilDeadline(challenge: Challenge): number | null {
     if (!challenge.deadline) return null;
     
@@ -195,10 +180,6 @@ export class ChallengeListComponent implements OnInit {
     if (days <= 3) return `⚠️ Quedan ${days} días`;
     return `📅 ${days} días restantes`;
   }
-
-  // ==========================================
-  // DESCARGAS Y UTILIDADES
-  // ==========================================
 
   getDifficultyColor(difficulty: string): string {
     switch (difficulty) {
@@ -272,10 +253,6 @@ export class ChallengeListComponent implements OnInit {
       }
     });
   }
-
-  // ==========================================
-  // ELIMINAR SOLUCIÓN
-  // ==========================================
 
   deleteChallengeSubmission(challenge: Challenge) {
     const submission = this.getMySubmission(challenge.id!);

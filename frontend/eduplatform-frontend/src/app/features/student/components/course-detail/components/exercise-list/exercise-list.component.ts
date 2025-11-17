@@ -1,5 +1,6 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Exercise, Submission } from '../../../../../../core/services/exercise.service';
 import { ExerciseService } from '../../../../../../core/services/exercise.service';
 import { forkJoin, of } from 'rxjs';
@@ -9,7 +10,7 @@ import { MotivationalMessagesComponent } from '../../../motivational-messages/mo
 @Component({
   selector: 'app-exercise-list',
   standalone: true,
-  imports: [CommonModule, MotivationalMessagesComponent],
+  imports: [CommonModule, MotivationalMessagesComponent, FormsModule],
   templateUrl: './exercise-list.component.html',
   styleUrls: ['./exercise-list.component.scss']
 })
@@ -31,12 +32,26 @@ export class ExerciseListComponent implements OnInit, OnChanges {
   loadingHintsMap = new Map<number, boolean>();
   hintsChecked = false; // Flag para evitar múltiples verificaciones
 
+  // 🆕 NUEVAS PROPIEDADES PARA FILTROS Y BÚSQUEDA
+  filteredExercises: Exercise[] = [];
+  searchTerm: string = '';
+  selectedFilter: string = 'all';
+  
+  // Opciones de filtro
+  filterOptions = [
+    { value: 'all', label: 'Todos los ejercicios', icon: '📚' },
+    { value: 'submitted', label: 'Entregados sin calificar', icon: '📤' },
+    { value: 'graded', label: 'Calificados', icon: '✅' },
+    { value: 'not-submitted', label: 'Sin entregar', icon: '⏳' }
+  ];
+
   constructor(private exerciseService: ExerciseService) {}
 
   ngOnInit() {
     if (this.exercises.length > 0 && !this.hintsChecked) {
       this.checkHintsAvailabilityOptimized();
     }
+    this.applyFilters(); // Aplicar filtros iniciales
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -47,6 +62,75 @@ export class ExerciseListComponent implements OnInit, OnChanges {
         this.checkHintsAvailabilityOptimized();
       }
     }
+
+    // 🆕 Aplicar filtros cuando cambien los ejercicios o submissions
+    if (changes['exercises'] || changes['submissions']) {
+      this.applyFilters();
+    }
+  }
+
+  // 🆕 MÉTODOS PARA FILTRADO Y BÚSQUEDA
+  onSearchChange(): void {
+    this.applyFilters();
+  }
+
+  onFilterChange(): void {
+    this.applyFilters();
+  }
+
+  applyFilters(): void {
+    let filtered = [...this.exercises];
+
+    // Aplicar filtro por estado
+    filtered = filtered.filter(exercise => {
+      const submission = this.getSubmission(exercise);
+      
+      switch (this.selectedFilter) {
+        case 'submitted':
+          return submission && submission.status !== 'GRADED';
+        case 'graded':
+          return submission && submission.status === 'GRADED';
+        case 'not-submitted':
+          return !submission;
+        case 'all':
+        default:
+          return true;
+      }
+    });
+
+    // Aplicar búsqueda por término
+    if (this.searchTerm.trim()) {
+      const term = this.searchTerm.toLowerCase().trim();
+      filtered = filtered.filter(exercise => 
+        exercise.title.toLowerCase().includes(term) ||
+        exercise.description.toLowerCase().includes(term) ||
+        exercise.difficulty.toLowerCase().includes(term)
+      );
+    }
+
+    this.filteredExercises = filtered;
+  }
+
+  // 🆕 Obtener contadores para cada filtro
+  getFilterCounts() {
+    return {
+      all: this.exercises.length,
+      submitted: this.exercises.filter(ex => {
+        const submission = this.getSubmission(ex);
+        return submission && submission.status !== 'GRADED';
+      }).length,
+      graded: this.exercises.filter(ex => {
+        const submission = this.getSubmission(ex);
+        return submission && submission.status === 'GRADED';
+      }).length,
+      notSubmitted: this.exercises.filter(ex => !this.getSubmission(ex)).length
+    };
+  }
+
+  // 🆕 Limpiar búsqueda
+  clearSearch(): void {
+    this.searchTerm = '';
+    this.applyFilters();
   }
 
   /**

@@ -1,6 +1,8 @@
 // ==========================================
-// 💫 MOTIVATIONAL MESSAGES COMPONENT
+// 💫 MOTIVATIONAL MESSAGES COMPONENT (OPTIMIZADO)
 // ==========================================
+
+@use "sass:color";
 
 $naranja-tango: #F26B21;
 $azul-fuente: #68B8BE;
@@ -10,29 +12,31 @@ $blanco: #FFFFFF;
 $verde-exito: #10b981;
 
 .motivational-messages-container {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 1000;
-  max-width: 400px;
-  animation: slideInRight 0.5s ease-out;
+  // ✅ CAMBIADO: De fixed a sticky para que se mueva con el scroll
+  position: sticky;
+  top: 90px; // Debajo del header sticky (que tiene z-index: 100)
+  z-index: 50; // ✅ Menor que el header pero visible
+  margin: 0 auto 20px auto;
+  max-width: 600px;
+  padding: 0 20px;
+  animation: slideInDown 0.5s ease-out;
 
   @media (max-width: 768px) {
-    top: 10px;
-    right: 10px;
-    left: 10px;
-    max-width: none;
+    top: 70px;
+    padding: 0 10px;
+    margin-bottom: 15px;
   }
 }
 
-@keyframes slideInRight {
+// ✅ Animación de entrada desde arriba
+@keyframes slideInDown {
   from {
     opacity: 0;
-    transform: translateX(100%);
+    transform: translateY(-30px);
   }
   to {
     opacity: 1;
-    transform: translateX(0);
+    transform: translateY(0);
   }
 }
 
@@ -41,7 +45,7 @@ $verde-exito: #10b981;
   border: 2px solid rgba($azul-fuente, 0.2);
   border-radius: 16px;
   padding: 16px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
   backdrop-filter: blur(10px);
   display: flex;
   align-items: flex-start;
@@ -51,8 +55,20 @@ $verde-exito: #10b981;
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
     border-color: rgba($azul-fuente, 0.4);
+  }
+
+  // ✅ Efecto de brillo sutil
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, $naranja-tango, $azul-fuente);
+    border-radius: 16px 16px 0 0;
   }
 }
 
@@ -60,7 +76,7 @@ $verde-exito: #10b981;
   flex-shrink: 0;
   width: 32px;
   height: 32px;
-  background: linear-gradient(135deg, $naranja-tango, lighten($naranja-tango, 10%));
+  background: linear-gradient(135deg, $naranja-tango, color.adjust($naranja-tango, $lightness: 10%));
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -90,7 +106,7 @@ $verde-exito: #10b981;
   line-height: 1.4;
   margin: 0 0 12px 0;
   font-weight: 500;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Roboto', 'Nunito', sans-serif;
 }
 
 .message-progress {
@@ -158,7 +174,11 @@ $verde-exito: #10b981;
     border-color: rgba($verde-exito, 0.3);
     
     .message-icon {
-      background: linear-gradient(135deg, $verde-exito, lighten($verde-exito, 10%));
+      background: linear-gradient(135deg, $verde-exito, color.adjust($verde-exito, $lightness: 10%));
+    }
+
+    &::before {
+      background: linear-gradient(90deg, $verde-exito, color.adjust($verde-exito, $lightness: 15%));
     }
   }
 
@@ -166,7 +186,7 @@ $verde-exito: #10b981;
     border-color: rgba($naranja-tango, 0.3);
     
     .message-icon {
-      background: linear-gradient(135deg, $naranja-tango, lighten($naranja-tango, 10%));
+      background: linear-gradient(135deg, $naranja-tango, color.adjust($naranja-tango, $lightness: 10%));
     }
   }
 
@@ -174,7 +194,11 @@ $verde-exito: #10b981;
     border-color: rgba($azul-fuente, 0.3);
     
     .message-icon {
-      background: linear-gradient(135deg, $azul-fuente, lighten($azul-fuente, 10%));
+      background: linear-gradient(135deg, $azul-fuente, color.adjust($azul-fuente, $lightness: 10%));
+    }
+
+    &::before {
+      background: linear-gradient(90deg, $azul-fuente, color.adjust($azul-fuente, $lightness: 15%));
     }
   }
 }
@@ -209,4 +233,28 @@ $verde-exito: #10b981;
       height: 10px;
     }
   }
+}
+
+// ✅ Asegurar que no tape el header
+@media (max-width: 768px) {
+  .motivational-messages-container {
+    top: 80px; // Más espacio en móviles
+  }
+}
+
+// ✅ Animación de salida
+@keyframes slideOutUp {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+}
+
+// Clase para animar la salida
+.motivational-messages-container.hiding {
+  animation: slideOutUp 0.3s ease-in forwards;
 }
