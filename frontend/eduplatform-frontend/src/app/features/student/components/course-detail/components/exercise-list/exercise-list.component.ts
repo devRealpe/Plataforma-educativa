@@ -20,6 +20,9 @@ export class ExerciseListComponent {
   @Output() downloadExercise = new EventEmitter<Exercise>();
   @Output() downloadSubmission = new EventEmitter<Submission>();
   @Output() openExternalUrl = new EventEmitter<string>();
+  
+  // 💡 NUEVO: Event emitter para ver pistas
+  @Output() viewHints = new EventEmitter<Exercise>();
 
   getSubmission(exercise: Exercise): Submission | undefined {
     return this.submissions.find(s => s.exerciseId === exercise.id);
@@ -96,5 +99,10 @@ export class ExerciseListComponent {
 
   onOpenExternalUrl(url: string) {
     this.openExternalUrl.emit(url);
+  }
+
+  // 💡 NUEVO: Método para ver pistas
+  onViewHints(exercise: Exercise) {
+    this.viewHints.emit(exercise);
   }
 }

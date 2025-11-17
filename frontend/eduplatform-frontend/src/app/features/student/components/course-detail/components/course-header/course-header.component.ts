@@ -2,7 +2,7 @@ import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
-
+import { HintsViewerModalComponent } from '../../../../modals/hints-viewer-modal/hints-viewer-modal.component';
 // Services
 import { CourseService, Course } from '../../../../../../core/services/course.service';
 import { ExerciseService, Exercise, Submission } from '../../../../../../core/services/exercise.service';
@@ -30,7 +30,8 @@ import { WhatsappButtonComponent } from '../../../../components/whatsapp-button/
     PodiumComponent,
     ExerciseListComponent,
     ChallengeListComponent,
-    WhatsappButtonComponent
+    WhatsappButtonComponent,
+    HintsViewerModalComponent
   ],
   templateUrl: './course-header.component.html',
   styleUrls: ['./course-header.component.scss']
@@ -75,6 +76,9 @@ export class CourseHeaderComponentStudent implements OnInit {
   selectedChallengeFile: File | null = null;
   isSubmittingChallenge = false;
   isChallengeEditMode = false;
+
+  showHintsModal = false;
+  selectedExerciseForHints: Exercise | null = null;
 
   // ==========================================
   // NAVEGACIÓN
@@ -608,4 +612,21 @@ export class CourseHeaderComponentStudent implements OnInit {
   getDeleteSubmissionMessage(): string {
     return `¿Estás seguro de que deseas eliminar tu entrega para "${this.exerciseToDelete?.title || 'este ejercicio'}"?\n\nEsta acción no se puede deshacer.`;
   }
+
+  /**
+ * 💡 Abrir modal de pistas
+ */
+openHintsModal(exercise: Exercise) {
+  this.selectedExerciseForHints = exercise;
+  this.showHintsModal = true;
+  console.log('💡 Abriendo modal de pistas para:', exercise.title);
+}
+
+/**
+ * 💡 Cerrar modal de pistas
+ */
+closeHintsModal() {
+  this.showHintsModal = false;
+  this.selectedExerciseForHints = null;
+}
 }

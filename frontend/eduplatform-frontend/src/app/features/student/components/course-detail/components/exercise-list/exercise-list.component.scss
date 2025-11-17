@@ -775,6 +775,25 @@ $font-body: 'Roboto', 'Nunito', sans-serif;
       transform: translateY(-2px);
     }
   }
+
+    &.hint-btn {
+    background: rgba($azul-fuente, 0.1);
+    color: $azul-oscuro;
+    border-color: rgba($azul-fuente, 0.3);
+
+    &:hover:not(:disabled) {
+      background: $azul-fuente;
+      color: $blanco;
+      border-color: $azul-fuente;
+      box-shadow: 0 4px 12px rgba(104, 184, 190, 0.4);
+      transform: translateY(-2px);
+
+      svg {
+        transform: scale(1.1) rotate(15deg);
+        filter: drop-shadow(0 0 6px rgba(255, 255, 255, 0.5));
+      }
+    }
+  }
 }
 
 // ==========================================

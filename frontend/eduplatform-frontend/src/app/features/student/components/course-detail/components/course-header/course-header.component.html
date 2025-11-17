@@ -502,4 +502,26 @@
     (cancel)="cancelDeleteSubmission()"
   >
   </app-confirmation-modal>
+
+  <app-exercise-list
+    *ngIf="activeTab === 'exercises'"
+    [exercises]="exercises"
+    [submissions]="submissions"
+    [isLoading]="isLoading"
+    (uploadExercise)="openUploadModal($event)"
+    (editSubmission)="openEditModal($event.exercise, $event.submission)"
+    (deleteSubmission)="deleteSubmission($event)"
+    (downloadExercise)="downloadExercise($event)"
+    (downloadSubmission)="downloadSubmission($event)"
+    (openExternalUrl)="openExternalUrl($event)"
+    (viewHints)="openHintsModal($event)"
+  ></app-exercise-list>
+
+  <!-- Modal: Ver Pistas -->
+  <app-hints-viewer-modal
+    *ngIf="showHintsModal && selectedExerciseForHints"
+    [exerciseId]="selectedExerciseForHints!.id!"
+    [exerciseTitle]="selectedExerciseForHints!.title"
+    (closeModal)="closeHintsModal()"
+  ></app-hints-viewer-modal>
 </div>
