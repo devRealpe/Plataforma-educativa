@@ -796,6 +796,15 @@ $font-body: 'Roboto', 'Nunito', sans-serif;
   }
 }
 
+.mini-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(104, 184, 190, 0.3);
+  border-top-color: #68B8BE;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
 // ==========================================
 // 📱 RESPONSIVE
 // ==========================================

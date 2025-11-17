@@ -1,6 +1,7 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Exercise, Submission } from '../../../../../../core/services/exercise.service';
+import { ExerciseService } from '../../../../../../core/services/exercise.service';
 
 @Component({
   selector: 'app-exercise-list',
@@ -9,7 +10,7 @@ import { Exercise, Submission } from '../../../../../../core/services/exercise.s
   templateUrl: './exercise-list.component.html',
   styleUrls: ['./exercise-list.component.scss']
 })
-export class ExerciseListComponent {
+export class ExerciseListComponent implements OnInit {
   @Input() exercises: Exercise[] = [];
   @Input() submissions: Submission[] = [];
   @Input() isLoading = false;
@@ -20,9 +21,59 @@ export class ExerciseListComponent {
   @Output() downloadExercise = new EventEmitter<Exercise>();
   @Output() downloadSubmission = new EventEmitter<Submission>();
   @Output() openExternalUrl = new EventEmitter<string>();
-  
-  // 💡 NUEVO: Event emitter para ver pistas
   @Output() viewHints = new EventEmitter<Exercise>();
+
+  // 🆕 Mapa para rastrear qué ejercicios tienen pistas
+  exercisesWithHints = new Map<number, boolean>();
+  loadingHints = new Set<number>();
+
+  constructor(private exerciseService: ExerciseService) {}
+
+  ngOnInit() {
+    // Cargar información de pistas para cada ejercicio
+    this.checkHintsAvailability();
+  }
+
+  /**
+   * 🔍 Verificar qué ejercicios tienen pistas disponibles
+   */
+  checkHintsAvailability() {
+    this.exercises.forEach(exercise => {
+      if (exercise.id) {
+        this.loadingHints.add(exercise.id);
+        
+        this.exerciseService.getHintsByExercise(exercise.id).subscribe({
+          next: (hints) => {
+            // Guardar si tiene pistas o no
+            this.exercisesWithHints.set(exercise.id!, hints.length > 0);
+            this.loadingHints.delete(exercise.id!);
+          },
+          error: (error) => {
+            console.error(`Error al verificar pistas para ejercicio ${exercise.id}:`, error);
+            // En caso de error, asumimos que no hay pistas
+            this.exercisesWithHints.set(exercise.id!, false);
+            this.loadingHints.delete(exercise.id!);
+          }
+        });
+      }
+    });
+  }
+
+  /**
+   * 🔍 Verificar si un ejercicio tiene pistas disponibles
+   */
+  hasHints(exercise: Exercise): boolean {
+    if (!exercise.id) return false;
+    return this.exercisesWithHints.get(exercise.id) ?? false;
+  }
+
+  /**
+   * 🔍 Verificar si se están cargando las pistas de un ejercicio
+   */
+  isLoadingHints(exercise: Exercise): boolean {
+    if (!exercise.id) return false;
+    return this.loadingHints.has(exercise.id);
+  }
 
   getSubmission(exercise: Exercise): Submission | undefined {
     return this.submissions.find(s => s.exerciseId === exercise.id);
@@ -101,8 +152,10 @@ export class ExerciseListComponent {
     this.openExternalUrl.emit(url);
   }
 
-  // 💡 NUEVO: Método para ver pistas
   onViewHints(exercise: Exercise) {
-    this.viewHints.emit(exercise);
+    // Solo emitir si realmente tiene pistas
+    if (this.hasHints(exercise)) {
+      this.viewHints.emit(exercise);
+    }
   }
 }
