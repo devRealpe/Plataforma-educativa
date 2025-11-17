@@ -4,11 +4,12 @@ import { Exercise, Submission } from '../../../../../../core/services/exercise.s
 import { ExerciseService } from '../../../../../../core/services/exercise.service';
 import { forkJoin, of } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+import { MotivationalMessagesComponent } from '../../../motivational-messages/motivational-messages.component';
 
 @Component({
   selector: 'app-exercise-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MotivationalMessagesComponent],
   templateUrl: './exercise-list.component.html',
   styleUrls: ['./exercise-list.component.scss']
 })

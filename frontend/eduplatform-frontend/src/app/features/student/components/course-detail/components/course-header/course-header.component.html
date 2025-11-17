@@ -1,5 +1,5 @@
 <!-- ==========================================
-     📄 course-header.component.html (STUDENT)
+     📄 course-header.component.html (STUDENT) - CORREGIDO
      Header con Reducción Automática al Scroll
      ========================================== -->
 
@@ -30,18 +30,17 @@
         <span>Volver al Dashboard</span>
       </button>
 
-      <!-- ✅ Course Header Info - Se oculta descripción cuando scrolled -->
+      <!-- ✅ Course Header Info -->
       <div class="course-header" *ngIf="course">
         <div class="course-header-main">
           <div class="course-title-section">
             <h1 class="course-title">{{ course.title }}</h1>
-            <!-- ✅ Descripción visible solo cuando NO hay scroll -->
             <p class="course-description" *ngIf="!isScrolled">
               {{ course.description }}
             </p>
           </div>
 
-          <!-- ✅ Meta Badges siempre visibles pero más pequeños al hacer scroll -->
+          <!-- ✅ Meta Badges -->
           <div class="course-meta-badges">
             <div class="meta-badge level">
               <svg
@@ -76,7 +75,7 @@
         </div>
       </div>
 
-      <!-- ✅ WhatsApp Button Compacto -->
+      <!-- ✅ WhatsApp Button -->
       <app-whatsapp-button
         [courseId]="courseId"
         *ngIf="course"
@@ -90,7 +89,6 @@
           (click)="onTabChange('exercises')"
           role="tab"
           [attr.aria-selected]="activeTab === 'exercises'"
-          aria-label="Ver Ejercicios"
         >
           <svg
             width="20"
@@ -115,7 +113,6 @@
           (click)="onTabChange('challenges')"
           role="tab"
           [attr.aria-selected]="activeTab === 'challenges'"
-          aria-label="Ver Retos"
         >
           <svg
             width="20"
@@ -146,7 +143,6 @@
           (click)="onTabChange('podium')"
           role="tab"
           [attr.aria-selected]="activeTab === 'podium'"
-          aria-label="Ver Podio"
         >
           <svg
             width="20"
@@ -183,6 +179,7 @@
       (downloadExercise)="downloadExercise($event)"
       (downloadSubmission)="downloadSubmission($event)"
       (openExternalUrl)="openExternalUrl($event)"
+      (viewHints)="openHintsModal($event)"
     ></app-exercise-list>
 
     <!-- Tab: Retos -->
@@ -362,7 +359,6 @@
       <!-- Información del Reto -->
       <div class="challenge-info-modal">
         <div class="info-row-modal">
-          <!-- Deadline Warning -->
           <div
             *ngIf="
               getDaysUntilChallengeDeadline() !== null &&
@@ -386,7 +382,6 @@
           </div>
         </div>
 
-        <!-- Descargar Archivo del Reto -->
         <div *ngIf="selectedChallenge.hasFile" class="download-section-modal">
           <button
             type="button"
@@ -409,7 +404,6 @@
           </button>
         </div>
 
-        <!-- Upload Area -->
         <div class="file-upload-area" *ngIf="!selectedChallengeFile">
           <input
             type="file"
@@ -468,60 +462,46 @@
           </button>
         </div>
       </div>
+    </div>
 
-      <div class="modal-footer">
-        <button class="btn-cancel" (click)="closeChallengeSubmissionModal()">
-          Cancelar
-        </button>
-        <button
-          class="btn-submit"
-          (click)="submitChallengeSolution()"
-          [disabled]="!selectedChallengeFile || isSubmittingChallenge"
-        >
-          {{
-            isSubmittingChallenge
-              ? "⏳ Guardando..."
-              : isChallengeEditMode
-              ? "💾 Actualizar Solución"
-              : "🚀 Enviar Solución"
-          }}
-        </button>
-      </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" (click)="closeChallengeSubmissionModal()">
+        Cancelar
+      </button>
+      <button
+        class="btn-submit"
+        (click)="submitChallengeSolution()"
+        [disabled]="!selectedChallengeFile || isSubmittingChallenge"
+      >
+        {{
+          isSubmittingChallenge
+            ? "⏳ Guardando..."
+            : isChallengeEditMode
+            ? "💾 Actualizar Solución"
+            : "🚀 Enviar Solución"
+        }}
+      </button>
     </div>
   </div>
-
-  <!-- Modal: Confirmación Eliminar Entrega -->
-  <app-confirmation-modal
-    *ngIf="showDeleteModal && exerciseToDelete"
-    title="¿Eliminar entrega?"
-    [message]="getDeleteSubmissionMessage()"
-    confirmText="Eliminar"
-    cancelText="Cancelar"
-    type="danger"
-    (confirm)="confirmDeleteSubmission()"
-    (cancel)="cancelDeleteSubmission()"
-  >
-  </app-confirmation-modal>
-
-  <!-- Modal: Ver Pistas -->
-  <app-hints-viewer-modal
-    *ngIf="showHintsModal && selectedExerciseForHints"
-    [exerciseId]="selectedExerciseForHints!.id!"
-    [exerciseTitle]="selectedExerciseForHints!.title"
-    (closeModal)="closeHintsModal()"
-  ></app-hints-viewer-modal>
-
-  <app-exercise-list
-    *ngIf="activeTab === 'exercises'"
-    [exercises]="exercises"
-    [submissions]="submissions"
-    [isLoading]="isLoading"
-    (uploadExercise)="openUploadModal($event)"
-    (editSubmission)="openEditModal($event.exercise, $event.submission)"
-    (deleteSubmission)="deleteSubmission($event)"
-    (downloadExercise)="downloadExercise($event)"
-    (downloadSubmission)="downloadSubmission($event)"
-    (openExternalUrl)="openExternalUrl($event)"
-    (viewHints)="openHintsModal($event)"
-  ></app-exercise-list>
 </div>
+
+<!-- Modal: Confirmación Eliminar Entrega -->
+<app-confirmation-modal
+  *ngIf="showDeleteModal && exerciseToDelete"
+  title="¿Eliminar entrega?"
+  [message]="getDeleteSubmissionMessage()"
+  confirmText="Eliminar"
+  cancelText="Cancelar"
+  type="danger"
+  (confirm)="confirmDeleteSubmission()"
+  (cancel)="cancelDeleteSubmission()"
+>
+</app-confirmation-modal>
+
+<!-- ✅ Modal: Ver Pistas - POSICIÓN CORRECTA -->
+<app-hints-viewer-modal
+  *ngIf="showHintsModal && selectedExerciseForHints"
+  [exerciseId]="selectedExerciseForHints.id!"
+  [exerciseTitle]="selectedExerciseForHints.title"
+  (closeModal)="closeHintsModal()"
+></app-hints-viewer-modal>
