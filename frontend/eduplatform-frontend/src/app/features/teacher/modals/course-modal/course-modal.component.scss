@@ -13,6 +13,7 @@ $gray-100: #f3f4f6;
 $gray-200: #e5e7eb;
 $gray-300: #d1d5db;
 $gray-400: #9ca3af;
+$gray-500: #6b7280; // Variable faltante agregada
 $gray-600: #6b7280;
 $gray-700: #374151;
 $gray-900: #111827;
@@ -56,7 +57,8 @@ $transition: all 0.2s ease;
   width: 100%;
   max-width: 650px;
   max-height: 90vh;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   animation: slideUp 0.3s ease-out;
   position: relative;
@@ -77,15 +79,15 @@ $transition: all 0.2s ease;
 // HEADER
 // ===========================
 .modal-header {
-  position: relative;
   padding: 2rem;
-  background: linear-gradient(135deg, $primary-blue 0%, #8b5cf6 100%);
+  background: linear-gradient(135deg, $primary-blue 0%, $primary-blue-hover 100%);
   border-radius: 20px 20px 0 0;
   color: white;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 1rem;
+  flex-shrink: 0;
 }
 
 .header-content {
@@ -145,10 +147,13 @@ $transition: all 0.2s ease;
 }
 
 // ===========================
-// FORM
+// FORM (CONTENIDO CON SCROLL)
 // ===========================
 .modal-form {
   padding: 2rem;
+  overflow-y: auto;
+  max-height: calc(90vh - 160px); // Ajuste basado en la altura del header
+  flex: 1;
 }
 
 .form-group {
@@ -216,7 +221,7 @@ $transition: all 0.2s ease;
   min-height: 120px;
   line-height: 1.6;
   background: white;
-  box-sizing: border-box; // 🔹 evita que se desborde
+  box-sizing: border-box;
 
   &::placeholder {
     color: $gray-400;
@@ -353,7 +358,7 @@ $transition: all 0.2s ease;
   display: flex;
   gap: 0.75rem;
   padding: 1rem;
-  background: linear-gradient(135deg, #e0f2fe 0%, #ddd6fe 100%);
+  background: #f0f7ff; // Color claro azul sin usar lighten()
   border-left: 4px solid $primary-blue;
   border-radius: 10px;
   font-size: 0.875rem;
@@ -394,6 +399,7 @@ $transition: all 0.2s ease;
   &:hover {
     background: $gray-50;
     border-color: $gray-300;
+    color: $gray-900;
   }
 }
 
@@ -404,7 +410,7 @@ $transition: all 0.2s ease;
   justify-content: center;
   gap: 0.5rem;
   padding: 0.875rem 1.5rem;
-  background: linear-gradient(135deg, $primary-blue 0%, #8b5cf6 100%);
+  background: linear-gradient(135deg, $primary-blue 0%, $primary-blue-hover 100%);
   color: white;
   border: none;
   border-radius: 10px;
@@ -415,6 +421,7 @@ $transition: all 0.2s ease;
   box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
 
   &:hover:not(:disabled) {
+    background: linear-gradient(135deg, $primary-blue-hover 0%, #1e40af 100%); // Color más oscuro sin darken()
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(37, 99, 235, 0.4);
   }
@@ -424,32 +431,37 @@ $transition: all 0.2s ease;
   }
 
   &:disabled {
-    background: $gray-300;
+    background: $gray-400;
     cursor: not-allowed;
     opacity: 0.6;
     box-shadow: none;
+    transform: none;
   }
 }
 
 // ===========================
-// SCROLLBAR
+// SCROLLBAR (SOLO EN EL FORM)
 // ===========================
-.modal-container {
+.modal-form {
   &::-webkit-scrollbar {
-    width: 10px;
+    width: 8px;
   }
 
   &::-webkit-scrollbar-track {
     background: $gray-100;
     border-radius: 10px;
+    margin: 4px;
   }
 
   &::-webkit-scrollbar-thumb {
     background: $gray-300;
     border-radius: 10px;
+    border: 2px solid transparent;
+    background-clip: content-box;
 
     &:hover {
       background: $gray-400;
+      background-clip: content-box;
     }
   }
 }
@@ -492,6 +504,7 @@ $transition: all 0.2s ease;
 
   .modal-form {
     padding: 1.5rem;
+    max-height: calc(100vh - 140px);
   }
 
   .form-actions {
@@ -512,5 +525,46 @@ $transition: all 0.2s ease;
     position: absolute;
     top: 1rem;
     right: 1rem;
+  }
+}
+
+// ===========================
+// VARIANTES DE COLOR
+// ===========================
+.info-box-warning {
+  background: #fef7ed; // Color claro naranja sin usar lighten()
+  border-left-color: $warning-orange;
+
+  svg {
+    color: $warning-orange;
+  }
+
+  strong {
+    color: #92400e; // Color oscuro naranja
+  }
+}
+
+.info-box-success {
+  background: #ecfdf5; // Color claro verde sin usar lighten()
+  border-left-color: $success-green;
+
+  svg {
+    color: $success-green;
+  }
+
+  strong {
+    color: #065f46; // Color oscuro verde
+  }
+}
+
+.submit-btn.no-changes {
+  background: linear-gradient(135deg, $gray-400 0%, $gray-500 100%);
+  cursor: not-allowed;
+  box-shadow: none;
+
+  &:hover {
+    transform: none;
+    box-shadow: none;
+    background: linear-gradient(135deg, $gray-400 0%, $gray-500 100%);
   }
 }

@@ -5,14 +5,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-    background: linear-gradient(
-    135deg,
-    oklch(0.95 0.05 280) 0%,
-    oklch(0.98 0.02 120) 50%,
-    oklch(0.92 0.08 320) 100%
-  );
+  background: #F0F0F0; // Gris Neutro como fondo principal
   padding: 1rem;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Poppins', 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 .register-content {
@@ -36,30 +31,40 @@
 .logo-circle {
   width: 56px;
   height: 56px;
-  background: #2563eb;
+  background: #F26B21; // Naranja Tango primario
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
 }
 
 .brand-title {
   font-size: 1.875rem;
   font-weight: 700;
-  background: linear-gradient(135deg, #2563eb 0%, #10b981 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #4C4C4C; // Gris Oscuro para texto principal
   margin: 0;
+  font-family: 'Poppins', sans-serif;
 }
 
 /* Card principal */
 .register-card {
-  background: white;
+  background: #FFFFFF; // Blanco para cards destacadas
+  border: 1px solid #DADADA; // Borde sutil gris
   border-radius: 1rem;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   padding: 2rem;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 6px 20px rgba(242, 107, 33, 0.15);
+    border-color: #F26B21; // Borde naranja al hover
+  }
 }
 
 .card-header {
@@ -69,28 +74,31 @@
   h2 {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #111827;
+    color: #4C4C4C; // Gris Oscuro
     margin: 0 0 0.5rem 0;
+    font-family: 'Poppins', sans-serif;
   }
 
   .subtitle {
-    color: #6b7280;
+    color: #4C4C4C; // Gris Oscuro
     font-size: 0.875rem;
     margin: 0;
+    opacity: 0.8;
   }
 }
 
 /* Formulario */
 .form-group {
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 label {
   display: block;
   font-size: 0.875rem;
   font-weight: 600;
-  color: #111827;
+  color: #4C4C4C; // Gris Oscuro
   margin-bottom: 0.5rem;
+  font-family: 'Roboto', sans-serif;
 }
 
 .input-wrapper {
@@ -104,29 +112,98 @@ label {
   left: 0.75rem;
   color: #9ca3af;
   pointer-events: none;
+  transition: color 0.3s ease;
 }
 
 input {
   width: 100%;
   padding: 0.75rem 1rem 0.75rem 2.75rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid #DADADA;
   border-radius: 0.5rem;
   font-size: 0.9375rem;
   outline: none;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
+  background: #FFFFFF;
+  color: #4C4C4C;
+  font-family: 'Roboto', sans-serif;
 
   &::placeholder {
     color: #9ca3af;
   }
 
   &:focus {
-    border-color: #2563eb;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    border-color: #68B8BE; // Azul Fuente en focus
+    box-shadow: 0 0 0 2px rgba(104, 184, 190, 0.2);
+    
+    & + .input-icon {
+      color: #68B8BE;
+    }
   }
 
   &.ng-invalid.ng-touched,
   &.ng-invalid.ng-dirty {
     border-color: #ef4444;
+    
+    & + .input-icon {
+      color: #ef4444;
+    }
+  }
+}
+
+/* Selector de rol */
+.role-selector {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.role-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  border: 2px solid #DADADA;
+  border-radius: 0.75rem;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    border-color: #68B8BE; // Azul Fuente al hover
+    background: rgba(104, 184, 190, 0.05);
+    transform: translateY(-2px);
+  }
+
+  &.active {
+    border-color: #F26B21; // Naranja Tango cuando está activo
+    background: rgba(242, 107, 33, 0.05);
+
+    .role-icon {
+      color: #F26B21;
+    }
+
+    span {
+      color: #F26B21;
+      font-weight: 600;
+    }
+  }
+
+  .role-icon {
+    width: 32px;
+    height: 32px;
+    color: #9ca3af;
+    transition: all 0.3s ease;
+  }
+
+  span {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: #4C4C4C; // Gris Oscuro
+    transition: all 0.3s ease;
+    font-family: 'Roboto', sans-serif;
   }
 }
 
@@ -141,9 +218,10 @@ input {
     gap: 0.75rem;
     font-weight: 400;
     font-size: 0.875rem;
-    color: #374151;
+    color: #4C4C4C; // Gris Oscuro
     line-height: 1.5;
     cursor: pointer;
+    font-family: 'Roboto', sans-serif;
   }
 
   input[type='checkbox'] {
@@ -152,29 +230,31 @@ input {
     min-width: 18px;
     margin-top: 0.125rem;
     padding: 0;
-    border: 2px solid #d1d5db;
+    border: 2px solid #DADADA;
     border-radius: 0.25rem;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.3s ease;
 
     &:checked {
-      background-color: #2563eb;
-      border-color: #2563eb;
+      background-color: #F26B21; // Naranja Tango cuando está marcado
+      border-color: #F26B21;
     }
 
     &:focus {
       outline: none;
-      border-color: #2563eb;
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+      border-color: #68B8BE; // Azul Fuente en focus
+      box-shadow: 0 0 0 2px rgba(104, 184, 190, 0.2);
     }
   }
 
   a {
-    color: #2563eb;
+    color: #68B8BE; // Azul Fuente para enlaces
     text-decoration: none;
     font-weight: 600;
+    transition: color 0.3s ease;
 
     &:hover {
+      color: #5aa8ad; // Azul más oscuro al hover
       text-decoration: underline;
     }
   }
@@ -187,60 +267,7 @@ input {
   font-size: 0.75rem;
   margin-top: 0.25rem;
   margin-left: 0.25rem;
-}
-
-/* Selector de rol */
-.role-selector {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.75rem;
-}
-
-.role-button {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  padding: 1rem;
-  border: 2px solid #e5e7eb;
-  border-radius: 0.75rem;
-  background: white;
-  cursor: pointer;
-  transition: all 0.2s;
-
-  &:hover {
-    border-color: #2563eb;
-    background: #eff6ff;
-  }
-
-  &.active {
-    border-color: #2563eb;
-    background: #eff6ff;
-
-    .role-icon {
-      color: #2563eb;
-    }
-
-    span {
-      color: #2563eb;
-      font-weight: 600;
-    }
-  }
-
-  .role-icon {
-    width: 32px;
-    height: 32px;
-    color: #6b7280;
-    transition: color 0.2s;
-  }
-
-  span {
-    font-size: 0.9375rem;
-    font-weight: 500;
-    color: #374151;
-    transition: all 0.2s;
-  }
+  font-family: 'Roboto', sans-serif;
 }
 
 /* Botón principal */
@@ -251,28 +278,48 @@ input {
   justify-content: center;
   gap: 0.5rem;
   padding: 0.875rem 1rem;
-  background: #2563eb;
+  background: #F26B21; // Naranja Tango primario
   color: white;
   border: none;
   border-radius: 0.5rem;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
-  margin-top: 1.5rem;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+  font-family: 'Poppins', sans-serif;
 
   &:hover:not(:disabled) {
-    background: #1d4ed8;
+    background: #e05a1a; // Naranja más oscuro al hover
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(242, 107, 33, 0.3);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:focus {
+    outline: 2px solid #68B8BE; // Azul Fuente para focus
+    outline-offset: 2px;
   }
 
   &:disabled {
-    background: #93c5fd;
+    background: #DADADA;
+    color: #9ca3af;
     cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
   }
 
   .btn-icon {
     width: 20px;
     height: 20px;
+    transition: transform 0.3s ease;
+  }
+
+  &:hover:not(:disabled) .btn-icon {
+    transform: scale(1.1);
   }
 }
 
@@ -280,15 +327,20 @@ input {
 .terms-text {
   text-align: center;
   font-size: 0.75rem;
-  color: #6b7280;
+  color: #4C4C4C; // Gris Oscuro
   margin: 1rem 0 0.5rem 0;
   line-height: 1.5;
+  opacity: 0.8;
+  font-family: 'Roboto', sans-serif;
 
   a {
-    color: #2563eb;
+    color: #68B8BE; // Azul Fuente
     text-decoration: none;
+    font-weight: 500;
+    transition: color 0.3s ease;
 
     &:hover {
+      color: #5aa8ad;
       text-decoration: underline;
     }
   }
@@ -298,16 +350,20 @@ input {
 .login-link {
   text-align: center;
   font-size: 0.875rem;
-  color: #6b7280;
-  margin: 0.5rem 0 0 0;
+  color: #4C4C4C; // Gris Oscuro
+  margin: 1.5rem 0 0 0;
+  font-family: 'Roboto', sans-serif;
 
   a {
-    color: #2563eb;
+    color: #F26B21; // Naranja Tango
     font-weight: 600;
     text-decoration: none;
+    cursor: pointer;
+    transition: color 0.3s ease;
 
     &:hover {
-      color: #1d4ed8;
+      color: #e05a1a; // Naranja más oscuro
+      text-decoration: underline;
     }
   }
 }
@@ -315,9 +371,11 @@ input {
 /* Footer */
 .footer-text {
   text-align: center;
-  font-size: 0.875rem;
-  color: #6b7280;
+  font-size: 0.75rem;
+  color: #4C4C4C; // Gris Oscuro
   margin-top: 1.5rem;
+  opacity: 0.7;
+  font-family: 'Roboto', sans-serif;
 }
 
 .terms-checkbox label {
@@ -331,11 +389,70 @@ input {
   line-height: 1.5;
 }
 
+/* Estados de validación mejorados */
+.input-wrapper {
+  &.valid input {
+    border-color: #68B8BE; // Azul Fuente para válido
+    
+    & + .input-icon {
+      color: #68B8BE;
+    }
+  }
+  
+  &.invalid input {
+    border-color: #ef4444; // Rojo para error
+    
+    & + .input-icon {
+      color: #ef4444;
+    }
+  }
+}
+
+/* Animaciones */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.register-card {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.brand-header {
+  animation: fadeInUp 0.6s ease-out 0.1s both;
+}
+
+.role-button.active {
+  animation: pulse 0.5s ease;
+}
 
 /* Responsive */
 @media (max-width: 480px) {
+  .register-container {
+    padding: 0.5rem;
+  }
+  
   .register-card {
     padding: 1.5rem;
+    border-radius: 0.75rem;
   }
 
   .brand-title {
@@ -347,8 +464,15 @@ input {
     height: 48px;
   }
 
+  .role-selector {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
   .role-button {
     padding: 0.875rem;
+    flex-direction: row;
+    justify-content: flex-start;
 
     .role-icon {
       width: 28px;
@@ -357,6 +481,48 @@ input {
 
     span {
       font-size: 0.875rem;
+    }
+  }
+
+  .card-header h2 {
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .register-content {
+    max-width: 400px;
+  }
+}
+
+/* Mejoras de accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Alto contraste para mejor accesibilidad */
+@media (prefers-contrast: high) {
+  .register-card {
+    border: 2px solid #4C4C4C;
+  }
+  
+  input {
+    border: 2px solid #4C4C4C;
+  }
+  
+  .btn-primary {
+    border: 2px solid #4C4C4C;
+  }
+  
+  .role-button {
+    border: 2px solid #4C4C4C;
+    
+    &.active {
+      border: 3px solid #4C4C4C;
     }
   }
 }

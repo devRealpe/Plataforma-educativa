@@ -5,14 +5,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-    background: linear-gradient(
-    135deg,
-    oklch(0.95 0.05 280) 0%,
-    oklch(0.98 0.02 120) 50%,
-    oklch(0.92 0.08 320) 100%
-  );
+  background: #F0F0F0; // Gris Neutro como fondo principal
   padding: 1rem;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Poppins', 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 .login-content {
@@ -36,27 +31,40 @@
 .logo-circle {
   width: 56px;
   height: 56px;
-  background: #2563eb;
+  background: #F26B21; // Naranja Tango primario
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: scale(1.05);
+  }
 }
 
 .brand-title {
   font-size: 1.875rem;
   font-weight: 700;
-  color: #2563eb;
+  color: #4C4C4C; // Gris Oscuro para texto principal
   margin: 0;
+  font-family: 'Poppins', sans-serif;
 }
 
 /* Card principal */
 .login-card {
-  background: white;
+  background: #FFFFFF; // Blanco para cards destacadas
+  border: 1px solid #DADADA; // Borde sutil gris
   border-radius: 1rem;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   padding: 2rem;
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 6px 20px rgba(242, 107, 33, 0.15);
+    border-color: #F26B21; // Borde naranja al hover
+  }
 }
 
 .card-header {
@@ -66,28 +74,31 @@
   h2 {
     font-size: 1.5rem;
     font-weight: 700;
-    color: #111827;
+    color: #4C4C4C; // Gris Oscuro
     margin: 0 0 0.5rem 0;
+    font-family: 'Poppins', sans-serif;
   }
 
   .subtitle {
-    color: #6b7280;
+    color: #4C4C4C; // Gris Oscuro
     font-size: 0.875rem;
     margin: 0;
+    opacity: 0.8;
   }
 }
 
 /* Formulario */
 .form-group {
-  margin-bottom: 1rem;
+  margin-bottom: 1.5rem;
 }
 
 label {
   display: block;
   font-size: 0.875rem;
   font-weight: 600;
-  color: #111827;
+  color: #4C4C4C; // Gris Oscuro
   margin-bottom: 0.5rem;
+  font-family: 'Roboto', sans-serif;
 }
 
 .label-row {
@@ -99,12 +110,13 @@ label {
 
 .forgot-link {
   font-size: 0.875rem;
-  color: #2563eb;
+  color: #68B8BE; // Azul Fuente para enlaces
   text-decoration: none;
-  font-weight: 400;
+  font-weight: 500;
+  transition: color 0.3s ease;
 
   &:hover {
-    color: #1d4ed8;
+    color: #5aa8ad; // Azul más oscuro al hover
   }
 }
 
@@ -119,28 +131,36 @@ label {
   left: 0.75rem;
   color: #9ca3af;
   pointer-events: none;
+  transition: color 0.3s ease;
 }
 
 input {
   width: 100%;
   padding: 0.75rem 1rem 0.75rem 2.75rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid #DADADA;
   border-radius: 0.5rem;
   font-size: 0.9375rem;
   outline: none;
-  transition: all 0.2s;
+  transition: all 0.3s ease;
+  background: #FFFFFF;
+  color: #4C4C4C;
+  font-family: 'Roboto', sans-serif;
 
   &::placeholder {
     color: #9ca3af;
   }
 
   &:focus {
-    border-color: #2563eb;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    border-color: #68B8BE; // Azul Fuente en focus
+    box-shadow: 0 0 0 2px rgba(104, 184, 190, 0.2);
+    
+    & + .input-icon {
+      color: #68B8BE;
+    }
   }
 }
 
-/* Botón principal */
+/* Botones */
 .btn-primary {
   width: 100%;
   display: flex;
@@ -148,53 +168,47 @@ input {
   justify-content: center;
   gap: 0.5rem;
   padding: 0.875rem 1rem;
-  background: #2563eb;
+  background: #F26B21; // Naranja Tango primario
   color: white;
   border: none;
   border-radius: 0.5rem;
   font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.2s;
-  margin-top: 1.5rem;
+  transition: all 0.3s ease;
+  margin-top: 1rem;
+  font-family: 'Poppins', sans-serif;
 
   &:hover:not(:disabled) {
-    background: #1d4ed8;
+    background: #e05a1a; // Naranja más oscuro al hover
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(242, 107, 33, 0.3);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(0);
+  }
+
+  &:focus {
+    outline: 2px solid #68B8BE; // Azul Fuente para focus
+    outline-offset: 2px;
   }
 
   &:disabled {
-    background: #93c5fd;
+    background: #DADADA;
+    color: #9ca3af;
     cursor: not-allowed;
+    transform: none;
   }
 
   .btn-icon {
     width: 20px;
     height: 20px;
-  }
-}
-
-/* Divider */
-.divider {
-  position: relative;
-  text-align: center;
-  margin: 1.5rem 0;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 0;
-    right: 0;
-    height: 1px;
-    background: #e5e7eb;
+    transition: transform 0.3s ease;
   }
 
-  span {
-    position: relative;
-    background: white;
-    padding: 0 1rem;
-    font-size: 0.875rem;
-    color: #6b7280;
+  &:hover:not(:disabled) .btn-icon {
+    transform: scale(1.1);
   }
 }
 
@@ -203,7 +217,7 @@ input {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 0.75rem;
-  margin-bottom: 1.5rem;
+  margin: 1.5rem 0;
 }
 
 .btn-social {
@@ -212,25 +226,32 @@ input {
   justify-content: center;
   gap: 0.5rem;
   padding: 0.75rem 1rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid #DADADA;
   border-radius: 0.5rem;
   background: white;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: all 0.3s ease;
 
   &:hover {
-    background: #f9fafb;
+    background: #F0F0F0; // Gris Neutro al hover
+    border-color: #68B8BE; // Azul Fuente
+    transform: translateY(-1px);
   }
 
   .social-icon {
     width: 20px;
     height: 20px;
+    transition: transform 0.3s ease;
+  }
+
+  &:hover .social-icon {
+    transform: scale(1.1);
   }
 
   span {
     font-size: 0.875rem;
     font-weight: 500;
-    color: #374151;
+    color: #4C4C4C; // Gris Oscuro
   }
 }
 
@@ -238,17 +259,20 @@ input {
 .register-link {
   text-align: center;
   font-size: 0.875rem;
-  color: #6b7280;
-  margin: 0;
-  margin-top: 10px;
+  color: #4C4C4C; // Gris Oscuro
+  margin: 1.5rem 0 0 0;
+  font-family: 'Roboto', sans-serif;
 
   a {
-    color: #2563eb;
+    color: #F26B21; // Naranja Tango
     font-weight: 600;
     text-decoration: none;
+    cursor: pointer;
+    transition: color 0.3s ease;
 
     &:hover {
-      color: #1d4ed8;
+      color: #e05a1a; // Naranja más oscuro
+      text-decoration: underline;
     }
   }
 }
@@ -256,15 +280,61 @@ input {
 /* Footer */
 .footer-text {
   text-align: center;
-  font-size: 0.875rem;
-  color: #6b7280;
+  font-size: 0.75rem;
+  color: #4C4C4C; // Gris Oscuro
   margin-top: 1.5rem;
+  opacity: 0.7;
+  font-family: 'Roboto', sans-serif;
+}
+
+/* Estados de validación */
+.input-wrapper {
+  &.valid input {
+    border-color: #68B8BE; // Azul Fuente para válido
+    
+    & + .input-icon {
+      color: #68B8BE;
+    }
+  }
+  
+  &.invalid input {
+    border-color: #ef4444; // Rojo para error
+    
+    & + .input-icon {
+      color: #ef4444;
+    }
+  }
+}
+
+/* Animaciones */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.login-card {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.brand-header {
+  animation: fadeInUp 0.6s ease-out 0.1s both;
 }
 
 /* Responsive */
 @media (max-width: 480px) {
+  .login-container {
+    padding: 0.5rem;
+  }
+  
   .login-card {
     padding: 1.5rem;
+    border-radius: 0.75rem;
   }
 
   .brand-title {
@@ -274,5 +344,44 @@ input {
   .logo-circle {
     width: 48px;
     height: 48px;
+  }
+
+  .social-buttons {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .card-header h2 {
+    font-size: 1.25rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .login-content {
+    max-width: 400px;
+  }
+}
+
+/* Mejoras de accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Alto contraste para mejor accesibilidad */
+@media (prefers-contrast: high) {
+  .login-card {
+    border: 2px solid #4C4C4C;
+  }
+  
+  input {
+    border: 2px solid #4C4C4C;
+  }
+  
+  .btn-primary {
+    border: 2px solid #4C4C4C;
   }
 }
