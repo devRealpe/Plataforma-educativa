@@ -2,7 +2,6 @@
 // 🎨 VARIABLES Y CONFIGURACIÓN
 // ==========================================
 
-// PALETA DE COLORES PRINCIPAL
 $naranja-tango: #F26B21;
 $naranja-oscuro: #D45A1A;
 $azul-fuente: #68B8BE;
@@ -13,7 +12,6 @@ $gris-claro: #DADADA;
 $blanco: #FFFFFF;
 $rojo-error: #E74C3C;
 
-// ESPACIADO
 $spacing-xs: 0.25rem;
 $spacing-sm: 0.5rem;
 $spacing-md: 1rem;
@@ -21,19 +19,16 @@ $spacing-lg: 1.5rem;
 $spacing-xl: 2rem;
 $spacing-2xl: 3rem;
 
-// BORDES
 $radius-sm: 8px;
 $radius-md: 12px;
 $radius-lg: 16px;
 $radius-xl: 20px;
 
-// SOMBRAS
 $shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
 $shadow-md: 0 2px 8px rgba(0, 0, 0, 0.1);
 $shadow-lg: 0 4px 12px rgba(242, 107, 33, 0.15);
 $shadow-xl: 0 8px 20px rgba(0, 0, 0, 0.12);
 
-// TRANSICIONES
 $transition-base: 0.3s ease-in-out;
 
 // ==========================================
@@ -88,68 +83,7 @@ $transition-base: 0.3s ease-in-out;
 }
 
 // ==========================================
-// 💡 MOTIVATIONAL BANNER
-// ==========================================
-
-.motivational-banner {
-  display: flex;
-  align-items: center;
-  gap: $spacing-lg;
-  padding: $spacing-xl;
-  background: rgba(242, 107, 33, 0.1);
-  border: 2px solid rgba(242, 107, 33, 0.2);
-  border-radius: $radius-lg;
-  margin-bottom: $spacing-xl;
-  box-shadow: $shadow-md;
-  animation: fadeInUp 0.6s ease 0.3s both;
-  position: relative;
-  overflow: hidden;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-    animation: shimmer 3s infinite;
-  }
-
-  .banner-icon {
-    flex-shrink: 0;
-    width: 64px;
-    height: 64px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: $naranja-tango;
-    border-radius: 50%;
-    box-shadow: 0 4px 16px rgba(242, 107, 33, 0.3);
-
-    svg {
-      color: $blanco;
-      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-    }
-  }
-
-  .banner-text {
-    flex: 1;
-    font-size: 1.05rem;
-    font-weight: 500;
-    color: $gris-oscuro;
-    line-height: 1.6;
-    margin: 0;
-  }
-}
-
-@keyframes shimmer {
-  0% { left: -100%; }
-  100% { left: 100%; }
-}
-
-// ==========================================
-// 🎯 HEADER
+// 🎯 HEADER OPTIMIZADO - REDUCCIÓN AUTOMÁTICA
 // ==========================================
 
 .header {
@@ -160,14 +94,113 @@ $transition-base: 0.3s ease-in-out;
   top: 0;
   z-index: 100;
   transition: all $transition-base;
-}
 
-.header-content {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: $spacing-xl;
-  position: relative;
-  z-index: 1;
+  .header-content {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: $spacing-lg $spacing-xl;
+    position: relative;
+    z-index: 1;
+    transition: all $transition-base;
+  }
+
+  // ✨ ESTADO REDUCIDO AL HACER SCROLL
+  &.scrolled {
+    box-shadow: $shadow-lg;
+
+    .header-content {
+      padding: $spacing-sm $spacing-xl;
+    }
+
+    .back-btn {
+      padding: $spacing-xs $spacing-sm;
+      font-size: 0.8rem;
+      margin-bottom: $spacing-xs;
+
+      span {
+        display: none;
+      }
+
+      svg {
+        width: 18px;
+        height: 18px;
+      }
+    }
+
+    .course-header {
+      margin-bottom: $spacing-sm;
+    }
+
+    .course-title {
+      font-size: 1.5rem;
+      margin-bottom: $spacing-xs;
+    }
+
+    .course-description {
+      display: none;
+    }
+
+    .course-meta-badges {
+      gap: $spacing-xs;
+
+      .meta-badge {
+        padding: $spacing-xs $spacing-sm;
+        font-size: 0.75rem;
+
+        svg {
+          width: 14px;
+          height: 14px;
+        }
+      }
+    }
+
+    .header-actions {
+      gap: $spacing-xs;
+      margin-top: $spacing-xs;
+
+      .action-btn {
+        padding: $spacing-xs $spacing-sm;
+        font-size: 0.8rem;
+
+        span {
+          display: none;
+        }
+
+        svg {
+          width: 16px;
+          height: 16px;
+        }
+
+        .badge-indicator {
+          width: 16px;
+          height: 16px;
+          font-size: 0.6rem;
+        }
+      }
+    }
+
+    .tabs-navigation {
+      margin-top: $spacing-xs;
+      padding: $spacing-xs;
+      gap: $spacing-xs;
+    }
+
+    .tab-btn {
+      padding: $spacing-xs $spacing-sm;
+      font-size: 0.8rem;
+
+      svg {
+        width: 16px;
+        height: 16px;
+      }
+
+      .tab-count {
+        min-width: 18px;
+        height: 18px;
+        font-size: 0.65rem;
+      }
+    }
+  }
 }
 
 // ==========================================
@@ -178,25 +211,21 @@ $transition-base: 0.3s ease-in-out;
   display: inline-flex;
   align-items: center;
   gap: $spacing-sm;
-  padding: $spacing-md $spacing-lg;
+  padding: $spacing-sm $spacing-md;
   background: $blanco;
   color: $gris-oscuro;
   border: 2px solid $gris-claro;
   border-radius: $radius-md;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   cursor: pointer;
   transition: all $transition-base;
-  margin-bottom: $spacing-lg;
+  margin-bottom: $spacing-md;
   box-shadow: $shadow-sm;
 
   svg {
     transition: transform $transition-base;
     flex-shrink: 0;
-  }
-
-  span {
-    transition: color $transition-base;
   }
 
   &:hover {
@@ -210,26 +239,23 @@ $transition-base: 0.3s ease-in-out;
       transform: translateX(-4px);
     }
   }
-
-  &:active {
-    transform: translateX(-4px) scale(0.98);
-  }
 }
 
 // ==========================================
-// 📚 COURSE HEADER
+// 📚 COURSE HEADER - OPTIMIZADO
 // ==========================================
 
 .course-header {
-  margin-bottom: $spacing-lg;
+  margin-bottom: $spacing-md;
+  transition: all $transition-base;
 }
 
 .course-header-main {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: $spacing-xl;
-  margin-bottom: $spacing-lg;
+  gap: $spacing-lg;
+  margin-bottom: $spacing-md;
   flex-wrap: wrap;
 }
 
@@ -239,15 +265,14 @@ $transition-base: 0.3s ease-in-out;
 }
 
 .course-title {
-  font-size: 2.25rem;
+  font-size: 1.75rem;
   font-weight: 800;
   color: $gris-oscuro;
-  margin: 0 0 $spacing-md 0;
+  margin: 0 0 $spacing-sm 0;
   line-height: 1.2;
   letter-spacing: -0.02em;
-  animation: fadeInUp 0.6s ease;
+  transition: all $transition-base;
   
-  // Efecto sutil naranja en el texto
   background: linear-gradient(135deg, $gris-oscuro 0%, $naranja-tango 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -255,29 +280,30 @@ $transition-base: 0.3s ease-in-out;
 }
 
 .course-description {
-  font-size: 1.05rem;
+  font-size: 0.95rem;
   color: $gris-oscuro;
   opacity: 0.8;
-  line-height: 1.6;
+  line-height: 1.5;
   margin: 0;
-  animation: fadeInUp 0.6s ease 0.1s both;
+  transition: opacity $transition-base, max-height $transition-base;
 }
 
 .course-meta-badges {
   display: flex;
-  gap: $spacing-md;
+  gap: $spacing-sm;
   flex-wrap: wrap;
+  transition: all $transition-base;
 }
 
 .meta-badge {
   display: flex;
   align-items: center;
-  gap: $spacing-sm;
-  padding: $spacing-md $spacing-lg;
+  gap: $spacing-xs;
+  padding: $spacing-sm $spacing-md;
   background: rgba(242, 107, 33, 0.1);
   border: 2px solid rgba(242, 107, 33, 0.2);
   border-radius: $radius-md;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 600;
   color: $gris-oscuro;
   box-shadow: $shadow-sm;
@@ -330,102 +356,61 @@ $transition-base: 0.3s ease-in-out;
 }
 
 // ==========================================
-// 🎮 ACTION BUTTONS
+// 🎮 ACTION BUTTONS - OPTIMIZADOS
 // ==========================================
 
 .header-actions {
   display: flex;
-  gap: $spacing-md;
+  gap: $spacing-sm;
   flex-wrap: wrap;
-  animation: fadeInUp 0.6s ease 0.2s both;
+  transition: all $transition-base;
 }
 
 .action-btn {
   display: flex;
   align-items: center;
-  gap: $spacing-sm;
-  padding: $spacing-md $spacing-xl;
+  gap: $spacing-xs;
+  padding: $spacing-sm $spacing-md;
   border: none;
   border-radius: $radius-md;
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
   cursor: pointer;
   transition: all $transition-base;
   position: relative;
   overflow: hidden;
-  box-shadow: $shadow-md;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
-    transform: translate(-50%, -50%);
-    transition: width 0.6s, height 0.6s;
-  }
-
-  &:hover::before {
-    width: 300px;
-    height: 300px;
-  }
+  box-shadow: $shadow-sm;
 
   svg {
-    position: relative;
-    z-index: 1;
     transition: transform $transition-base;
     flex-shrink: 0;
   }
 
-  span {
-    position: relative;
-    z-index: 1;
-  }
-
   &:hover {
-    transform: translateY(-3px) scale(1.05);
+    transform: translateY(-2px);
 
     svg {
-      transform: scale(1.1) rotate(5deg);
+      transform: scale(1.1);
     }
-  }
-
-  &:active {
-    transform: translateY(-1px) scale(1.02);
   }
 
   &.primary {
     background: $naranja-tango;
     color: $blanco;
-    box-shadow: 0 4px 16px rgba(242, 107, 33, 0.3);
+    box-shadow: 0 2px 8px rgba(242, 107, 33, 0.3);
 
     &:hover {
       background: $naranja-oscuro;
-      box-shadow: 0 8px 24px rgba(242, 107, 33, 0.4);
+      box-shadow: 0 4px 12px rgba(242, 107, 33, 0.4);
     }
 
     &.challenge {
       background: $azul-fuente;
-      color: $blanco;
-      box-shadow: 0 4px 16px rgba(104, 184, 190, 0.3);
+      box-shadow: 0 2px 8px rgba(104, 184, 190, 0.3);
 
       &:hover {
         background: $azul-oscuro;
-        box-shadow: 0 8px 24px rgba(104, 184, 190, 0.4);
-      }
-    }
-
-    &.exercise {
-      background: $naranja-tango;
-      color: $blanco;
-      box-shadow: 0 4px 16px rgba(242, 107, 33, 0.3);
-
-      &:hover {
-        background: $naranja-oscuro;
-        box-shadow: 0 8px 24px rgba(242, 107, 33, 0.4);
+        box-shadow: 0 4px 12px rgba(104, 184, 190, 0.4);
       }
     }
   }
@@ -440,23 +425,55 @@ $transition-base: 0.3s ease-in-out;
       border-color: $naranja-tango;
       color: $naranja-tango;
     }
+
+    &.whatsapp {
+      position: relative;
+
+      &:hover {
+        border-color: #25D366;
+        color: #25D366;
+        background: rgba(37, 211, 102, 0.05);
+
+        svg {
+          filter: drop-shadow(0 0 6px rgba(37, 211, 102, 0.5));
+        }
+      }
+
+      .badge-indicator {
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        background: #25D366;
+        color: $blanco;
+        font-size: 0.65rem;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 2px solid $blanco;
+        font-weight: 700;
+      }
+    }
   }
 }
 
 // ==========================================
-// 📑 TAB NAVIGATION
+// 📑 TAB NAVIGATION - OPTIMIZADO
 // ==========================================
 
 .tabs-navigation {
   display: flex;
-  gap: $spacing-sm;
+  gap: $spacing-xs;
   background: $blanco;
-  padding: $spacing-sm;
+  padding: $spacing-xs;
   border-radius: $radius-lg;
-  margin-top: $spacing-lg;
+  margin-top: $spacing-md;
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
   overflow-x: auto;
   scrollbar-width: thin;
+  transition: all $transition-base;
 
   &::-webkit-scrollbar {
     height: 6px;
@@ -476,38 +493,33 @@ $transition-base: 0.3s ease-in-out;
   display: flex;
   align-items: center;
   gap: $spacing-sm;
-  padding: $spacing-md $spacing-xl;
+  padding: $spacing-sm $spacing-md;
   background: transparent;
   color: $gris-oscuro;
   border: 2px solid transparent;
   border-radius: $radius-md;
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   cursor: pointer;
   transition: all $transition-base;
   white-space: nowrap;
-  position: relative;
 
   svg {
     transition: all $transition-base;
     flex-shrink: 0;
   }
 
-  .tab-label {
-    transition: all $transition-base;
-  }
-
   .tab-count {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 24px;
-    height: 24px;
-    padding: 0 $spacing-sm;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 $spacing-xs;
     background: $gris-claro;
     color: $gris-oscuro;
-    border-radius: 12px;
-    font-size: 0.75rem;
+    border-radius: 11px;
+    font-size: 0.7rem;
     font-weight: 700;
     transition: all $transition-base;
   }
@@ -530,12 +542,7 @@ $transition-base: 0.3s ease-in-out;
   &.active {
     color: $blanco;
     background: $naranja-tango;
-    border-color: transparent;
-    box-shadow: 0 4px 12px rgba(242, 107, 33, 0.3);
-
-    svg {
-      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-    }
+    box-shadow: 0 2px 8px rgba(242, 107, 33, 0.3);
 
     .tab-count {
       background: rgba(255, 255, 255, 0.3);
@@ -545,56 +552,8 @@ $transition-base: 0.3s ease-in-out;
     &:hover {
       background: $naranja-oscuro;
       transform: translateY(-2px);
-      box-shadow: 0 6px 16px rgba(242, 107, 33, 0.4);
+      box-shadow: 0 4px 12px rgba(242, 107, 33, 0.4);
     }
-  }
-}
-
-.action-btn {
-  &.whatsapp {
-    position: relative;
-
-    &:hover {
-      border-color: #25D366;
-      color: #25D366;
-      background: rgba(37, 211, 102, 0.05);
-
-      svg {
-        filter: drop-shadow(0 0 8px rgba(37, 211, 102, 0.5));
-      }
-    }
-
-    .badge-indicator {
-      position: absolute;
-      top: -4px;
-      right: -4px;
-      background: #25D366;
-      color: $blanco;
-      font-size: 0.7rem;
-      width: 18px;
-      height: 18px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 2px solid $blanco;
-      font-weight: 700;
-    }
-  }
-}
-
-// ==========================================
-// 🎭 ANIMATIONS
-// ==========================================
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }
 
@@ -619,33 +578,42 @@ $transition-base: 0.3s ease-in-out;
 
 @media (max-width: 768px) {
   .header-content {
-    padding: $spacing-lg;
+    padding: $spacing-md;
+  }
+
+  .header.scrolled .header-content {
+    padding: $spacing-xs $spacing-md;
   }
 
   .course-title {
-    font-size: 1.75rem;
+    font-size: 1.5rem;
   }
 
   .course-description {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
   }
 
   .tabs-navigation {
-    padding: $spacing-xs;
-    gap: $spacing-xs;
+    gap: 2px;
   }
 
   .tab-btn {
-    padding: $spacing-sm $spacing-md;
-    font-size: 0.875rem;
+    padding: $spacing-xs $spacing-sm;
+    font-size: 0.8rem;
 
     .tab-label {
       display: none;
     }
 
-    .tab-count {
-      margin-left: 0;
+    svg {
+      width: 18px;
+      height: 18px;
     }
+  }
+
+  .header.scrolled .tab-btn svg {
+    width: 16px;
+    height: 16px;
   }
 
   .header-actions {
@@ -660,27 +628,12 @@ $transition-base: 0.3s ease-in-out;
 
 @media (max-width: 480px) {
   .course-title {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
   }
 
   .meta-badge {
-    font-size: 0.8rem;
-    padding: $spacing-sm $spacing-md;
-  }
-
-  .action-btn {
-    padding: $spacing-sm $spacing-md;
-    font-size: 0.875rem;
-
-    span {
-      display: none;
-    }
-  }
-
-  .back-btn {
-    span {
-      display: none;
-    }
+    font-size: 0.75rem;
+    padding: $spacing-xs $spacing-sm;
   }
 }
 

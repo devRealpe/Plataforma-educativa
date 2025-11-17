@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -35,16 +35,8 @@ import { ChallengeListComponent } from '../challenge-list/challenge-list.compone
 import { WhatsappModalComponent } from '../../../../modals/whatsapp-modal/whatsapp-modal.component';
 
 /**
- * 🎯 ORQUESTADOR PRINCIPAL DE COURSE DETAIL
- *
- * Este componente actúa como:
- * - Contenedor principal de la vista de detalle del curso
- * - Coordinador de todos los componentes hijos
- * - Gestor del estado global (curso, ejercicios, retos)
- * - Controlador de modales
- * - Router principal de la sección
- *
- * Reemplaza completamente a CourseDetailComponent
+ * 🎯 ORQUESTADOR PRINCIPAL DE COURSE DETAIL - TEACHER (OPTIMIZADO)
+ * ✨ Reducción automática del header al hacer scroll
  */
 @Component({
   selector: 'app-course-header',
@@ -81,6 +73,11 @@ export class CourseHeaderComponent implements OnInit {
   isLoadingChallenges = false;
 
   // ==========================================
+  // 🆕 ESTADO DEL SCROLL
+  // ==========================================
+  isScrolled = false;
+
+  // ==========================================
   // ESTADO DE MODALES
   // ==========================================
   showExerciseModal = false;
@@ -109,7 +106,7 @@ export class CourseHeaderComponent implements OnInit {
   activeTab: 'exercises' | 'challenges' | 'podium' = 'exercises';
 
   // ==========================================
-  // 🆕 GETTERS PARA LAS PROPIEDADES FALTANTES
+  // GETTERS
   // ==========================================
   get exerciseCount(): number {
     return this.exercises.length;
@@ -128,6 +125,15 @@ export class CourseHeaderComponent implements OnInit {
     private snackBar: MatSnackBar
   ) {}
 
+  // ==========================================
+  // 🆕 DETECTAR SCROLL
+  // ==========================================
+  @HostListener('window:scroll', ['$event'])
+  onWindowScroll() {
+    // Activar estado "scrolled" después de 100px
+    this.isScrolled = window.pageYOffset > 100;
+  }
+
   ngOnInit() {
     this.courseId = Number(this.route.snapshot.paramMap.get('id'));
 
@@ -138,7 +144,7 @@ export class CourseHeaderComponent implements OnInit {
       return;
     }
 
-    console.log('🚀 Inicializando Course Header con ID:', this.courseId);
+    console.log('🚀 Inicializando Course Header (TEACHER) con ID:', this.courseId);
     this.loadCourseData();
     this.loadChallenges();
   }
@@ -215,7 +221,6 @@ export class CourseHeaderComponent implements OnInit {
     this.router.navigate(['/teacher-dashboard']);
   }
 
-  // 🆕 MÉTODO FALTANTE: onTabChange
   onTabChange(tab: 'exercises' | 'challenges' | 'podium') {
     this.activeTab = tab;
     console.log('📑 Tab cambiado a:', tab);
@@ -229,7 +234,6 @@ export class CourseHeaderComponent implements OnInit {
   // 👥 GESTIÓN DE ESTUDIANTES
   // ==========================================
 
-  // 🆕 MÉTODO RENOMBRADO: onManageStudents
   onManageStudents() {
     this.openManageStudents();
   }
@@ -240,31 +244,24 @@ export class CourseHeaderComponent implements OnInit {
 
   closeStudentsModal() {
     this.showStudentsModal = false;
-    // Recargar datos por si cambió el número de estudiantes
     this.loadCourseData();
   }
 
   // ==========================================
   // 📝 GESTIÓN DE EJERCICIOS
   // ==========================================
-    /**
-   * 🔄 ACTUALIZACIÓN DE EJERCICIO
-   * Este método DEBE estar dentro de la clase
-   */
+
   onExerciseUpdated(exerciseId: number) {
     console.log('🔄 Ejercicio actualizado ID:', exerciseId);
     console.log('📊 Recargando lista de ejercicios...');
     
-    // Recargar la lista completa
     this.loadExercises();
     
-    // Mostrar notificación
     this.snackBar.open('✅ Lista actualizada', '', {
       duration: 1500,
     });
   }
 
-  // 🆕 MÉTODO RENOMBRADO: onCreateExercise
   onCreateExercise() {
     this.openCreateExercise();
   }
@@ -286,13 +283,11 @@ export class CourseHeaderComponent implements OnInit {
 
   handleExerciseCreated(exercise: Exercise) {
     if (this.editingExercise) {
-      // Actualizar ejercicio existente
       const index = this.exercises.findIndex((e) => e.id === exercise.id);
       if (index !== -1) {
         this.exercises[index] = exercise;
       }
     } else {
-      // Agregar nuevo ejercicio
       this.exercises.push(exercise);
     }
 
@@ -450,7 +445,6 @@ export class CourseHeaderComponent implements OnInit {
   // 🏆 GESTIÓN DE RETOS
   // ==========================================
 
-  // 🆕 MÉTODO RENOMBRADO: onCreateChallenge
   onCreateChallenge() {
     this.openCreateChallenge();
   }
@@ -472,13 +466,11 @@ export class CourseHeaderComponent implements OnInit {
 
   handleChallengeCreated(challenge: Challenge) {
     if (this.editingChallenge) {
-      // Actualizar reto existente
       const index = this.challenges.findIndex((c) => c.id === challenge.id);
       if (index !== -1) {
         this.challenges[index] = challenge;
       }
     } else {
-      // Agregar nuevo reto
       this.challenges.push(challenge);
     }
 
@@ -542,7 +534,7 @@ export class CourseHeaderComponent implements OnInit {
     }
 
     try {
-      new URL(url); // Validar URL
+      new URL(url);
       window.open(url, '_blank', 'noopener,noreferrer');
       this.snackBar.open('🔗 Abriendo enlace externo...', '', {
         duration: 2000,
@@ -555,6 +547,31 @@ export class CourseHeaderComponent implements OnInit {
         panelClass: ['error-snackbar'],
       });
     }
+  }
+
+  // ==========================================
+  // 💬 GESTIÓN DE WHATSAPP
+  // ==========================================
+
+  openWhatsappModal() {
+    if (this.course?.whatsappLink) {
+      this.currentWhatsappLink = this.course.whatsappLink;
+    }
+    this.showWhatsappModal = true;
+  }
+
+  closeWhatsappModal() {
+    this.showWhatsappModal = false;
+    this.currentWhatsappLink = null;
+  }
+
+  handleWhatsappLinkUpdated(Link: string) {
+    if (this.course){
+      this.course.whatsappLink = Link || undefined;
+      this.course.hasWhatsappLink = !!Link;
+    }
+
+    this.loadCourseData();
   }
 
   // ==========================================
@@ -571,38 +588,5 @@ export class CourseHeaderComponent implements OnInit {
     return `¿Estás seguro de que deseas eliminar el reto "${
       this.challengeToDelete?.title || ''
     }"?\n\nEsta acción eliminará:\n• El reto y sus archivos\n• Todas las soluciones enviadas\n• Las bonificaciones otorgadas\n\nEsta acción no se puede deshacer.`;
-  }
-
-  // Metodos para whatsapp link
-
-  /**
-   * Abre el modal para gestionar el enlace de WhatsApp
-   */
-  openWhatsappModal() {
-    if (this.course?.whatsappLink) {
-      this.currentWhatsappLink = this.course.whatsappLink;
-    }
-    this.showWhatsappModal = true;
-  }
-
-  /**
-   * Cierra el modal de WhatsApp
-   */
-  closeWhatsappModal() {
-    this.showWhatsappModal = false;
-    this.currentWhatsappLink = null;
-  }
-
-  /**
-   * Actualiza el enlace de WhatsApp en el estado del curso
-   */
-  handleWhatsappLinkUpdated(Link: string) {
-    if (this.course){
-      this.course.whatsappLink = Link || undefined;
-      this.course.hasWhatsappLink = !!Link;
-    }
-
-    // Recargar datos del curso para reflejar cambios
-    this.loadCourseData();
   }
 }

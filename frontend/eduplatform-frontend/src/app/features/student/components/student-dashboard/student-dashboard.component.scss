@@ -1,21 +1,46 @@
-// ===========================
-// VARIABLES (Mismo estilo moderno que profesor)
-// ===========================
-$primary: #667eea;
-$secondary: #764ba2;
-$accent: #f093fb;
-$success: #43e97b;
-$warning: #fa709a;
-$danger: #f5576c;
+// ==========================================
+// 🎓 STUDENT DASHBOARD - REDISEÑO CON PALETA SOLICITADA
+// ==========================================
 
-$dark: #1a202c;
-$light: #f7fafc;
-$gray: #718096;
+// 🎨 PALETA PRINCIPAL (60-30-10)
+$naranja-tango: #F26B21;
+$naranja-oscuro: #D45A1A;
+$azul-fuente: #68B8BE;
+$azul-oscuro: #5AA3A8;
+$gris-neutro: #F0F0F0;
+$gris-oscuro: #4C4C4C;
+$gris-claro: #DADADA;
+$blanco: #FFFFFF;
+$rojo-error: #E74C3C;
+$verde-exito: #10b981;
+$verde-oscuro: #0d9668;
 
-$shadow-sm: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.06);
-$shadow-md: 0 4px 6px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.06);
-$shadow-lg: 0 10px 15px rgba(0,0,0,0.1), 0 4px 6px rgba(0,0,0,0.05);
-$shadow-xl: 0 20px 25px rgba(0,0,0,0.15), 0 10px 10px rgba(0,0,0,0.04);
+// Variables de espaciado
+$spacing-xs: 0.25rem;
+$spacing-sm: 0.5rem;
+$spacing-md: 1rem;
+$spacing-lg: 1.5rem;
+$spacing-xl: 2rem;
+$spacing-2xl: 3rem;
+
+// Variables de bordes
+$radius-sm: 8px;
+$radius-md: 12px;
+$radius-lg: 16px;
+$radius-xl: 20px;
+
+// Sombras
+$shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+$shadow-md: 0 2px 8px rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 4px 12px rgba(242, 107, 33, 0.15);
+$shadow-xl: 0 8px 20px rgba(0, 0, 0, 0.12);
+
+// Transiciones
+$transition-base: 0.3s ease-in-out;
+
+// Variables de tipografía
+$font-heading: 'Poppins', 'Montserrat', sans-serif;
+$font-body: 'Roboto', 'Nunito', sans-serif;
 
 * {
   margin: 0;
@@ -25,34 +50,24 @@ $shadow-xl: 0 20px 25px rgba(0,0,0,0.15), 0 10px 10px rgba(0,0,0,0.04);
 
 .app-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: $gris-neutro;
+  font-family: $font-body;
   position: relative;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: 
-      radial-gradient(circle at 20% 50%, rgba(255,255,255,0.1) 0%, transparent 50%),
-      radial-gradient(circle at 80% 80%, rgba(255,255,255,0.08) 0%, transparent 50%);
-    pointer-events: none;
-  }
 }
 
-// Header (mismo que profesor)
+// ==========================================
+// 🎯 HEADER
+// ==========================================
+
 .header {
-  background: rgba(255,255,255,0.95);
+  background: $blanco;
   backdrop-filter: blur(20px);
-  border: none;
-  padding: 1rem 2rem;
+  border-bottom: 2px solid $gris-claro;
+  padding: $spacing-lg $spacing-xl;
   position: sticky;
   top: 0;
   z-index: 100;
-  box-shadow: 0 4px 30px rgba(0,0,0,0.1);
+  box-shadow: $shadow-md;
 }
 
 .header-content {
@@ -66,27 +81,25 @@ $shadow-xl: 0 20px 25px rgba(0,0,0,0.15), 0 10px 10px rgba(0,0,0,0.04);
 .logo {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: $spacing-md;
 
   h1 {
     font-size: 1.5rem;
     font-weight: 800;
-    background: linear-gradient(135deg, $primary, $secondary);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: $gris-oscuro;
+    font-family: $font-heading;
   }
 }
 
 .logo-icon {
   width: 48px;
   height: 48px;
-  background: linear-gradient(135deg, $primary, $secondary);
-  border-radius: 14px;
+  background: linear-gradient(135deg, $naranja-tango, $naranja-oscuro);
+  border-radius: $radius-md;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 16px rgba(102,126,234,0.4);
+  box-shadow: 0 8px 16px rgba(242, 107, 33, 0.3);
   transform: rotate(-5deg);
   transition: transform 0.3s ease;
 
@@ -97,7 +110,7 @@ $shadow-xl: 0 20px 25px rgba(0,0,0,0.15), 0 10px 10px rgba(0,0,0,0.04);
 
 .header-actions {
   display: flex;
-  gap: 1rem;
+  gap: $spacing-md;
   align-items: center;
 }
 
@@ -105,15 +118,15 @@ $shadow-xl: 0 20px 25px rgba(0,0,0,0.15), 0 10px 10px rgba(0,0,0,0.04);
 .logout-btn {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  background: white;
+  gap: $spacing-sm;
+  padding: $spacing-md $spacing-lg;
   border: 2px solid transparent;
-  border-radius: 12px;
+  border-radius: $radius-md;
   cursor: pointer;
   font-size: 0.9rem;
   font-weight: 600;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all $transition-base;
+  font-family: $font-body;
 
   &:hover {
     transform: translateY(-2px);
@@ -122,58 +135,66 @@ $shadow-xl: 0 20px 25px rgba(0,0,0,0.15), 0 10px 10px rgba(0,0,0,0.04);
 }
 
 .profile-btn {
-  background: linear-gradient(135deg, $primary, $secondary);
-  color: white;
+  background: linear-gradient(135deg, $naranja-tango, $naranja-oscuro);
+  color: $blanco;
 
   &:hover {
-    box-shadow: 0 8px 25px rgba(102,126,234,0.4);
+    box-shadow: 0 8px 25px rgba(242, 107, 33, 0.4);
   }
 }
 
 .logout-btn {
-  color: $danger;
-  border-color: $danger;
+  color: $rojo-error;
+  border-color: $rojo-error;
+  background: $blanco;
 
   &:hover {
-    background: $danger;
-    color: white;
-    box-shadow: 0 8px 25px rgba(245,87,108,0.4);
+    background: $rojo-error;
+    color: $blanco;
+    box-shadow: 0 8px 25px rgba(231, 76, 60, 0.4);
   }
 }
 
-// Main Content
+// ==========================================
+// 🎯 MAIN CONTENT
+// ==========================================
+
 .main-content {
   max-width: 1400px;
   margin: 0 auto;
-  padding: 2rem;
+  padding: $spacing-xl;
   position: relative;
   z-index: 1;
 }
 
-// Stats Grid
+// ==========================================
+// 📊 STATS GRID
+// ==========================================
+
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  gap: $spacing-lg;
+  margin-bottom: $spacing-xl;
 }
 
 .stat-card {
-  background: white;
-  padding: 2rem;
-  border-radius: 20px;
+  background: $blanco;
+  padding: $spacing-xl;
+  border-radius: $radius-lg;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  box-shadow: $shadow-lg;
-  border: 1px solid rgba(255,255,255,0.8);
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: $shadow-md;
+  border: 2px solid $gris-claro;
+  transition: all $transition-base;
   position: relative;
   overflow: hidden;
 
   &:hover {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: $shadow-xl;
+    transform: translateY(-4px);
+    box-shadow: $shadow-lg;
+    border-color: $naranja-tango;
 
     .stat-icon {
       transform: scale(1.1) rotate(5deg);
@@ -189,49 +210,70 @@ $shadow-xl: 0 20px 25px rgba(0,0,0,0.15), 0 10px 10px rgba(0,0,0,0.04);
 
 .stat-title {
   font-size: 0.85rem;
-  color: $gray;
-  margin-bottom: 0.5rem;
+  color: $gris-oscuro;
+  margin-bottom: $spacing-sm;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  font-family: $font-body;
 }
 
 .stat-value {
   font-size: 2.5rem;
   font-weight: 800;
-  background: linear-gradient(135deg, $dark, $gray);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: $gris-oscuro;
+  font-family: $font-heading;
 }
 
 .stat-icon {
   width: 70px;
   height: 70px;
-  border-radius: 16px;
+  border-radius: $radius-md;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 2rem;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transition: all $transition-base;
+  box-shadow: $shadow-sm;
+
+  // Diferentes colores para cada ícono
+  &.courses {
+    background: rgba(104, 184, 190, 0.1);
+    color: $azul-fuente;
+  }
+
+  &.progress {
+    background: rgba(242, 107, 33, 0.1);
+    color: $naranja-tango;
+  }
+
+  &.completed {
+    background: rgba(16, 185, 129, 0.1);
+    color: $verde-exito;
+  }
+
+  &.pending {
+    background: rgba(231, 76, 60, 0.1);
+    color: $rojo-error;
+  }
 }
 
-// ===========================
-// JOIN COURSE SECTION
-// ===========================
+// ==========================================
+// 🎯 JOIN COURSE SECTION
+// ==========================================
+
 .join-course-section {
-  margin-bottom: 2rem;
+  margin-bottom: $spacing-xl;
 }
 
 .join-card {
-  background: linear-gradient(135deg, $primary 0%, $secondary 100%);
-  border-radius: 24px;
-  padding: 2.5rem;
+  background: linear-gradient(135deg, $naranja-tango 0%, $naranja-oscuro 100%);
+  border-radius: $radius-lg;
+  padding: $spacing-2xl;
   display: flex;
-  gap: 2rem;
+  gap: $spacing-xl;
   align-items: center;
-  box-shadow: 0 12px 40px rgba(102,126,234,0.4);
+  box-shadow: $shadow-lg;
   position: relative;
   overflow: hidden;
 
@@ -242,7 +284,7 @@ $shadow-xl: 0 20px 25px rgba(0,0,0,0.15), 0 10px 10px rgba(0,0,0,0.04);
     right: -10%;
     width: 400px;
     height: 400px;
-    background: rgba(255,255,255,0.1);
+    background: rgba(255, 255, 255, 0.1);
     border-radius: 50%;
     pointer-events: none;
   }
@@ -251,15 +293,15 @@ $shadow-xl: 0 20px 25px rgba(0,0,0,0.15), 0 10px 10px rgba(0,0,0,0.04);
 .join-icon {
   width: 90px;
   height: 90px;
-  background: rgba(255,255,255,0.2);
+  background: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(10px);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  color: white;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  color: $blanco;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
 
 .join-content {
@@ -271,70 +313,75 @@ $shadow-xl: 0 20px 25px rgba(0,0,0,0.15), 0 10px 10px rgba(0,0,0,0.04);
 .join-title {
   font-size: 2rem;
   font-weight: 800;
-  color: white;
-  margin-bottom: 0.75rem;
+  color: $blanco;
+  margin-bottom: $spacing-md;
+  font-family: $font-heading;
 }
 
 .join-description {
-  color: rgba(255,255,255,0.95);
-  margin-bottom: 1.5rem;
+  color: rgba(255, 255, 255, 0.95);
+  margin-bottom: $spacing-lg;
   font-size: 1rem;
   line-height: 1.6;
+  font-family: $font-body;
 }
 
 .join-input-group {
   display: flex;
-  gap: 1rem;
+  gap: $spacing-md;
   max-width: 600px;
 }
 
 .join-input {
   flex: 1;
-  padding: 1rem 1.5rem;
-  border: 2px solid rgba(255,255,255,0.3);
-  border-radius: 14px;
+  padding: $spacing-md $spacing-lg;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: $radius-md;
   font-size: 1.1rem;
-  background: rgba(255,255,255,0.95);
-  color: $dark;
+  background: rgba(255, 255, 255, 0.95);
+  color: $gris-oscuro;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 2px;
-  transition: all 0.3s ease;
+  transition: all $transition-base;
+  font-family: $font-body;
 
   &::placeholder {
-    color: $gray;
+    color: $gris-oscuro;
     text-transform: none;
     letter-spacing: normal;
+    opacity: 0.7;
   }
 
   &:focus {
     outline: none;
-    border-color: white;
-    background: white;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    border-color: $blanco;
+    background: $blanco;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   }
 }
 
 .join-btn {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 1rem 2rem;
-  background: white;
-  color: $primary;
+  gap: $spacing-sm;
+  padding: $spacing-md $spacing-xl;
+  background: $blanco;
+  color: $naranja-tango;
   border: none;
-  border-radius: 14px;
+  border-radius: $radius-md;
   font-weight: 700;
   font-size: 1rem;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all $transition-base;
   white-space: nowrap;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  font-family: $font-body;
 
   &:hover:not(:disabled) {
-    background: $light;
+    background: $gris-neutro;
     transform: translateY(-3px);
-    box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
   }
 
   &:disabled {
@@ -345,7 +392,7 @@ $shadow-xl: 0 20px 25px rgba(0,0,0,0.15), 0 10px 10px rgba(0,0,0,0.04);
   .spinner {
     width: 18px;
     height: 18px;
-    border: 2px solid $primary;
+    border: 2px solid $naranja-tango;
     border-top-color: transparent;
     border-radius: 50%;
     animation: spin 0.6s linear infinite;
@@ -356,65 +403,69 @@ $shadow-xl: 0 20px 25px rgba(0,0,0,0.15), 0 10px 10px rgba(0,0,0,0.04);
   }
 }
 
-// ===========================
-// COURSES SECTION
-// ===========================
+// ==========================================
+// 📚 COURSES SECTION
+// ==========================================
+
 .courses-section {
-  background: white;
-  border-radius: 24px;
-  padding: 2rem;
-  box-shadow: $shadow-xl;
-  border: 1px solid rgba(255,255,255,0.8);
+  background: $blanco;
+  border-radius: $radius-lg;
+  padding: $spacing-xl;
+  box-shadow: $shadow-md;
+  border: 2px solid $gris-claro;
 }
 
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: $spacing-xl;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: $spacing-md;
 }
 
 .section-title {
   font-size: 2rem;
   font-weight: 800;
-  background: linear-gradient(135deg, $dark, $gray);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  margin-bottom: 0.25rem;
+  color: $gris-oscuro;
+  margin-bottom: $spacing-xs;
+  font-family: $font-heading;
 }
 
 .section-subtitle {
-  color: $gray;
+  color: $gris-oscuro;
   font-size: 1rem;
   font-weight: 500;
+  opacity: 0.8;
+  font-family: $font-body;
 }
 
-// Empty State
+// ==========================================
+// 📭 EMPTY STATE
+// ==========================================
+
 .empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 5rem 2rem;
+  padding: $spacing-2xl * 2;
   text-align: center;
 }
 
 .empty-icon {
   width: 140px;
   height: 140px;
-  background: linear-gradient(135deg, rgba(102,126,234,0.1), rgba(118,75,162,0.1));
+  background: rgba(242, 107, 33, 0.1);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 2rem;
+  margin-bottom: $spacing-xl;
   animation: float 3s ease-in-out infinite;
 
   svg {
-    color: $primary;
+    color: $naranja-tango;
   }
 }
 
@@ -426,27 +477,31 @@ $shadow-xl: 0 20px 25px rgba(0,0,0,0.15), 0 10px 10px rgba(0,0,0,0.04);
 .empty-title {
   font-size: 1.75rem;
   font-weight: 800;
-  color: $dark;
-  margin-bottom: 0.5rem;
+  color: $gris-oscuro;
+  margin-bottom: $spacing-sm;
+  font-family: $font-heading;
 }
 
 .empty-description {
   font-size: 1.1rem;
-  color: $gray;
+  color: $gris-oscuro;
   max-width: 500px;
   line-height: 1.6;
+  opacity: 0.8;
+  font-family: $font-body;
 }
 
-// ===========================
-// COURSE CARD STUDENT
-// ===========================
+// ==========================================
+// 🎓 COURSE CARD STUDENT
+// ==========================================
+
 .course-card.student-course {
-  background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
-  border: 2px solid rgba(255,255,255,0.8);
-  border-radius: 20px;
-  padding: 2rem;
-  margin-bottom: 1.5rem;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  background: $blanco;
+  border: 2px solid $gris-claro;
+  border-radius: $radius-lg;
+  padding: $spacing-xl;
+  margin-bottom: $spacing-lg;
+  transition: all $transition-base;
   box-shadow: $shadow-md;
   position: relative;
 
@@ -457,14 +512,15 @@ $shadow-xl: 0 20px 25px rgba(0,0,0,0.15), 0 10px 10px rgba(0,0,0,0.04);
     left: 0;
     width: 5px;
     height: 100%;
-    background: linear-gradient(180deg, $primary, $secondary);
+    background: linear-gradient(180deg, $naranja-tango, $naranja-oscuro);
     transition: width 0.3s ease;
-    border-radius: 20px 0 0 20px;
+    border-radius: $radius-lg 0 0 $radius-lg;
   }
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: $shadow-xl;
+    box-shadow: $shadow-lg;
+    border-color: $naranja-tango;
 
     &::before {
       width: 8px;
@@ -479,8 +535,8 @@ $shadow-xl: 0 20px 25px rgba(0,0,0,0.15), 0 10px 10px rgba(0,0,0,0.04);
 
 .course-header {
   display: flex;
-  gap: 1.5rem;
-  margin-bottom: 1.5rem;
+  gap: $spacing-lg;
+  margin-bottom: $spacing-lg;
 }
 
 .course-progress {
@@ -497,91 +553,98 @@ $shadow-xl: 0 20px 25px rgba(0,0,0,0.15), 0 10px 10px rgba(0,0,0,0.04);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1rem;
+  margin-bottom: $spacing-md;
   flex-wrap: wrap;
-  gap: 1rem;
+  gap: $spacing-md;
   padding-right: 40px;
 }
 
 .course-title {
   font-size: 1.75rem;
   font-weight: 800;
-  color: $dark;
+  color: $gris-oscuro;
+  font-family: $font-heading;
 }
 
 .course-badges {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: $spacing-md;
   flex-wrap: wrap;
 }
 
 .course-level {
-  padding: 0.5rem 1rem;
-  background: linear-gradient(135deg, rgba(102,126,234,0.1), rgba(118,75,162,0.1));
-  color: $primary;
-  border-radius: 10px;
+  padding: $spacing-sm $spacing-md;
+  background: rgba(104, 184, 190, 0.1);
+  color: $azul-oscuro;
+  border-radius: $radius-sm;
   font-size: 0.85rem;
   font-weight: 700;
-  border: 2px solid rgba(102,126,234,0.2);
+  border: 2px solid rgba(104, 184, 190, 0.2);
+  font-family: $font-body;
 }
 
 .progress-badge {
-  padding: 0.5rem 1rem;
-  background: linear-gradient(135deg, rgba(67,233,123,0.2), rgba(56,249,215,0.2));
-  color: #047857;
-  border-radius: 10px;
+  padding: $spacing-sm $spacing-md;
+  background: rgba(16, 185, 129, 0.1);
+  color: $verde-oscuro;
+  border-radius: $radius-sm;
   font-size: 0.85rem;
   font-weight: 700;
-  border: 2px solid rgba(67,233,123,0.3);
+  border: 2px solid rgba(16, 185, 129, 0.2);
+  font-family: $font-body;
 }
 
 .course-description {
-  color: $gray;
+  color: $gris-oscuro;
   line-height: 1.8;
   font-size: 1rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: $spacing-lg;
+  opacity: 0.8;
+  font-family: $font-body;
 }
 
 // Progress Bar
 .progress-container {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: $spacing-md;
 }
 
 .progress-bar {
   flex: 1;
   height: 10px;
-  background: rgba(102,126,234,0.1);
+  background: rgba(242, 107, 33, 0.1);
   border-radius: 10px;
   overflow: hidden;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .progress-fill {
   height: 100%;
   border-radius: 10px;
   transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(90deg, $naranja-tango, $naranja-oscuro);
 }
 
 .progress-text {
   font-size: 0.9rem;
-  color: $gray;
+  color: $gris-oscuro;
   font-weight: 700;
   white-space: nowrap;
   min-width: fit-content;
+  font-family: $font-body;
 }
 
 // Course Stats
 .course-stats {
   display: flex;
-  gap: 2rem;
-  padding: 1.5rem;
-  background: white;
-  border-radius: 14px;
-  margin-bottom: 1.5rem;
+  gap: $spacing-xl;
+  padding: $spacing-lg;
+  background: $gris-neutro;
+  border-radius: $radius-md;
+  margin-bottom: $spacing-lg;
   flex-wrap: wrap;
   box-shadow: $shadow-sm;
 }
@@ -589,20 +652,21 @@ $shadow-xl: 0 20px 25px rgba(0,0,0,0.15), 0 10px 10px rgba(0,0,0,0.04);
 .stat-item {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  color: $dark;
+  gap: $spacing-sm;
+  color: $gris-oscuro;
   font-size: 0.9rem;
   font-weight: 600;
+  font-family: $font-body;
 
   svg {
-    color: $primary;
+    color: $naranja-tango;
   }
 }
 
 // Action Buttons
 .action-buttons {
   display: flex;
-  gap: 1rem;
+  gap: $spacing-md;
   flex-wrap: wrap;
 }
 
@@ -612,33 +676,34 @@ $shadow-xl: 0 20px 25px rgba(0,0,0,0.15), 0 10px 10px rgba(0,0,0,0.04);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 1rem 1.5rem;
+  gap: $spacing-sm;
+  padding: $spacing-md $spacing-lg;
   border: none;
-  border-radius: 14px;
+  border-radius: $radius-md;
   font-weight: 700;
   font-size: 0.95rem;
   cursor: pointer;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all $transition-base;
+  font-family: $font-body;
 
   &.primary {
-    background: linear-gradient(135deg, $primary, $secondary);
-    color: white;
-    box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+    background: linear-gradient(135deg, $naranja-tango, $naranja-oscuro);
+    color: $blanco;
+    box-shadow: 0 4px 15px rgba(242, 107, 33, 0.4);
 
     &:hover {
       transform: translateY(-3px);
-      box-shadow: 0 8px 25px rgba(102,126,234,0.5);
+      box-shadow: 0 8px 25px rgba(242, 107, 33, 0.5);
     }
   }
 
   &.secondary {
-    background: white;
-    color: $primary;
-    border: 2px solid $primary;
+    background: $blanco;
+    color: $naranja-tango;
+    border: 2px solid $naranja-tango;
 
     &:hover {
-      background: linear-gradient(135deg, rgba(102,126,234,0.1), rgba(118,75,162,0.1));
+      background: rgba(242, 107, 33, 0.1);
       transform: translateY(-3px);
       box-shadow: $shadow-md;
     }
@@ -652,24 +717,24 @@ $shadow-xl: 0 20px 25px rgba(0,0,0,0.15), 0 10px 10px rgba(0,0,0,0.04);
   right: 15px;
   width: 32px;
   height: 32px;
-  border-radius: 10px;
+  border-radius: $radius-sm;
   border: none;
-  background: rgba(245,87,108,0.1);
-  color: $danger;
+  background: rgba(231, 76, 60, 0.1);
+  color: $rojo-error;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all $transition-base;
   z-index: 10;
   opacity: 0;
   transform: scale(0.8);
 
   &:hover {
-    background: $danger;
-    color: white;
+    background: $rojo-error;
+    color: $blanco;
     transform: scale(1.1);
-    box-shadow: 0 4px 12px rgba(245,87,108,0.4);
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
   }
 
   svg {
@@ -686,13 +751,14 @@ $shadow-xl: 0 20px 25px rgba(0,0,0,0.15), 0 10px 10px rgba(0,0,0,0.04);
   transform: scale(1);
 }
 
-// ===========================
-// RESPONSIVE
-// ===========================
+// ==========================================
+// 📱 RESPONSIVE
+// ==========================================
+
 @media (max-width: 768px) {
   .header-content {
     flex-direction: column;
-    gap: 1rem;
+    gap: $spacing-md;
   }
 
   .stats-grid {
@@ -702,6 +768,7 @@ $shadow-xl: 0 20px 25px rgba(0,0,0,0.15), 0 10px 10px rgba(0,0,0,0.04);
   .join-card {
     flex-direction: column;
     text-align: center;
+    padding: $spacing-xl;
   }
 
   .join-input-group {
@@ -725,5 +792,33 @@ $shadow-xl: 0 20px 25px rgba(0,0,0,0.15), 0 10px 10px rgba(0,0,0,0.04);
   .action-btn {
     width: 100%;
     min-width: unset;
+  }
+
+  .course-stats {
+    gap: $spacing-md;
+    justify-content: center;
+  }
+
+  .main-content {
+    padding: $spacing-md;
+  }
+}
+
+// ==========================================
+// 🌟 ACCESSIBILITY
+// ==========================================
+
+button:focus-visible {
+  outline: 3px solid $naranja-tango;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

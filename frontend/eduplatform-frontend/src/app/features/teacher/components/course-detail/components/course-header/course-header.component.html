@@ -1,10 +1,14 @@
-<!-- Wrapper Principal -->
+<!-- ==========================================
+     📄 course-header.component.html (TEACHER)
+     Header con Reducción Automática al Scroll
+     ========================================== -->
+
 <div class="course-detail-wrapper">
   <!-- Background Gradient -->
   <div class="background-gradient"></div>
 
-  <!-- Header Sticky -->
-  <header class="header">
+  <!-- ✅ Header Sticky con clase dinámica 'scrolled' -->
+  <header class="header" [class.scrolled]="isScrolled">
     <div class="header-content">
       <!-- Back Navigation -->
       <button
@@ -23,7 +27,7 @@
           <line x1="19" y1="12" x2="5" y2="12"></line>
           <polyline points="12 19 5 12 12 5"></polyline>
         </svg>
-        <span>Volver al Dashboard</span>
+        <span>Volver</span>
       </button>
 
       <!-- Course Header Info -->
@@ -31,7 +35,10 @@
         <div class="course-header-main">
           <div class="course-title-section">
             <h1 class="course-title">{{ course.title }}</h1>
-            <p class="course-description">{{ course.description }}</p>
+            <!-- ✅ Descripción visible solo cuando NO hay scroll -->
+            <p class="course-description" *ngIf="!isScrolled">
+              {{ course.description }}
+            </p>
           </div>
 
           <div class="course-meta-badges">
@@ -69,12 +76,12 @@
           </div>
         </div>
 
-        <!-- Action Buttons -->
+        <!-- ✅ Action Buttons - Más compactos al hacer scroll -->
         <div class="header-actions">
           <button
-            class="action-btn secondary"
-            (click)="onManageStudents()"
-            aria-label="Gestionar Estudiantes"
+            class="action-btn primary exercise"
+            (click)="onCreateExercise()"
+            aria-label="Crear Ejercicio"
           >
             <svg
               width="18"
@@ -84,12 +91,10 @@
               stroke="currentColor"
               stroke-width="2"
             >
-              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-              <circle cx="9" cy="7" r="4"></circle>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
             </svg>
-            <span>Gestionar Estudiantes</span>
+            <span>Crear Ejercicio</span>
           </button>
 
           <button
@@ -120,9 +125,9 @@
           </button>
 
           <button
-            class="action-btn primary exercise"
-            (click)="onCreateExercise()"
-            aria-label="Crear Ejercicio"
+            class="action-btn secondary"
+            (click)="onManageStudents()"
+            aria-label="Gestionar Estudiantes"
           >
             <svg
               width="18"
@@ -132,11 +137,14 @@
               stroke="currentColor"
               stroke-width="2"
             >
-              <line x1="12" y1="5" x2="12" y2="19"></line>
-              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+              <circle cx="9" cy="7" r="4"></circle>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
             </svg>
-            <span>Crear Ejercicio</span>
+            <span>Gestionar Estudiantes</span>
           </button>
+
           <button
             class="action-btn secondary whatsapp"
             (click)="openWhatsappModal()"
@@ -248,7 +256,7 @@
   </header>
 
   <!-- ============================================ -->
-  <!-- 🆕 CONTENIDO DINÁMICO SEGÚN TAB ACTIVO -->
+  <!-- CONTENIDO DINÁMICO SEGÚN TAB ACTIVO -->
   <!-- ============================================ -->
   <main class="main-content">
     <!-- Tab: Ejercicios -->
@@ -287,7 +295,7 @@
 </div>
 
 <!-- ============================================ -->
-<!-- 🆕 MODALES -->
+<!-- MODALES -->
 <!-- ============================================ -->
 
 <!-- Modal: Crear/Editar Ejercicio -->

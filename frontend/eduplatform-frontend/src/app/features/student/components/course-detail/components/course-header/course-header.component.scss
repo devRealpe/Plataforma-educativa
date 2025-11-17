@@ -1,27 +1,23 @@
 // ==========================================
-// 🎮 REDISEÑO APLICACIÓN EDUCATIVA - VARIABLES
+// 🎮 VARIABLES
 // ==========================================
 
-// PALETA PRINCIPAL
 $tango-orange: #F26B21;
 $source-blue: #68B8BE;
 $neutral-gray: #F0F0F0;
 $dark-gray: #4C4C4C;
 $pure-white: #FFFFFF;
 
-// COLORES COMPLEMENTARIOS
 $tango-orange-dark: #D45A1A;
 $tango-orange-light: #F58A4D;
 $source-blue-dark: #5AA3A8;
 $source-blue-light: #87D0D5;
 
-// ESTADOS Y ALERTAS
 $success-green: #10B981;
 $warning-orange: #F59E0B;
 $danger-red: #EF4444;
 $info-blue: #3B82F6;
 
-// ESCALA DE GRISES
 $gray-50: #F9FAFB;
 $gray-100: #F3F4F6;
 $gray-200: #E5E7EB;
@@ -33,7 +29,6 @@ $gray-700: #374151;
 $gray-800: #1F2937;
 $gray-900: #111827;
 
-// ESPACIADO
 $spacing-xs: 0.25rem;
 $spacing-sm: 0.5rem;
 $spacing-md: 1rem;
@@ -41,29 +36,22 @@ $spacing-lg: 1.5rem;
 $spacing-xl: 2rem;
 $spacing-2xl: 3rem;
 
-// BORDES
 $radius-sm: 4px;
 $radius-md: 8px;
 $radius-lg: 12px;
 $radius-xl: 16px;
 
-// SOMBRAS
 $shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
 $shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
 $shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
 $shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
 
-// TRANSICIONES
 $transition-fast: 0.15s ease;
 $transition-base: 0.2s ease;
 $transition-slow: 0.3s ease;
 
-// TIPOGRAFÍA
-$font-heading: 'Poppins', 'Montserrat', sans-serif;
-$font-body: 'Roboto', 'Nunito', sans-serif;
-
 // ==========================================
-// 🌐 WRAPPER PRINCIPAL - REDISEÑADO
+// 🌐 WRAPPER PRINCIPAL
 // ==========================================
 
 :host {
@@ -118,7 +106,7 @@ $font-body: 'Roboto', 'Nunito', sans-serif;
 }
 
 // ==========================================
-// 🎯 HEADER - REDISEÑADO CON ESTADOS
+// 🎯 HEADER OPTIMIZADO - REDUCCIÓN AUTOMÁTICA
 // ==========================================
 
 .header {
@@ -130,66 +118,113 @@ $font-body: 'Roboto', 'Nunito', sans-serif;
   z-index: 100;
   transition: all $transition-slow;
 
-  // 🆕 Estado colapsado
-  &.collapsed {
-    .header-content {
-      padding: $spacing-md $spacing-xl;
-    }
-
-    .course-header {
-      max-height: 0;
-      overflow: hidden;
-      opacity: 0;
-      margin-bottom: 0;
-      padding: 0;
-      transition: all $transition-slow;
-    }
-
-    .tabs-navigation {
-      margin-top: $spacing-md;
-    }
-  }
-
-  // Estado expandido (por defecto)
   .header-content {
     max-width: 1400px;
     margin: 0 auto;
-    padding: $spacing-xl;
+    padding: $spacing-lg $spacing-xl;
     position: relative;
     z-index: 1;
-    transition: padding $transition-slow;
+    transition: all $transition-slow;
+  }
+
+  // ✨ ESTADO REDUCIDO AL HACER SCROLL
+  &.scrolled {
+    box-shadow: $shadow-md;
+
+    .header-content {
+      padding: $spacing-sm $spacing-xl;
+    }
+
+    .back-btn {
+      padding: $spacing-sm $spacing-md;
+      font-size: 0.8rem;
+      margin-bottom: $spacing-sm;
+
+      span {
+        display: none;
+      }
+
+      svg {
+        width: 18px;
+        height: 18px;
+      }
+    }
+
+    .course-header {
+      margin-bottom: $spacing-sm;
+    }
+
+    .course-title {
+      font-size: 1.25rem;
+      margin-bottom: $spacing-xs;
+    }
+
+    .course-description {
+      display: none;
+    }
+
+    .course-meta-badges {
+      gap: $spacing-xs;
+
+      .meta-badge {
+        padding: $spacing-xs $spacing-sm;
+        font-size: 0.8rem;
+
+        svg {
+          width: 14px;
+          height: 14px;
+        }
+      }
+    }
+
+    .tabs-navigation {
+      margin-top: $spacing-sm;
+      padding: $spacing-xs;
+      gap: $spacing-xs;
+    }
+
+    .tab-btn {
+      padding: $spacing-sm $spacing-md;
+      font-size: 0.85rem;
+
+      svg {
+        width: 16px;
+        height: 16px;
+      }
+
+      .tab-count {
+        min-width: 20px;
+        height: 20px;
+        font-size: 0.7rem;
+      }
+    }
   }
 }
 
 // ==========================================
-// 🔙 BACK BUTTON - REDISEÑADO
+// 🔙 BACK BUTTON
 // ==========================================
 
 .back-btn {
   display: inline-flex;
   align-items: center;
   gap: $spacing-sm;
-  padding: $spacing-md $spacing-lg;
+  padding: $spacing-sm $spacing-md;
   background: $pure-white;
   color: $dark-gray;
   border: 2px solid $gray-300;
   border-radius: $radius-md;
-  font-family: $font-body;
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 0.875rem;
   cursor: pointer;
   transition: all $transition-base;
-  margin-bottom: $spacing-lg;
+  margin-bottom: $spacing-md;
   box-shadow: $shadow-sm;
 
   svg {
     transition: transform $transition-base;
     flex-shrink: 0;
     color: $dark-gray;
-  }
-
-  span {
-    transition: color $transition-base;
   }
 
   &:hover {
@@ -203,146 +238,22 @@ $font-body: 'Roboto', 'Nunito', sans-serif;
       color: $tango-orange;
     }
   }
-
-  &:active {
-    transform: translateX(-2px) scale(0.98);
-  }
-
-  &:focus-visible {
-    outline: 2px solid $source-blue;
-    outline-offset: 2px;
-  }
 }
 
 // ==========================================
-// 🆕 BOTÓN DE TOGGLE HEADER
-// ==========================================
-
-.toggle-header-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: $spacing-sm;
-  padding: $spacing-md $spacing-lg;
-  background: linear-gradient(135deg, $tango-orange, $tango-orange-light);
-  color: $pure-white;
-  border: 2px solid transparent;
-  border-radius: $radius-md;
-  font-family: $font-body;
-  font-weight: 600;
-  font-size: 0.9rem;
-  cursor: pointer;
-  transition: all $transition-base;
-  box-shadow: 0 4px 12px rgba($tango-orange, 0.3);
-  position: relative;
-  overflow: hidden;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    background: rgba($pure-white, 0.2);
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    transition: width 0.6s, height 0.6s;
-  }
-
-  &:hover::before {
-    width: 300px;
-    height: 300px;
-  }
-
-  svg {
-    transition: transform $transition-base;
-    flex-shrink: 0;
-    position: relative;
-    z-index: 1;
-  }
-
-  .toggle-text {
-    position: relative;
-    z-index: 1;
-  }
-
-  &:hover {
-    background: linear-gradient(135deg, $tango-orange-dark, $tango-orange);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba($tango-orange, 0.4);
-
-    svg {
-      transform: scale(1.1);
-    }
-  }
-
-  &:active {
-    transform: translateY(0);
-  }
-
-  &:focus-visible {
-    outline: 2px solid $source-blue;
-    outline-offset: 2px;
-  }
-
-  // Variante cuando está colapsado
-  &.collapsed-state {
-    margin-bottom: $spacing-md;
-    width: 100%;
-    justify-content: center;
-
-    svg {
-      animation: bounce 2s ease-in-out infinite;
-    }
-  }
-
-  // Variante cuando está expandido
-  &.expanded-state {
-    margin-top: $spacing-lg;
-    background: linear-gradient(135deg, $source-blue, $source-blue-light);
-    box-shadow: 0 4px 12px rgba($source-blue, 0.3);
-
-    &:hover {
-      background: linear-gradient(135deg, $source-blue-dark, $source-blue);
-      box-shadow: 0 6px 16px rgba($source-blue, 0.4);
-    }
-
-    svg {
-      transform: rotate(180deg);
-    }
-
-    &:hover svg {
-      transform: rotate(180deg) scale(1.1);
-    }
-  }
-}
-
-@keyframes bounce {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-4px);
-  }
-}
-
-// ==========================================
-// 📚 COURSE HEADER - REDISEÑADO
+// 📚 COURSE HEADER - OPTIMIZADO
 // ==========================================
 
 .course-header {
-  margin-bottom: $spacing-lg;
+  margin-bottom: $spacing-md;
   transition: all $transition-slow;
-  max-height: 1000px; // Altura máxima para animación
-  opacity: 1;
 }
 
 .course-header-main {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: $spacing-xl;
-  margin-bottom: $spacing-lg;
+  gap: $spacing-lg;
   flex-wrap: wrap;
 }
 
@@ -352,41 +263,39 @@ $font-body: 'Roboto', 'Nunito', sans-serif;
 }
 
 .course-title {
-  font-family: $font-heading;
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: 700;
   color: $dark-gray;
-  margin: 0 0 $spacing-md 0;
+  margin: 0 0 $spacing-sm 0;
   line-height: 1.2;
   letter-spacing: -0.01em;
-  animation: fadeInUp 0.6s ease;
+  transition: all $transition-slow;
 }
 
 .course-description {
-  font-family: $font-body;
-  font-size: 1.05rem;
+  font-size: 0.95rem;
   color: $gray-600;
-  line-height: 1.6;
+  line-height: 1.5;
   margin: 0;
-  animation: fadeInUp 0.6s ease 0.1s both;
+  transition: opacity $transition-slow, max-height $transition-slow;
 }
 
 .course-meta-badges {
   display: flex;
-  gap: $spacing-md;
+  gap: $spacing-sm;
   flex-wrap: wrap;
+  transition: all $transition-slow;
 }
 
 .meta-badge {
   display: flex;
   align-items: center;
-  gap: $spacing-sm;
-  padding: $spacing-md $spacing-lg;
+  gap: $spacing-xs;
+  padding: $spacing-sm $spacing-md;
   background: $pure-white;
   border: 2px solid $gray-200;
   border-radius: $radius-md;
-  font-family: $font-body;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 600;
   color: $dark-gray;
   box-shadow: $shadow-sm;
@@ -430,20 +339,20 @@ $font-body: 'Roboto', 'Nunito', sans-serif;
 }
 
 // ==========================================
-// 📑 TAB NAVIGATION - REDISEÑADO
+// 📑 TAB NAVIGATION - OPTIMIZADO
 // ==========================================
 
 .tabs-navigation {
   display: flex;
-  gap: $spacing-sm;
+  gap: $spacing-xs;
   background: $pure-white;
-  padding: $spacing-sm;
+  padding: $spacing-xs;
   border-radius: $radius-lg;
-  margin-top: $spacing-lg;
+  margin-top: $spacing-md;
   box-shadow: $shadow-sm;
   overflow-x: auto;
   scrollbar-width: thin;
-  transition: margin-top $transition-slow;
+  transition: all $transition-slow;
 
   &::-webkit-scrollbar {
     height: 6px;
@@ -463,18 +372,16 @@ $font-body: 'Roboto', 'Nunito', sans-serif;
   display: flex;
   align-items: center;
   gap: $spacing-sm;
-  padding: $spacing-md $spacing-xl;
+  padding: $spacing-sm $spacing-lg;
   background: transparent;
   color: $gray-600;
   border: 2px solid transparent;
   border-radius: $radius-md;
-  font-family: $font-body;
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   cursor: pointer;
   transition: all $transition-base;
   white-space: nowrap;
-  position: relative;
 
   svg {
     transition: all $transition-base;
@@ -490,13 +397,13 @@ $font-body: 'Roboto', 'Nunito', sans-serif;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 24px;
-    height: 24px;
-    padding: 0 $spacing-sm;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 $spacing-xs;
     background: $gray-200;
     color: $gray-700;
-    border-radius: 12px;
-    font-size: 0.75rem;
+    border-radius: 11px;
+    font-size: 0.7rem;
     font-weight: 700;
     transition: all $transition-base;
   }
@@ -520,12 +427,10 @@ $font-body: 'Roboto', 'Nunito', sans-serif;
   &.active {
     color: $pure-white;
     background: $tango-orange;
-    border-color: transparent;
     box-shadow: 0 4px 12px rgba($tango-orange, 0.3);
 
     svg {
       color: $pure-white;
-      filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
     }
 
     .tab-count {
@@ -542,7 +447,7 @@ $font-body: 'Roboto', 'Nunito', sans-serif;
 }
 
 // ==========================================
-// 🎭 MODAL - REDISEÑADO
+// 🎭 MODAL
 // ==========================================
 
 .modal-overlay {
@@ -591,13 +496,11 @@ $font-body: 'Roboto', 'Nunito', sans-serif;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.75rem 2rem;
+  padding: 1.5rem 1.75rem;
   border-bottom: 1px solid $gray-200;
-  background: $pure-white;
 
   h3 {
-    font-family: $font-heading;
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: 700;
     color: $dark-gray;
     margin: 0;
@@ -620,23 +523,17 @@ $font-body: 'Roboto', 'Nunito', sans-serif;
     background: $gray-200;
     color: $dark-gray;
   }
-
-  &:focus-visible {
-    outline: 2px solid $source-blue;
-    outline-offset: 2px;
-  }
 }
 
 .modal-content {
-  padding: 2rem;
+  padding: 1.75rem;
 }
 
 .modal-description {
-  font-family: $font-body;
   color: $gray-700;
   line-height: 1.6;
-  margin: 0 0 1.75rem 0;
-  font-size: 0.9375rem;
+  margin: 0 0 1.5rem 0;
+  font-size: 0.9rem;
 
   strong {
     color: $dark-gray;
@@ -650,8 +547,8 @@ $font-body: 'Roboto', 'Nunito', sans-serif;
     background: rgba($warning-orange, 0.1);
     border-left: 4px solid $warning-orange;
     border-radius: $radius-sm;
-    color: darken($warning-orange, 30%);
-    font-size: 0.875rem;
+    color: #92400e;
+    font-size: 0.85rem;
   }
 }
 
@@ -668,7 +565,7 @@ $font-body: 'Roboto', 'Nunito', sans-serif;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 3rem 2rem;
+  padding: 2.5rem 1.75rem;
   border: 2px dashed $gray-300;
   border-radius: $radius-lg;
   background: $gray-50;
@@ -686,16 +583,14 @@ $font-body: 'Roboto', 'Nunito', sans-serif;
   }
 
   span:first-of-type {
-    font-family: $font-body;
     font-weight: 600;
     color: $dark-gray;
     margin-bottom: 0.5rem;
-    font-size: 1rem;
+    font-size: 0.95rem;
   }
 
   .file-hint {
-    font-family: $font-body;
-    font-size: 0.875rem;
+    font-size: 0.8rem;
     color: $gray-600;
   }
 }
@@ -704,7 +599,7 @@ $font-body: 'Roboto', 'Nunito', sans-serif;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 1.25rem;
+  padding: 1rem;
   background: rgba($tango-orange, 0.05);
   border: 2px solid $tango-orange;
   border-radius: $radius-md;
@@ -715,6 +610,7 @@ $font-body: 'Roboto', 'Nunito', sans-serif;
     gap: 0.75rem;
     color: $dark-gray;
     font-weight: 500;
+    font-size: 0.9rem;
 
     svg {
       color: $tango-orange;
@@ -739,17 +635,12 @@ $font-body: 'Roboto', 'Nunito', sans-serif;
     background: $danger-red;
     color: $pure-white;
   }
-
-  &:focus-visible {
-    outline: 2px solid $danger-red;
-    outline-offset: 2px;
-  }
 }
 
 .modal-footer {
   display: flex;
   gap: 1rem;
-  padding: 1.5rem 2rem;
+  padding: 1.25rem 1.75rem;
   border-top: 1px solid $gray-200;
   background: $gray-50;
   border-radius: 0 0 $radius-xl $radius-xl;
@@ -757,14 +648,13 @@ $font-body: 'Roboto', 'Nunito', sans-serif;
 
 .btn-cancel, .btn-submit {
   flex: 1;
-  padding: 0.875rem 1.5rem;
+  padding: 0.75rem 1.25rem;
   border: none;
   border-radius: $radius-md;
-  font-family: $font-body;
   font-weight: 600;
   cursor: pointer;
   transition: all $transition-base;
-  font-size: 0.9375rem;
+  font-size: 0.9rem;
 }
 
 .btn-cancel {
@@ -776,11 +666,6 @@ $font-body: 'Roboto', 'Nunito', sans-serif;
     background: $gray-50;
     border-color: $gray-400;
   }
-
-  &:focus-visible {
-    outline: 2px solid $source-blue;
-    outline-offset: 2px;
-  }
 }
 
 .btn-submit {
@@ -790,7 +675,6 @@ $font-body: 'Roboto', 'Nunito', sans-serif;
 
   &:hover:not(:disabled) {
     background: $tango-orange-dark;
-    border-color: $tango-orange-dark;
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba($tango-orange, 0.3);
   }
@@ -798,27 +682,6 @@ $font-body: 'Roboto', 'Nunito', sans-serif;
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-    transform: none !important;
-  }
-
-  &:focus-visible {
-    outline: 2px solid $source-blue;
-    outline-offset: 2px;
-  }
-}
-
-// ==========================================
-// 🎭 ANIMACIONES
-// ==========================================
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
   }
 }
 
@@ -834,46 +697,55 @@ $font-body: 'Roboto', 'Nunito', sans-serif;
 
 @media (max-width: 768px) {
   .header-content {
-    padding: $spacing-lg;
+    padding: $spacing-md;
   }
 
-  .header.collapsed .header-content {
-    padding: $spacing-sm $spacing-lg;
+  .header.scrolled .header-content {
+    padding: $spacing-xs $spacing-md;
   }
 
   .course-title {
-    font-size: 1.75rem;
+    font-size: 1.35rem;
   }
 
   .course-description {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
   }
 
   .tabs-navigation {
-    padding: $spacing-xs;
-    gap: $spacing-xs;
+    gap: 2px;
   }
 
   .tab-btn {
-    padding: $spacing-sm $spacing-md;
-    font-size: 0.875rem;
+    padding: $spacing-xs $spacing-sm;
+    font-size: 0.8rem;
 
     .tab-label {
       display: none;
     }
 
-    .tab-count {
-      margin-left: 0;
+    svg {
+      width: 18px;
+      height: 18px;
     }
   }
 
-  .toggle-header-btn {
-    font-size: 0.85rem;
-    padding: $spacing-sm $spacing-md;
-
-    .toggle-text {
-      font-size: 0.85rem;
+  .header.scrolled {
+    .tab-btn svg {
+      width: 16px;
+      height: 16px;
     }
+  }
+}
+
+@media (max-width: 480px) {
+  .course-title {
+    font-size: 1.2rem;
+  }
+
+  .meta-badge {
+    font-size: 0.75rem;
+    padding: $spacing-xs $spacing-sm;
   }
 
   .modal-container {
@@ -883,51 +755,6 @@ $font-body: 'Roboto', 'Nunito', sans-serif;
   .modal-header,
   .modal-content,
   .modal-footer {
-    padding: 1.25rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .course-title {
-    font-size: 1.5rem;
-  }
-
-  .meta-badge {
-    font-size: 0.8rem;
-    padding: $spacing-sm $spacing-md;
-  }
-
-  .back-btn {
-    span {
-      display: none;
-    }
-  }
-
-  .toggle-header-btn .toggle-text {
-    font-size: 0.8rem;
-  }
-
-  .modal-footer {
-    flex-direction: column;
-  }
-}
-
-// ==========================================
-// 🌟 ACCESIBILIDAD
-// ==========================================
-
-button:focus-visible {
-  outline: 2px solid $source-blue;
-  outline-offset: 2px;
-  border-radius: $radius-sm;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
+    padding: 1rem;
   }
 }

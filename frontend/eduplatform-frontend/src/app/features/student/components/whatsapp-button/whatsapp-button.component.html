@@ -1,15 +1,19 @@
 <!-- Loading -->
-<div *ngIf="isLoading" class="whatsapp-loading">
+<div *ngIf="isLoading" class="whatsapp-compact loading">
   <div class="spinner"></div>
   <span>Cargando...</span>
 </div>
 
-<!-- Con enlace configurado -->
-<div *ngIf="!isLoading && hasLink" class="whatsapp-banner">
-  <div class="banner-icon">
+<!-- Con enlace configurado - VERSIÓN COMPACTA -->
+<button
+  *ngIf="!isLoading && hasLink"
+  class="whatsapp-compact active"
+  (click)="openWhatsapp()"
+>
+  <div class="whatsapp-icon">
     <svg
-      width="32"
-      height="32"
+      width="20"
+      height="20"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -20,32 +24,28 @@
       ></path>
     </svg>
   </div>
-  <div class="banner-content">
-    <h4>💬 Grupo de WhatsApp del Curso</h4>
-    <p>Únete al grupo para estar al tanto de todas las novedades</p>
+  <div class="whatsapp-text">
+    <span class="whatsapp-label">Grupo de WhatsApp</span>
+    <span class="whatsapp-hint">Haz clic para unirte</span>
   </div>
-  <button class="join-btn" (click)="openWhatsapp()">
-    <svg
-      width="20"
-      height="20"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-    >
-      <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
-      <polyline points="15 3 21 3 21 9"></polyline>
-      <line x1="10" y1="14" x2="21" y2="3"></line>
-    </svg>
-    Unirse al Grupo
-  </button>
-</div>
-
-<!-- Sin enlace configurado -->
-<div *ngIf="!isLoading && !hasLink" class="whatsapp-empty">
   <svg
-    width="24"
-    height="24"
+    class="whatsapp-arrow"
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+  >
+    <polyline points="9 18 15 12 9 6"></polyline>
+  </svg>
+</button>
+
+<!-- Sin enlace configurado - VERSIÓN COMPACTA -->
+<div *ngIf="!isLoading && !hasLink" class="whatsapp-compact disabled">
+  <svg
+    width="18"
+    height="18"
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
@@ -55,5 +55,5 @@
     <line x1="12" y1="8" x2="12" y2="12"></line>
     <line x1="12" y1="16" x2="12.01" y2="16"></line>
   </svg>
-  <span>El profesor aún no ha configurado un grupo de WhatsApp</span>
+  <span>Sin grupo de WhatsApp configurado</span>
 </div>

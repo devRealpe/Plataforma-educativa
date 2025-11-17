@@ -1,6 +1,6 @@
 <!-- ==========================================
      📄 course-header.component.html (STUDENT)
-     Header con Reducción al Scroll
+     Header con Reducción Automática al Scroll
      ========================================== -->
 
 <div class="course-detail-wrapper">
@@ -30,18 +30,18 @@
         <span>Volver al Dashboard</span>
       </button>
 
-      <!-- ✅ Course Header Info con clase 'compact' cuando scrolled -->
+      <!-- ✅ Course Header Info - Se oculta descripción cuando scrolled -->
       <div class="course-header" *ngIf="course">
         <div class="course-header-main">
           <div class="course-title-section">
             <h1 class="course-title">{{ course.title }}</h1>
-            <!-- ✅ Descripción oculta al hacer scroll -->
+            <!-- ✅ Descripción visible solo cuando NO hay scroll -->
             <p class="course-description" *ngIf="!isScrolled">
               {{ course.description }}
             </p>
           </div>
 
-          <!-- ✅ Meta Badges en línea cuando scrolled -->
+          <!-- ✅ Meta Badges siempre visibles pero más pequeños al hacer scroll -->
           <div class="course-meta-badges">
             <div class="meta-badge level">
               <svg
@@ -76,7 +76,7 @@
         </div>
       </div>
 
-      <!-- ✅ WhatsApp Button -->
+      <!-- ✅ WhatsApp Button Compacto -->
       <app-whatsapp-button
         [courseId]="courseId"
         *ngIf="course"

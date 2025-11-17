@@ -1,55 +1,114 @@
-$primary-blue: #2563eb;
-$success-green: #10b981;
-$warning-orange: #f59e0b;
-$danger-red: #dc2626;
-$gray-50: #f9fafb;
-$gray-100: #f3f4f6;
-$gray-200: #e5e7eb;
-$gray-300: #d1d5db;
-$gray-600: #6b7280;
-$gray-700: #374151;
-$gray-900: #111827;
+// ==========================================
+// 🏆 CHALLENGE LIST - REDISEÑO CON PALETA SOLICITADA
+// ==========================================
 
-.challenges-container {
-  padding: 0;
+// 🎨 PALETA PRINCIPAL (60-30-10)
+$naranja-tango: #F26B21;
+$naranja-oscuro: #D45A1A;
+$azul-fuente: #68B8BE;
+$azul-oscuro: #5AA3A8;
+$gris-neutro: #F0F0F0;
+$gris-oscuro: #4C4C4C;
+$gris-claro: #DADADA;
+$blanco: #FFFFFF;
+$negro: #000000;
+$rojo-error: #E74C3C;
+$verde-exito: #10b981;
+$verde-oscuro: #0d9668;
+
+// Variables de espaciado
+$spacing-xs: 0.25rem;
+$spacing-sm: 0.5rem;
+$spacing-md: 1rem;
+$spacing-lg: 1.5rem;
+$spacing-xl: 2rem;
+$spacing-2xl: 3rem;
+
+// Variables de bordes
+$radius-sm: 8px;
+$radius-md: 12px;
+$radius-lg: 16px;
+$radius-xl: 20px;
+
+// Sombras
+$shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+$shadow-md: 0 2px 8px rgba(0, 0, 0, 0.1);
+$shadow-lg: 0 4px 12px rgba(242, 107, 33, 0.15);
+$shadow-xl: 0 8px 20px rgba(0, 0, 0, 0.12);
+
+// Transiciones
+$transition-base: 0.3s ease-in-out;
+
+// Variables de tipografía
+$font-heading: 'Poppins', 'Montserrat', sans-serif;
+$font-body: 'Roboto', 'Nunito', sans-serif;
+
+:host {
+  display: block;
+  background-color: $gris-neutro;
+  min-height: 100vh;
+  animation: fadeIn 0.4s ease;
 }
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+// ==========================================
+// 🏆 SECTION HEADER
+// ==========================================
 
 .section-header {
   margin-bottom: 2rem;
+  padding: $spacing-xl;
+  background: $blanco;
+  border-radius: $radius-lg;
+  border: 2px solid $gris-claro;
+  box-shadow: $shadow-md;
 
   h2 {
     font-size: 1.75rem;
     font-weight: 700;
-    color: $gray-900;
-    margin: 0 0 0.5rem 0;
+    color: $gris-oscuro;
+    margin: 0 0 $spacing-sm 0;
+    font-family: $font-heading;
   }
 
   .subtitle {
-    color: $gray-600;
+    color: $gris-oscuro;
     margin: 0;
+    font-size: 1rem;
+    font-family: $font-body;
+    opacity: 0.8;
   }
 }
+
+// ==========================================
+// ⏳ LOADING STATE
+// ==========================================
 
 .loading, .empty-state {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 4rem 2rem;
+  padding: $spacing-2xl * 2;
+  background: $blanco;
+  border-radius: $radius-xl;
+  border: 2px solid $gris-claro;
+  box-shadow: $shadow-md;
   text-align: center;
-  background: white;
-  border-radius: 16px;
-  border: 1px solid $gray-200;
 }
 
 .spinner {
   width: 50px;
   height: 50px;
-  border: 4px solid $gray-200;
-  border-top-color: $warning-orange;
+  border: 4px solid $gris-claro;
+  border-top-color: $naranja-tango;
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
-  margin-bottom: 1rem;
+  margin-bottom: $spacing-lg;
 }
 
 @keyframes spin {
@@ -59,188 +118,293 @@ $gray-900: #111827;
 .empty-icon {
   width: 120px;
   height: 120px;
-  background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%);
+  background: rgba(242, 107, 33, 0.1);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 1.5rem;
+  position: relative;
+  animation: float 3s ease-in-out infinite;
+  margin-bottom: $spacing-xl;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    background: $naranja-tango;
+    border-radius: 50%;
+    opacity: 0.2;
+    filter: blur(12px);
+    animation: pulse 2s ease-in-out infinite;
+  }
 
   svg {
-    color: $warning-orange;
+    color: $naranja-tango;
+    position: relative;
+    z-index: 1;
   }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
 }
 
 .empty-title {
   font-size: 1.5rem;
   font-weight: 700;
-  color: $gray-900;
-  margin: 0 0 0.5rem 0;
+  color: $gris-oscuro;
+  margin: 0 0 $spacing-md 0;
+  font-family: $font-heading;
 }
 
 .empty-description {
   font-size: 1rem;
-  color: $gray-600;
+  color: $gris-oscuro;
+  opacity: 0.8;
   margin: 0;
+  font-family: $font-body;
 }
+
+// ==========================================
+// 🎴 CHALLENGES GRID & CARDS
+// ==========================================
 
 .challenges-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
-  gap: 1.5rem;
+  gap: $spacing-xl;
+  animation: fadeInUp 0.6s ease;
 }
 
-.challenge-card {
-  background: white;
-  border-radius: 16px;
-  border: 2px solid $warning-orange;
-  border-left: 6px solid $warning-orange;
-  overflow: hidden;
-  transition: all 0.2s ease;
-
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(245, 158, 11, 0.2);
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
+.challenge-card {
+  background: $blanco;
+  border-radius: $radius-lg;
+  border: 2px solid $gris-claro;
+  overflow: hidden;
+  transition: all $transition-base;
+  box-shadow: $shadow-md;
+  position: relative;
+
+  &:hover {
+    transform: translateY(-6px);
+    box-shadow: $shadow-lg;
+    border-color: $naranja-tango;
+  }
+}
+
+// ==========================================
+// 🎯 CARD HEADER
+// ==========================================
+
 .card-header {
-  padding: 1.5rem;
-  background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%);
-  border-bottom: 1px solid rgba(245, 158, 11, 0.2);
+  padding: $spacing-lg;
+  background: rgba(242, 107, 33, 0.05);
+  border-bottom: 2px solid $gris-claro;
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 1rem;
+  gap: $spacing-md;
 }
 
 .header-left {
   flex: 1;
+  min-width: 0;
 }
 
 .challenge-title {
   font-size: 1.25rem;
   font-weight: 700;
-  color: #92400e;
-  margin: 0 0 0.75rem 0;
+  color: $gris-oscuro;
+  margin: 0 0 $spacing-md 0;
+  line-height: 1.3;
+  word-wrap: break-word;
+  font-family: $font-heading;
 }
 
 .challenge-badges {
   display: flex;
-  gap: 0.5rem;
+  gap: $spacing-sm;
   flex-wrap: wrap;
 }
 
 .badge {
-  padding: 0.25rem 0.75rem;
-  border-radius: 6px;
+  padding: $spacing-xs $spacing-md;
+  border-radius: $radius-sm;
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: $spacing-xs;
+  transition: all $transition-base;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-family: $font-body;
+
+  svg {
+    flex-shrink: 0;
+  }
 
   &.difficulty {
-    color: white;
+    color: $blanco;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+
+    &:hover {
+      transform: scale(1.05);
+    }
   }
 
   &.points {
-    background: rgba(245, 158, 11, 0.2);
-    color: #92400e;
-    border: 1px solid $warning-orange;
+    background: $azul-fuente;
+    color: $blanco;
+    box-shadow: 0 2px 8px rgba(104, 184, 190, 0.3);
 
     svg {
-      fill: $warning-orange;
+      fill: $blanco;
+      animation: sparkle 2s ease-in-out infinite;
+    }
+
+    &:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(104, 184, 190, 0.5);
     }
   }
 }
 
+@keyframes sparkle {
+  0%, 100% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.2); }
+}
+
 .status-badge {
-  padding: 0.5rem 1rem;
+  padding: $spacing-sm $spacing-md;
   border-radius: 20px;
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  font-family: $font-body;
 
   &.status-pending {
-    background: #fef3c7;
-    color: #92400e;
+    background: rgba(242, 107, 33, 0.1);
+    color: $naranja-oscuro;
+    border: 1px solid $naranja-tango;
   }
 
   &.status-reviewed {
-    background: #d1fae5;
-    color: #065f46;
+    background: rgba(16, 185, 129, 0.1);
+    color: $verde-oscuro;
+    border: 1px solid $verde-exito;
   }
 
   &.status-rejected {
-    background: #fee2e2;
-    color: #991b1b;
+    background: rgba(231, 76, 60, 0.1);
+    color: $rojo-error;
+    border: 1px solid $rojo-error;
   }
 }
 
+// ==========================================
+// 📄 CARD BODY
+// ==========================================
+
 .card-body {
-  padding: 1.5rem;
+  padding: $spacing-lg;
 }
 
 .challenge-description {
-  color: $gray-700;
+  font-size: 0.95rem;
+  color: $gris-oscuro;
   line-height: 1.6;
-  margin: 0 0 1.5rem 0;
+  margin: 0 0 $spacing-lg 0;
+  font-family: $font-body;
 }
 
 .challenge-info {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
+  gap: $spacing-md;
+  margin-bottom: $spacing-lg;
 }
 
 .info-item {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: $spacing-sm;
+  padding: $spacing-sm $spacing-md;
+  background: rgba(242, 107, 33, 0.05);
+  border-radius: $radius-sm;
   font-size: 0.875rem;
-  color: $gray-600;
+  color: $gris-oscuro;
+  transition: all $transition-base;
+  font-family: $font-body;
 
   svg {
-    color: $warning-orange;
+    color: $naranja-tango;
     flex-shrink: 0;
+  }
+
+  &:hover {
+    background: rgba(242, 107, 33, 0.1);
+    transform: translateY(-2px);
   }
 }
 
+// ==========================================
+// 📤 SUBMISSION INFO
+// ==========================================
+
 .submission-info {
-  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-  padding: 1.5rem;
-  border-radius: 12px;
-  border: 2px solid $success-green;
-  margin-top: 1.5rem;
+  background: rgba(104, 184, 190, 0.05);
+  padding: $spacing-lg;
+  border-radius: $radius-md;
+  border: 2px solid $azul-fuente;
+  margin-top: $spacing-lg;
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .submission-header {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid rgba(16, 185, 129, 0.2);
+  gap: $spacing-sm;
+  margin-bottom: $spacing-md;
+  padding-bottom: $spacing-md;
+  border-bottom: 1px solid rgba(104, 184, 190, 0.2);
 
   svg {
-    color: $success-green;
+    color: $azul-fuente;
   }
 
   span {
     font-weight: 700;
-    color: #065f46;
+    color: $azul-oscuro;
     font-size: 1.125rem;
+    font-family: $font-heading;
   }
 }
 
 .submission-details {
   p {
-    margin: 0.5rem 0;
-    color: #065f46;
+    margin: $spacing-sm 0;
+    color: $azul-oscuro;
     font-size: 0.875rem;
+    font-family: $font-body;
 
     strong {
       font-weight: 600;
@@ -249,74 +413,91 @@ $gray-900: #111827;
 }
 
 .reviewed-section {
-  margin-top: 1rem;
-  padding-top: 1rem;
-  border-top: 1px solid rgba(16, 185, 129, 0.2);
+  margin-top: $spacing-md;
+  padding-top: $spacing-md;
+  border-top: 1px solid rgba(104, 184, 190, 0.2);
 }
 
 .bonus-display {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 1rem;
+  gap: $spacing-md;
+  margin-bottom: $spacing-md;
 }
 
 .bonus-label {
   font-weight: 600;
-  color: #047857;
+  color: $azul-oscuro;
   font-size: 0.95rem;
+  font-family: $font-body;
 }
 
 .bonus-value {
-  padding: 0.5rem 1rem;
-  background: white;
-  border-radius: 8px;
+  padding: $spacing-sm $spacing-md;
+  background: $blanco;
+  border-radius: $radius-sm;
   font-size: 1.5rem;
   font-weight: 700;
-  color: $success-green;
+  color: $azul-fuente;
+  font-family: $font-heading;
+  border: 2px solid $azul-fuente;
 }
 
 .feedback-box {
-  background: white;
-  padding: 1rem;
-  border-radius: 8px;
-  border-left: 4px solid $success-green;
+  background: $blanco;
+  padding: $spacing-md;
+  border-radius: $radius-sm;
+  border-left: 4px solid $azul-fuente;
+  animation: pulse 2s infinite;
 
   strong {
     display: block;
-    color: #047857;
-    margin-bottom: 0.5rem;
+    color: $azul-oscuro;
+    margin-bottom: $spacing-sm;
     font-size: 0.95rem;
+    font-family: $font-heading;
   }
 
   p {
     margin: 0;
-    color: $gray-700;
+    color: $gris-oscuro;
     line-height: 1.5;
+    font-family: $font-body;
   }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
 }
 
 .pending-section {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem;
+  gap: $spacing-sm;
+  padding: $spacing-md;
   background: rgba(255, 255, 255, 0.6);
-  border-radius: 8px;
+  border-radius: $radius-sm;
   font-size: 0.875rem;
-  color: #6b7280;
+  color: $gris-oscuro;
+  font-family: $font-body;
 
   svg {
-    color: $warning-orange;
+    color: $naranja-tango;
+    animation: spin 2s linear infinite;
   }
 }
 
+// ==========================================
+// 🔘 CARD FOOTER
+// ==========================================
+
 .card-footer {
-  padding: 1rem 1.5rem;
-  background: $gray-50;
-  border-top: 1px solid $gray-200;
+  padding: $spacing-lg;
+  background: $blanco;
+  border-top: 2px solid $gris-claro;
   display: flex;
-  gap: 0.5rem;
+  gap: $spacing-sm;
   flex-wrap: wrap;
 }
 
@@ -326,75 +507,169 @@ $gray-900: #111827;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1rem;
-  background: white;
-  color: $gray-700;
-  border: 1px solid $gray-200;
-  border-radius: 8px;
+  gap: $spacing-sm;
+  padding: $spacing-md $spacing-lg;
+  background: $blanco;
+  color: $gris-oscuro;
+  border: 2px solid $gris-claro;
+  border-radius: $radius-sm;
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all $transition-base;
+  font-family: $font-body;
+
+  svg {
+    transition: all $transition-base;
+    flex-shrink: 0;
+  }
+
+  span {
+    transition: all $transition-base;
+  }
 
   &:hover:not(:disabled) {
-    background: $gray-100;
-    border-color: $gray-300;
-    transform: translateY(-1px);
+    background: rgba(242, 107, 33, 0.05);
+    border-color: $naranja-tango;
+    color: $naranja-tango;
+    transform: translateY(-2px);
+    box-shadow: $shadow-sm;
+
+    svg {
+      transform: scale(1.1);
+    }
+  }
+
+  &:focus {
+    outline: none;
+    border-color: $azul-fuente;
+    box-shadow: 0 0 0 2px rgba(104, 184, 190, 0.3);
   }
 
   &:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+    transform: none;
   }
 
   &.primary {
-    background: $warning-orange;
-    color: white;
-    border-color: $warning-orange;
+    background: $naranja-tango;
+    color: $blanco;
+    border-color: $naranja-tango;
+    box-shadow: 0 2px 8px rgba(242, 107, 33, 0.3);
 
     &:hover:not(:disabled) {
-      background: #d97706;
-      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+      background: $naranja-oscuro;
+      border-color: $naranja-oscuro;
+      box-shadow: 0 4px 12px rgba(242, 107, 33, 0.4);
+      transform: translateY(-2px);
+
+      svg {
+        transform: scale(1.1);
+      }
     }
   }
 
   &.secondary {
-    background: $gray-100;
-    color: $gray-700;
+    background: $azul-fuente;
+    color: $blanco;
+    border-color: $azul-fuente;
 
     &:hover:not(:disabled) {
-      background: $gray-200;
+      background: $azul-oscuro;
+      box-shadow: 0 4px 12px rgba(104, 184, 190, 0.4);
+      transform: translateY(-2px);
     }
   }
 
   &.edit-btn {
-    background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%);
-    color: #92400e;
-    border-color: $warning-orange;
+    background: rgba(242, 107, 33, 0.1);
+    color: $naranja-oscuro;
+    border-color: $naranja-tango;
 
     &:hover:not(:disabled) {
-      background: linear-gradient(135deg, #fed7aa 0%, #fbbf24 100%);
-      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+      background: rgba(242, 107, 33, 0.2);
+      box-shadow: 0 4px 12px rgba(242, 107, 33, 0.3);
+      transform: translateY(-2px);
     }
   }
 
   &.danger-btn {
-    background: rgba(220, 38, 38, 0.1);
-    color: $danger-red;
-    border-color: $danger-red;
+    background: rgba(231, 76, 60, 0.1);
+    color: $rojo-error;
+    border-color: $rojo-error;
 
     &:hover:not(:disabled) {
-      background: $danger-red;
-      color: white;
-      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+      background: $rojo-error;
+      color: $blanco;
+      box-shadow: 0 4px 12px rgba(231, 76, 60, 0.3);
+      transform: translateY(-2px);
     }
+  }
+}
+
+// ==========================================
+// 💬 MENSAJES MOTIVACIONALES
+// ==========================================
+
+.motivational-message {
+  background: $blanco;
+  border: 2px solid $naranja-tango;
+  border-radius: $radius-md;
+  padding: $spacing-lg;
+  margin: $spacing-md 0;
+  animation: fadeIn 0.5s ease;
+
+  &.success {
+    border-color: $azul-fuente;
+    background: rgba(104, 184, 190, 0.05);
+  }
+
+  &.error {
+    border-color: $rojo-error;
+    background: rgba(231, 76, 60, 0.05);
+  }
+
+  .message-icon {
+    color: $naranja-tango;
+    margin-right: $spacing-sm;
+    
+    &.success {
+      color: $azul-fuente;
+    }
+    
+    &.error {
+      color: $rojo-error;
+    }
+  }
+
+  .message-text {
+    color: $gris-oscuro;
+    font-family: $font-body;
+    font-weight: 500;
+    margin: 0;
+  }
+}
+
+// ==========================================
+// 📱 RESPONSIVE
+// ==========================================
+
+@media (max-width: 1024px) {
+  .challenges-grid {
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
   }
 }
 
 @media (max-width: 768px) {
   .challenges-grid {
     grid-template-columns: 1fr;
+    gap: $spacing-lg;
+  }
+
+  .card-header {
+    flex-direction: column;
+    gap: $spacing-md;
   }
 
   .card-footer {
@@ -402,7 +677,65 @@ $gray-900: #111827;
 
     .footer-btn {
       width: 100%;
-      min-width: unset;
+      min-width: 0;
     }
+  }
+
+  .section-header {
+    margin: $spacing-md;
+    padding: $spacing-lg;
+    
+    h2 {
+      font-size: 1.5rem;
+    }
+  }
+
+  .bonus-display {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: $spacing-sm;
+  }
+}
+
+@media (max-width: 480px) {
+  .challenge-card {
+    margin: $spacing-sm;
+  }
+
+  .card-header {
+    flex-direction: column;
+    gap: $spacing-md;
+  }
+
+  .status-badge {
+    align-self: flex-start;
+  }
+
+  .footer-btn {
+    font-size: 0.8rem;
+    padding: $spacing-sm $spacing-md;
+
+    span {
+      font-size: 0.75rem;
+    }
+  }
+}
+
+// ==========================================
+// 🌟 ACCESSIBILITY
+// ==========================================
+
+button:focus-visible {
+  outline: 3px solid $naranja-tango;
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

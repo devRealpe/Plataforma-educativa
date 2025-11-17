@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatSnackBar } from '@angular/material/snack-bar';
@@ -15,19 +15,11 @@ import { ConfirmationModalComponent } from '../../../../../../shared/components/
 import { PodiumComponent } from '../../../../../../shared/components/podium/podium.component';
 import { ExerciseListComponent } from '../exercise-list/exercise-list.component';
 import { ChallengeListComponent } from '../challenge-list/challenge-list.component';
-
-// 🆕 WhatsApp Button Component - IMPORTANTE: Verificar que esté correctamente importado
 import { WhatsappButtonComponent } from '../../../../components/whatsapp-button/whatsapp-button.component';
 
 /**
- * 🎯 ORQUESTADOR PRINCIPAL DE COURSE DETAIL - STUDENT
- * 
- * Este componente actúa como:
- * - Contenedor principal de la vista de detalle del curso
- * - Coordinador de todos los componentes hijos
- * - Gestor del estado global (curso, ejercicios, retos)
- * - Controlador de modales
- * - Router principal de la sección
+ * 🎯 ORQUESTADOR PRINCIPAL DE COURSE DETAIL - STUDENT (OPTIMIZADO)
+ * ✨ Reducción automática del header al hacer scroll
  */
 @Component({
   selector: 'app-course-header',
@@ -38,7 +30,7 @@ import { WhatsappButtonComponent } from '../../../../components/whatsapp-button/
     PodiumComponent,
     ExerciseListComponent,
     ChallengeListComponent,
-    WhatsappButtonComponent // ✅ CRÍTICO: Debe estar aquí
+    WhatsappButtonComponent
   ],
   templateUrl: './course-header.component.html',
   styleUrls: ['./course-header.component.scss']
@@ -56,6 +48,11 @@ export class CourseHeaderComponentStudent implements OnInit {
   
   isLoading = true;
   isLoadingChallenges = false;
+
+  // ==========================================
+  // 🆕 ESTADO DEL SCROLL
+  // ==========================================
+  isScrolled = false;
 
   // ==========================================
   // ESTADO DE MODALES
@@ -99,6 +96,15 @@ export class CourseHeaderComponentStudent implements OnInit {
     private challengeService: ChallengeService,
     private snackBar: MatSnackBar
   ) {}
+
+  // ==========================================
+  // 🆕 DETECTAR SCROLL
+  // ==========================================
+  @HostListener('window:scroll', ['$event'])
+  onWindowScroll() {
+    // Activar estado "scrolled" después de 100px
+    this.isScrolled = window.pageYOffset > 100;
+  }
 
   ngOnInit() {
     this.courseId = Number(this.route.snapshot.paramMap.get('id'));
@@ -283,7 +289,6 @@ export class CourseHeaderComponentStudent implements OnInit {
     this.isSubmitting = true;
 
     if (this.isEditMode) {
-      // EDITAR
       const submission = this.getSubmission(this.selectedExercise);
       if (!submission?.id) {
         this.snackBar.open('No se encontró la entrega', 'Cerrar', {
@@ -313,7 +318,6 @@ export class CourseHeaderComponentStudent implements OnInit {
         }
       });
     } else {
-      // CREAR
       this.exerciseService.submitExercise(this.selectedExercise.id, this.selectedFile).subscribe({
         next: (submission) => {
           this.loadMySubmissions();

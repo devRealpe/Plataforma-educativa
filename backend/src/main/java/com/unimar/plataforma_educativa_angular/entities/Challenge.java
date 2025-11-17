@@ -24,7 +24,8 @@ public class Challenge {
     @Column(nullable = false)
     private String title;
 
-    @Column(length = 2000)
+    @Lob
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     @Column(nullable = false)
