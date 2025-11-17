@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ChallengeService, Challenge, ChallengeSubmission } from '../../../../../../core/services/challenge.service';
@@ -16,6 +16,12 @@ export class ChallengeListComponent implements OnInit {
   @Input() challenges: Challenge[] = [];
   @Input() submissions: ChallengeSubmission[] = [];
   @Input() isLoading = false;
+
+  // ✅ CORRECCIÓN: Este Output debe emitir un objeto, NO un evento nativo
+  @Output() openSubmissionModalEvent = new EventEmitter<{
+    challenge: Challenge;
+    existingSubmission?: ChallengeSubmission;
+  }>();
 
   // Estado del modal de subir/editar solución
   showSubmissionModal = false;
@@ -61,17 +67,18 @@ export class ChallengeListComponent implements OnInit {
   }
 
   // ==========================================
-  // GESTIÓN DEL MODAL DE SUBIR/EDITAR
+  // 🚨 MÉTODO CORREGIDO - CRÍTICO
   // ==========================================
-
+  
+  /**
+   * ✅ Este método DEBE emitir un objeto con challenge y existingSubmission
+   * NO debe manejar el modal aquí, solo emitir el evento
+   */
   openSubmissionModal(challenge: Challenge, existingSubmission?: ChallengeSubmission) {
-    this.selectedChallenge = challenge;
-    this.existingSubmission = existingSubmission || this.getMySubmission(challenge.id!);
-    this.isEditMode = !!this.existingSubmission;
-    this.selectedFile = null;
+    const submission = existingSubmission || this.getMySubmission(challenge.id!);
     
     // Validar si puede editar
-    if (this.isEditMode && this.existingSubmission && !this.existingSubmission.canBeEdited) {
+    if (submission && !submission.canBeEdited) {
       this.snackBar.open(
         '⚠️ Esta solución ya no puede ser editada',
         'Cerrar',
@@ -80,9 +87,16 @@ export class ChallengeListComponent implements OnInit {
       return;
     }
 
-    this.showSubmissionModal = true;
+    // ✅ EMITIR EL EVENTO CON LA ESTRUCTURA CORRECTA
+    this.openSubmissionModalEvent.emit({
+      challenge: challenge,
+      existingSubmission: submission
+    });
   }
 
+  // Los métodos del modal integrado ya no se usan si el modal está en course-header
+  // Si quieres mantener el modal interno, estos métodos son correctos
+  
   closeSubmissionModal() {
     this.showSubmissionModal = false;
     this.selectedChallenge = null;
@@ -183,7 +197,7 @@ export class ChallengeListComponent implements OnInit {
   }
 
   // ==========================================
-  // DESCARGAS
+  // DESCARGAS Y UTILIDADES
   // ==========================================
 
   getDifficultyColor(difficulty: string): string {
