@@ -1,7 +1,9 @@
-import { Component, Input, Output, EventEmitter, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Exercise, Submission } from '../../../../../../core/services/exercise.service';
 import { ExerciseService } from '../../../../../../core/services/exercise.service';
+import { forkJoin, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
 @Component({
   selector: 'app-exercise-list',
@@ -10,7 +12,7 @@ import { ExerciseService } from '../../../../../../core/services/exercise.servic
   templateUrl: './exercise-list.component.html',
   styleUrls: ['./exercise-list.component.scss']
 })
-export class ExerciseListComponent implements OnInit {
+export class ExerciseListComponent implements OnInit, OnChanges {
   @Input() exercises: Exercise[] = [];
   @Input() submissions: Submission[] = [];
   @Input() isLoading = false;
@@ -25,35 +27,73 @@ export class ExerciseListComponent implements OnInit {
 
   // 🆕 Mapa para rastrear qué ejercicios tienen pistas
   exercisesWithHints = new Map<number, boolean>();
-  loadingHints = new Set<number>();
+  loadingHintsMap = new Map<number, boolean>();
+  hintsChecked = false; // Flag para evitar múltiples verificaciones
 
   constructor(private exerciseService: ExerciseService) {}
 
   ngOnInit() {
-    // Cargar información de pistas para cada ejercicio
-    this.checkHintsAvailability();
+    if (this.exercises.length > 0 && !this.hintsChecked) {
+      this.checkHintsAvailabilityOptimized();
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    // ✅ Verificar pistas cuando cambien los ejercicios
+    if (changes['exercises'] && !changes['exercises'].firstChange) {
+      const currentExercises = changes['exercises'].currentValue as Exercise[];
+      if (currentExercises && currentExercises.length > 0) {
+        this.checkHintsAvailabilityOptimized();
+      }
+    }
   }
 
   /**
-   * 🔍 Verificar qué ejercicios tienen pistas disponibles
+   * 🚀 OPTIMIZADO: Verificar pistas de TODOS los ejercicios en paralelo con forkJoin
    */
-  checkHintsAvailability() {
-    this.exercises.forEach(exercise => {
-      if (exercise.id) {
-        this.loadingHints.add(exercise.id);
+  checkHintsAvailabilityOptimized() {
+    if (this.exercises.length === 0) return;
+
+    console.log('🔍 Verificando pistas para', this.exercises.length, 'ejercicios...');
+    this.hintsChecked = true;
+
+    // Crear array de observables
+    const hintRequests = this.exercises
+      .filter(ex => ex.id !== undefined)
+      .map(exercise => {
+        this.loadingHintsMap.set(exercise.id!, true);
         
-        this.exerciseService.getHintsByExercise(exercise.id).subscribe({
-          next: (hints) => {
-            // Guardar si tiene pistas o no
-            this.exercisesWithHints.set(exercise.id!, hints.length > 0);
-            this.loadingHints.delete(exercise.id!);
-          },
-          error: (error) => {
-            console.error(`Error al verificar pistas para ejercicio ${exercise.id}:`, error);
-            // En caso de error, asumimos que no hay pistas
-            this.exercisesWithHints.set(exercise.id!, false);
-            this.loadingHints.delete(exercise.id!);
-          }
+        return this.exerciseService.getHintsByExercise(exercise.id!).pipe(
+          map(hints => ({
+            exerciseId: exercise.id!,
+            hasHints: hints.length > 0
+          })),
+          catchError(error => {
+            console.error(`❌ Error al verificar pistas para ejercicio ${exercise.id}:`, error);
+            return of({
+              exerciseId: exercise.id!,
+              hasHints: false
+            });
+          })
+        );
+      });
+
+    // ✅ Ejecutar TODAS las peticiones en paralelo
+    forkJoin(hintRequests).subscribe({
+      next: (results) => {
+        results.forEach(result => {
+          this.exercisesWithHints.set(result.exerciseId, result.hasHints);
+          this.loadingHintsMap.set(result.exerciseId, false);
+        });
+        
+        const totalWithHints = results.filter(r => r.hasHints).length;
+        console.log(`✅ Verificación completada: ${totalWithHints}/${results.length} ejercicios tienen pistas`);
+      },
+      error: (error) => {
+        console.error('❌ Error global al verificar pistas:', error);
+        // Limpiar estados de carga
+        this.exercises.forEach(ex => {
+          if (ex.id) this.loadingHintsMap.set(ex.id, false);
         });
       }
     });
@@ -72,7 +112,7 @@ export class ExerciseListComponent implements OnInit {
    */
   isLoadingHints(exercise: Exercise): boolean {
     if (!exercise.id) return false;
-    return this.loadingHints.has(exercise.id);
+    return this.loadingHintsMap.get(exercise.id) ?? false;
   }
 
   getSubmission(exercise: Exercise): Submission | undefined {
@@ -153,9 +193,8 @@ export class ExerciseListComponent implements OnInit {
   }
 
   onViewHints(exercise: Exercise) {
-    // Solo emitir si realmente tiene pistas
-    if (this.hasHints(exercise)) {
-      this.viewHints.emit(exercise);
-    }
+    console.log('💡 Emitiendo evento viewHints para:', exercise.title);
+    // ✅ Emitir siempre, sin validación aquí
+    this.viewHints.emit(exercise);
   }
 }

@@ -1,1 +1,251 @@
-<p>hints-viewer-modal works!</p>
+<!-- ==========================================
+     💡 MODAL DE PISTAS PARA ESTUDIANTES
+     ========================================== -->
+
+<!-- Overlay del Modal -->
+<div class="modal-overlay" (click)="closeFromWarning()">
+  <div class="modal-container" (click)="$event.stopPropagation()">
+    <!-- ============================================ -->
+    <!-- PANTALLA DE ADVERTENCIA INICIAL -->
+    <!-- ============================================ -->
+    <div *ngIf="showWarning" class="warning-screen">
+      <div class="warning-icon">
+        <svg
+          width="80"
+          height="80"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path
+            d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"
+          ></path>
+          <line x1="12" y1="9" x2="12" y2="13"></line>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+      </div>
+
+      <h2 class="warning-title">⚠️ Antes de ver las pistas...</h2>
+
+      <div class="warning-message">
+        <p>
+          Las pistas están diseñadas para <strong>ayudarte a pensar</strong>, no
+          para darte la respuesta directa.
+        </p>
+        <p>
+          Cada pista desbloqueada es un paso más hacia la solución.
+          <strong>Intenta resolver el ejercicio por tu cuenta primero</strong>
+          y usa las pistas solo cuando realmente las necesites.
+        </p>
+        <div class="warning-encouragement">
+          <p>
+            💡 <strong>Recuerda:</strong> El verdadero aprendizaje viene del
+            esfuerzo y la reflexión. ¡Tú puedes hacerlo!
+          </p>
+        </div>
+      </div>
+
+      <div class="warning-actions">
+        <button class="btn-back" (click)="closeFromWarning()">
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <line x1="19" y1="12" x2="5" y2="12"></line>
+            <polyline points="12 19 5 12 12 5"></polyline>
+          </svg>
+          <span>Volver al Ejercicio</span>
+        </button>
+        <button class="btn-continue" (click)="acceptWarning()">
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <polyline points="9 11 12 14 22 4"></polyline>
+            <path
+              d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"
+            ></path>
+          </svg>
+          <span>Entiendo, Continuar</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- ============================================ -->
+    <!-- CONTENIDO DEL MODAL DE PISTAS -->
+    <!-- ============================================ -->
+    <ng-container *ngIf="!showWarning">
+      <!-- Header -->
+      <div class="modal-header">
+        <div class="header-title-section">
+          <h3>💡 Pistas del Ejercicio</h3>
+          <p class="exercise-title">{{ exerciseTitle }}</p>
+        </div>
+        <button class="close-btn" (click)="close()" aria-label="Cerrar modal">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body">
+        <!-- Loading State -->
+        <div *ngIf="isLoading" class="loading-state">
+          <div class="spinner"></div>
+          <p>Cargando pistas...</p>
+        </div>
+
+        <!-- Empty State -->
+        <div *ngIf="!isLoading && hints.length === 0" class="empty-hints">
+          <div class="empty-icon">
+            <svg
+              width="64"
+              height="64"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+            >
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+          </div>
+          <h4>No hay pistas disponibles</h4>
+          <p>El profesor aún no ha agregado pistas para este ejercicio</p>
+        </div>
+
+        <!-- Hints Content -->
+        <div *ngIf="!isLoading && hints.length > 0" class="hints-container">
+          <!-- Progress Info -->
+          <div class="progress-info">
+            <p class="progress-text">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+              </svg>
+              Has desbloqueado
+              <strong>{{ unlockedCount }}/{{ hints.length }}</strong> pistas
+            </p>
+          </div>
+
+          <!-- Hints List -->
+          <div class="hints-list">
+            <div
+              *ngFor="let hint of hints; let i = index"
+              class="hint-card"
+              [class.unlocked]="isHintUnlocked(hint.id!)"
+            >
+              <!-- Hint Header -->
+              <div class="hint-header">
+                <span class="hint-number">💡 Pista {{ i + 1 }}</span>
+                <span
+                  *ngIf="isHintUnlocked(hint.id!)"
+                  class="hint-unlocked-badge"
+                >
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                  Desbloqueada
+                </span>
+              </div>
+
+              <!-- Hint Body -->
+              <div class="hint-body">
+                <!-- Locked State -->
+                <div *ngIf="!isHintUnlocked(hint.id!)" class="hint-locked">
+                  <svg
+                    width="48"
+                    height="48"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <rect
+                      x="3"
+                      y="11"
+                      width="18"
+                      height="11"
+                      rx="2"
+                      ry="2"
+                    ></rect>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                  </svg>
+                  <p>Esta pista está bloqueada</p>
+                  <button class="btn-unlock" (click)="unlockHint(hint.id!)">
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                    >
+                      <rect
+                        x="3"
+                        y="11"
+                        width="18"
+                        height="11"
+                        rx="2"
+                        ry="2"
+                      ></rect>
+                      <path d="M7 11V7a5 5 0 0 1 9.9-1"></path>
+                    </svg>
+                    Desbloquear Pista {{ i + 1 }}
+                  </button>
+                </div>
+
+                <!-- Unlocked State -->
+                <div *ngIf="isHintUnlocked(hint.id!)" class="hint-content">
+                  <p>{{ hint.content }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="modal-footer">
+        <p class="footer-tip">
+          <strong>💡 Consejo:</strong> Intenta usar la menor cantidad de pistas
+          posible para maximizar tu aprendizaje.
+        </p>
+        <button class="btn-close-footer" (click)="close()">Cerrar</button>
+      </div>
+    </ng-container>
+  </div>
+</div>

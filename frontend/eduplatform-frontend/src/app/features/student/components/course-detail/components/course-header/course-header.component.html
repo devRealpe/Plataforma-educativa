@@ -503,6 +503,14 @@
   >
   </app-confirmation-modal>
 
+  <!-- Modal: Ver Pistas -->
+  <app-hints-viewer-modal
+    *ngIf="showHintsModal && selectedExerciseForHints"
+    [exerciseId]="selectedExerciseForHints!.id!"
+    [exerciseTitle]="selectedExerciseForHints!.title"
+    (closeModal)="closeHintsModal()"
+  ></app-hints-viewer-modal>
+
   <app-exercise-list
     *ngIf="activeTab === 'exercises'"
     [exercises]="exercises"
@@ -516,12 +524,4 @@
     (openExternalUrl)="openExternalUrl($event)"
     (viewHints)="openHintsModal($event)"
   ></app-exercise-list>
-
-  <!-- Modal: Ver Pistas -->
-  <app-hints-viewer-modal
-    *ngIf="showHintsModal && selectedExerciseForHints"
-    [exerciseId]="selectedExerciseForHints!.id!"
-    [exerciseTitle]="selectedExerciseForHints!.title"
-    (closeModal)="closeHintsModal()"
-  ></app-hints-viewer-modal>
 </div>
