@@ -4,9 +4,43 @@
     <div class="header-content">
       <div class="logo">
         <div class="logo-icon">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path d="M12 2L2 7V17L12 22L22 17V7L12 2Z" fill="white" />
-            <circle cx="12" cy="12" r="3" fill="#2563eb" />
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="128"
+            height="128"
+            viewBox="0 0 64 64"
+          >
+            <!-- Fondo redondeado -->
+            <rect width="64" height="64" rx="14" fill="#FFFFFF" />
+
+            <!-- Libro naranja -->
+            <g transform="translate(8,14)">
+              <!-- Tapa izquierda -->
+              <path
+                d="M6 4 C14 0, 22 0, 30 4 V30 C22 26, 14 26, 6 30 Z"
+                fill="#F26B21"
+                opacity="0.95"
+              />
+
+              <!-- Tapa derecha -->
+              <path
+                d="M42 4 C34 0, 26 0, 18 4 V30 C26 26, 34 26, 42 30 Z"
+                fill="#F26B21"
+                opacity="0.95"
+              />
+
+              <!-- Línea central de separación -->
+              <line
+                x1="18"
+                y1="6"
+                x2="30"
+                y2="30"
+                stroke="#FFFFFF"
+                stroke-width="2"
+                stroke-linecap="round"
+                opacity="0.8"
+              />
+            </g>
           </svg>
         </div>
         <h1>Mariana Learning</h1>

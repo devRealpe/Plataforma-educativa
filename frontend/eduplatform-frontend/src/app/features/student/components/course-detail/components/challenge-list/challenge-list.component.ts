@@ -24,7 +24,7 @@ export class ChallengeListComponent implements OnInit, OnChanges {
     existingSubmission?: ChallengeSubmission;
   }>();
 
-  // 🆕 FILTROS Y BÚSQUEDA
+  // FILTROS Y BÚSQUEDA
   filteredChallenges: Challenge[] = [];
   searchTerm: string = '';
   selectedFilter: string = 'all';
@@ -67,7 +67,7 @@ export class ChallengeListComponent implements OnInit, OnChanges {
     }
   }
 
-  // 🆕 MÉTODOS DE FILTRADO
+  // MÉTODOS DE FILTRADO
   onSearchChange(): void {
     this.applyFilters();
   }

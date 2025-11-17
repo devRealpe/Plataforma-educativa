@@ -35,19 +35,19 @@ public class SubmissionController {
             @RequestParam("file") MultipartFile file,
             Authentication auth) {
         try {
-            System.out.println("📤 Subiendo entrega para ejercicio: " + exerciseId);
+            System.out.println("Subiendo entrega para ejercicio: " + exerciseId);
             System.out.println("   Usuario: " + auth.getName());
             System.out.println("   Archivo: " + file.getOriginalFilename());
 
             Submission submission = submissionService.submitExercise(exerciseId, auth.getName(), file);
 
-            System.out.println("   ✅ Entrega creada exitosamente");
+            System.out.println("   Entrega creada exitosamente");
 
             return ResponseEntity.ok(Map.of(
                     "message", "Entrega subida exitosamente. El profesor ya puede verla y calificarla.",
                     "submission", new SubmissionDTO(submission)));
         } catch (RuntimeException e) {
-            System.err.println("   ❌ Error al subir entrega: " + e.getMessage());
+            System.err.println("   Error al subir entrega: " + e.getMessage());
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
@@ -66,13 +66,13 @@ public class SubmissionController {
 
             Submission submission = submissionService.updateSubmission(id, auth.getName(), file);
 
-            System.out.println("   ✅ Entrega actualizada exitosamente");
+            System.out.println("   Entrega actualizada exitosamente");
 
             return ResponseEntity.ok(Map.of(
                     "message", "Entrega actualizada exitosamente",
                     "submission", new SubmissionDTO(submission)));
         } catch (RuntimeException e) {
-            System.err.println("   ❌ Error al editar entrega: " + e.getMessage());
+            System.err.println("   Error al editar entrega: " + e.getMessage());
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
@@ -173,7 +173,7 @@ public class SubmissionController {
                     .body(fileData);
 
         } catch (RuntimeException e) {
-            System.err.println("❌ Error al descargar entrega: " + e.getMessage());
+            System.err.println("Error al descargar entrega: " + e.getMessage());
             return ResponseEntity.badRequest().build();
         }
     }

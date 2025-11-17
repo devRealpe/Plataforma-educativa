@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject, tap } from 'rxjs';
 
-// ✅ Respuesta del login (con token)
+// Respuesta del login (con token)
 export interface LoginResponse {
   token: string;
   email: string;
@@ -10,7 +10,7 @@ export interface LoginResponse {
   role: string;
 }
 
-// ✅ Perfil del usuario (sin token) - Exportada para usarla en componentes
+// Perfil del usuario (sin token) - Exportada para usarla en componentes
 export interface UserProfile {
   email: string;
   name: string;

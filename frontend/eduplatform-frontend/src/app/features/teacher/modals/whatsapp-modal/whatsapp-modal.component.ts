@@ -1,7 +1,3 @@
-// ========================================
-// whatsapp-modal.component.ts
-// ========================================
-
 import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -27,7 +23,7 @@ export class WhatsappModalComponent implements OnInit {
   showError: boolean = false;
   errorMessage: string = '';
   
-  // 🆕 Estado del modal de confirmación
+  // Estado del modal de confirmación
   showDeleteConfirmation: boolean = false;
 
   constructor(
@@ -89,17 +85,17 @@ export class WhatsappModalComponent implements OnInit {
     });
   }
 
-  // 🆕 Abrir modal de confirmación
+  // Abrir modal de confirmación
   openDeleteConfirmation() {
     this.showDeleteConfirmation = true;
   }
 
-  // 🆕 Cancelar eliminación
+  // Cancelar eliminación
   cancelDelete() {
     this.showDeleteConfirmation = false;
   }
 
-  // 🆕 Confirmar eliminación
+  // Confirmar eliminación
   confirmDelete() {
     this.showDeleteConfirmation = false;
     this.isSubmitting = true;

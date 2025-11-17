@@ -69,7 +69,7 @@ public class AuthController {
     }
 
     // ========================================
-    // ✅ NUEVO: Actualizar nombre de perfil
+    // Actualizar nombre de perfil
     // ========================================
     @PutMapping("/profile")
     public ResponseEntity<?> updateProfile(
@@ -104,7 +104,7 @@ public class AuthController {
     }
 
     // ========================================
-    // ✅ NUEVO: Cambiar contraseña
+    // Cambiar contraseña
     // ========================================
     @PutMapping("/change-password")
     public ResponseEntity<?> changePassword(

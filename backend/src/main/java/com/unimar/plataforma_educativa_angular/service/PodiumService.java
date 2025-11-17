@@ -34,18 +34,18 @@ public class PodiumService {
      */
     public List<PodiumDTO> getPodiumByCourse(Long courseId, String userEmail) {
         System.out.println("\n========================================");
-        System.out.println("🏆 OBTENIENDO PODIO DEL CURSO");
+        System.out.println(" OBTENIENDO PODIO DEL CURSO");
         System.out.println("========================================");
         System.out.println("   Course ID: " + courseId);
         System.out.println("   Usuario: " + userEmail);
 
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> {
-                    System.err.println("❌ Curso no encontrado con ID: " + courseId);
+                    System.err.println("Curso no encontrado con ID: " + courseId);
                     return new RuntimeException("Curso no encontrado");
                 });
 
-        System.out.println("   ✅ Curso encontrado: " + course.getTitle());
+        System.out.println("   Curso encontrado: " + course.getTitle());
 
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> {
@@ -53,36 +53,36 @@ public class PodiumService {
                     return new RuntimeException("Usuario no encontrado");
                 });
 
-        System.out.println("   ✅ Usuario encontrado: " + user.getNombre() + " (" + user.getRole() + ")");
+        System.out.println("   Usuario encontrado: " + user.getNombre() + " (" + user.getRole() + ")");
 
         // Verificar acceso
         boolean hasAccess = course.getTeacher().getId().equals(user.getId()) ||
                 course.getStudents().contains(user);
 
-        System.out.println("   🔐 Verificando acceso:");
+        System.out.println("   Verificando acceso:");
         System.out.println("      • Es profesor: " + course.getTeacher().getId().equals(user.getId()));
         System.out.println("      • Es estudiante: " + course.getStudents().contains(user));
         System.out.println("      • Tiene acceso: " + hasAccess);
 
         if (!hasAccess) {
-            System.err.println("❌ No tienes acceso a este curso");
+            System.err.println("No tienes acceso a este curso");
             throw new RuntimeException("No tienes acceso a este curso");
         }
 
-        System.out.println("\n   📊 Consultando student_scores...");
+        System.out.println("\n   Consultando student_scores...");
         List<StudentScore> topScores = studentScoreRepository.findTopStudentsByCourseId(courseId);
 
-        System.out.println("   📋 Resultados de la consulta:");
+        System.out.println("   Resultados de la consulta:");
         System.out.println("      • Registros encontrados: " + topScores.size());
 
         if (topScores.isEmpty()) {
-            System.out.println("      ⚠️ No hay registros en student_scores para este curso");
+            System.out.println("      No hay registros en student_scores para este curso");
             System.out.println("========================================\n");
             return new ArrayList<>();
         }
 
         // Mostrar top 3
-        System.out.println("\n   🏅 Top 3 estudiantes:");
+        System.out.println("\n   Top 3 estudiantes:");
         topScores.stream().limit(3).forEach(score -> {
             System.out.println("      • " + score.getStudent().getNombre() +
                     ": " + score.getTotalBonusPoints() + " XP, " +
@@ -99,7 +99,7 @@ public class PodiumService {
             podium.add(new PodiumDTO(top10.get(i), i + 1));
         }
 
-        System.out.println("\n   ✅ Podio generado con " + podium.size() + " estudiantes");
+        System.out.println("\n   Podio generado con " + podium.size() + " estudiantes");
         System.out.println("========================================\n");
 
         return podium;
@@ -109,7 +109,7 @@ public class PodiumService {
      * Obtener podio por nivel de curso
      */
     public List<PodiumDTO> getPodiumByLevel(String level, String userEmail) {
-        System.out.println("\n🏆 Obteniendo podio por nivel: " + level);
+        System.out.println("\n Obteniendo podio por nivel: " + level);
 
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
@@ -121,11 +121,11 @@ public class PodiumService {
                 .collect(Collectors.toList());
 
         if (coursesOfLevel.isEmpty()) {
-            System.out.println("⚠️ No tienes acceso a cursos de nivel " + level);
+            System.out.println("No tienes acceso a cursos de nivel " + level);
             throw new RuntimeException("No tienes acceso a cursos de nivel " + level);
         }
 
-        System.out.println("✅ Cursos de nivel " + level + " encontrados: " + coursesOfLevel.size());
+        System.out.println("Cursos de nivel " + level + " encontrados: " + coursesOfLevel.size());
 
         List<StudentScore> allScores = new ArrayList<>();
         for (Course course : coursesOfLevel) {
@@ -148,7 +148,7 @@ public class PodiumService {
             podium.add(new PodiumDTO(sortedScores.get(i), i + 1));
         }
 
-        System.out.println("✅ Podio por nivel generado con " + podium.size() + " estudiantes\n");
+        System.out.println("Podio por nivel generado con " + podium.size() + " estudiantes\n");
 
         return podium;
     }
@@ -157,7 +157,7 @@ public class PodiumService {
      * Obtener posición de un estudiante en el podio
      */
     public PodiumDTO getStudentPosition(Long courseId, String studentEmail) {
-        System.out.println("\n📍 Obteniendo posición del estudiante en el podio");
+        System.out.println("\n Obteniendo posición del estudiante en el podio");
         System.out.println("   Course ID: " + courseId);
         System.out.println("   Estudiante: " + studentEmail);
 
@@ -168,7 +168,7 @@ public class PodiumService {
                 .orElseThrow(() -> new RuntimeException("Curso no encontrado"));
 
         if (!course.getStudents().contains(student)) {
-            System.err.println("❌ No estás inscrito en este curso");
+            System.err.println("No estás inscrito en este curso");
             throw new RuntimeException("No estás inscrito en este curso");
         }
 
@@ -177,7 +177,7 @@ public class PodiumService {
                 .orElse(null);
 
         if (studentScore == null || studentScore.getTotalBonusPoints() == 0) {
-            System.out.println("⚠️ El estudiante no tiene puntos aún");
+            System.out.println("El estudiante no tiene puntos aún");
             PodiumDTO dto = new PodiumDTO();
             dto.setStudentId(student.getId());
             dto.setStudentName(student.getNombre());
@@ -198,7 +198,7 @@ public class PodiumService {
             }
         }
 
-        System.out.println("✅ Posición del estudiante: " + position);
+        System.out.println("Posición del estudiante: " + position);
 
         return new PodiumDTO(studentScore, position);
     }

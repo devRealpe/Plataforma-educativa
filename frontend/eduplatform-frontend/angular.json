@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "eduplatform-frontend": {
+    "mariana-learning": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/eduplatform-frontend",
+            "outputPath": "dist/mariana-learning",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -70,10 +70,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "eduplatform-frontend:build:production"
+              "buildTarget": "mariana-learning:build:production"
             },
             "development": {
-              "buildTarget": "eduplatform-frontend:build:development"
+              "buildTarget": "mariana-learning:build:development"
             }
           },
           "defaultConfiguration": "development"

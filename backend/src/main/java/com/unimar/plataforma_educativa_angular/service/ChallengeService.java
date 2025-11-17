@@ -74,7 +74,7 @@ public class ChallengeService {
         if (externalUrl != null && !externalUrl.trim().isEmpty()) {
             validateUrl(externalUrl);
             challenge.setExternalUrl(externalUrl.trim());
-            System.out.println("✅ URL externa guardada: " + externalUrl.trim());
+            System.out.println("URL externa guardada: " + externalUrl.trim());
         }
 
         // Guardar archivo si existe
@@ -83,14 +83,14 @@ public class ChallengeService {
                 challenge.setFileData(file.getBytes());
                 challenge.setFileName(file.getOriginalFilename());
                 challenge.setFileType(file.getContentType());
-                System.out.println("✅ Archivo guardado: " + file.getOriginalFilename());
+                System.out.println("Archivo guardado: " + file.getOriginalFilename());
             } catch (IOException e) {
                 throw new RuntimeException("Error al procesar el archivo: " + e.getMessage());
             }
         }
 
         if (!challenge.hasFile() && !challenge.hasExternalUrl()) {
-            System.out.println("⚠️ Advertencia: Reto sin recursos (archivo o URL)");
+            System.out.println("Advertencia: Reto sin recursos (archivo o URL)");
             // Nota: Esto es válido, algunos retos pueden ser solo descripción
         }
 
@@ -98,7 +98,7 @@ public class ChallengeService {
         challenge.setActive(true);
         Challenge saved = challengeRepository.save(challenge);
 
-        System.out.println("🏆 Reto creado exitosamente:");
+        System.out.println("Reto creado exitosamente:");
         System.out.println("   • ID: " + saved.getId());
         System.out.println("   • Título: " + saved.getTitle());
         System.out.println("   • Tiene archivo: " + saved.hasFile());
@@ -156,7 +156,7 @@ public class ChallengeService {
 
     @Transactional
     public Challenge updateChallenge(Long id, Challenge challengeData, String teacherEmail,
-            MultipartFile file, String externalUrl, Boolean removeFile) { // ✅ NUEVO
+            MultipartFile file, String externalUrl, Boolean removeFile) {
         Challenge challenge = challengeRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Reto no encontrado"));
 
@@ -183,7 +183,6 @@ public class ChallengeService {
             challenge.setActive(challengeData.getActive());
         }
 
-        // ✅ NUEVO: Eliminar archivo si se solicita
         if (removeFile != null && removeFile) {
             System.out.println("🗑️ Eliminando archivo adjunto del reto");
             challenge.setFileData(null);
@@ -198,7 +197,7 @@ public class ChallengeService {
             } else {
                 validateUrl(externalUrl);
                 challenge.setExternalUrl(externalUrl.trim());
-                System.out.println("✅ URL externa actualizada: " + externalUrl.trim());
+                System.out.println("URL externa actualizada: " + externalUrl.trim());
             }
         }
 
@@ -207,7 +206,7 @@ public class ChallengeService {
                 challenge.setFileData(file.getBytes());
                 challenge.setFileName(file.getOriginalFilename());
                 challenge.setFileType(file.getContentType());
-                System.out.println("✅ Archivo actualizado: " + file.getOriginalFilename());
+                System.out.println("Archivo actualizado: " + file.getOriginalFilename());
             } catch (IOException e) {
                 throw new RuntimeException("Error al actualizar el archivo: " + e.getMessage());
             }
@@ -215,7 +214,7 @@ public class ChallengeService {
 
         Challenge updated = challengeRepository.save(challenge);
 
-        System.out.println("🏆 Reto actualizado exitosamente:");
+        System.out.println("Reto actualizado exitosamente:");
         System.out.println("   • ID: " + updated.getId());
         System.out.println("   • Título: " + updated.getTitle());
         System.out.println("   • Tiene archivo: " + updated.hasFile());

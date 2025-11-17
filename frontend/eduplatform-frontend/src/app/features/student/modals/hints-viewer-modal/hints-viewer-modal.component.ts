@@ -4,7 +4,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { ExerciseService, Hint } from '../../../../core/services/exercise.service';
 
 /**
- * 💡 MODAL PARA VER PISTAS (ESTUDIANTE)
+ * MODAL PARA VER PISTAS (ESTUDIANTE)
  * Muestra advertencia inicial y permite desbloquear pistas progresivamente
  */
 @Component({

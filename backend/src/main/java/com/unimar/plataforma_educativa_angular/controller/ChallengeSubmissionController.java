@@ -32,19 +32,19 @@ public class ChallengeSubmissionController {
             @RequestParam("file") MultipartFile file,
             Authentication auth) {
         try {
-            System.out.println("📤 Subiendo solución de reto: " + challengeId);
+            System.out.println("Subiendo solución de reto: " + challengeId);
             System.out.println("   Usuario: " + auth.getName());
             System.out.println("   Archivo: " + file.getOriginalFilename());
 
             ChallengeSubmission submission = submissionService.submitChallenge(challengeId, auth.getName(), file);
 
-            System.out.println("   ✅ Solución enviada exitosamente");
+            System.out.println("Solución enviada exitosamente");
 
             return ResponseEntity.ok(Map.of(
                     "message", "Solución enviada exitosamente. El profesor la revisará pronto.",
                     "submission", new ChallengeSubmissionDTO(submission)));
         } catch (RuntimeException e) {
-            System.err.println("   ❌ Error al enviar solución: " + e.getMessage());
+            System.err.println("Error al enviar solución: " + e.getMessage());
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
@@ -58,18 +58,18 @@ public class ChallengeSubmissionController {
             @RequestParam("file") MultipartFile file,
             Authentication auth) {
         try {
-            System.out.println("✏️ Editando solución: " + id);
+            System.out.println("Editando solución: " + id);
             System.out.println("   Usuario: " + auth.getName());
 
             ChallengeSubmission submission = submissionService.updateSubmission(id, auth.getName(), file);
 
-            System.out.println("   ✅ Solución actualizada exitosamente");
+            System.out.println("Solución actualizada exitosamente");
 
             return ResponseEntity.ok(Map.of(
                     "message", "Solución actualizada exitosamente",
                     "submission", new ChallengeSubmissionDTO(submission)));
         } catch (RuntimeException e) {
-            System.err.println("   ❌ Error al editar solución: " + e.getMessage());
+            System.err.println("Error al editar solución: " + e.getMessage());
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
@@ -129,7 +129,7 @@ public class ChallengeSubmissionController {
     }
 
     // ========================================
-    // ✅ ENDPOINT FALTANTE: REVISAR SOLUCIÓN
+    // REVISAR SOLUCIÓN
     // ========================================
     /**
      * Revisar y otorgar bonificación (Profesor)
@@ -141,7 +141,7 @@ public class ChallengeSubmissionController {
             @RequestBody Map<String, Object> reviewData,
             Authentication auth) {
         try {
-            System.out.println("🔍 Revisando solución de reto: " + id);
+            System.out.println("Revisando solución de reto: " + id);
             System.out.println("   Profesor: " + auth.getName());
             System.out.println("   Datos: " + reviewData);
 
@@ -154,13 +154,13 @@ public class ChallengeSubmissionController {
                     feedback,
                     auth.getName());
 
-            System.out.println("   ✅ Solución revisada exitosamente");
+            System.out.println("Solución revisada exitosamente");
 
             return ResponseEntity.ok(Map.of(
                     "message", "Solución revisada exitosamente",
                     "submission", new ChallengeSubmissionDTO(submission)));
         } catch (RuntimeException e) {
-            System.err.println("   ❌ Error al revisar solución: " + e.getMessage());
+            System.err.println("Error al revisar solución: " + e.getMessage());
             e.printStackTrace(); // Para debug
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
@@ -187,7 +187,7 @@ public class ChallengeSubmissionController {
                     .body(fileData);
 
         } catch (RuntimeException e) {
-            System.err.println("❌ Error al descargar solución: " + e.getMessage());
+            System.err.println("Error al descargar solución: " + e.getMessage());
             return ResponseEntity.badRequest().build();
         }
     }

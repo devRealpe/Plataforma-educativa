@@ -1,6 +1,3 @@
-// ========================================
-// TeacherStatsDTO.java
-// ========================================
 package com.unimar.plataforma_educativa_angular.dto;
 
 import lombok.AllArgsConstructor;
@@ -12,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class TeacherStatsDTO {
     private Integer totalCourses;
-    private Integer totalStudents; // Sin duplicados
+    private Integer totalStudents;
     private Integer totalExercises;
     private Integer totalChallenges;
     private Integer pendingSubmissions;

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { AuthService, UserProfile } from '../../../core/services/auth.service'; // ✅ Importar UserProfile del servicio
+import { AuthService, UserProfile } from '../../../core/services/auth.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -57,13 +57,13 @@ export class ProfileComponent implements OnInit {
    * Cargar datos del usuario
    */
   loadUserData() {
-    // ✅ Primero intentar obtener del servicio
+    // Primero intentar obtener del servicio
     this.user = this.authService.getCurrentUser();
     
     if (!this.user) {
       // Si no hay usuario en memoria, cargar desde el backend
       this.authService.getProfile().subscribe({
-        next: (profile) => { // ✅ Ya tiene el tipo correcto UserProfile
+        next: (profile) => { // Ya tiene el tipo correcto UserProfile
           this.user = profile;
           this.profileForm.patchValue({ nombre: profile.name });
         },
@@ -122,9 +122,9 @@ export class ProfileComponent implements OnInit {
 
     this.authService.updateProfile(nombre).subscribe({
       next: (response) => {
-        this.profileMessage = '✅ Perfil actualizado exitosamente';
+        this.profileMessage = ' Perfil actualizado exitosamente';
         
-        // ✅ Actualizar el usuario local
+        // Actualizar el usuario local
         if (this.user) {
           this.user = { ...this.user, name: response.name };
         }
@@ -179,7 +179,7 @@ export class ProfileComponent implements OnInit {
 
     this.authService.changePassword(currentPassword, newPassword).subscribe({
       next: (response) => {
-        this.passwordMessage = '✅ Contraseña actualizada exitosamente';
+        this.passwordMessage = ' Contraseña actualizada exitosamente';
         this.isChangingPassword = false;
         this.passwordForm.reset();
         this.isLoadingPassword = false;

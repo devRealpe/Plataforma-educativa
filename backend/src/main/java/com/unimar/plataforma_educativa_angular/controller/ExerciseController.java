@@ -31,11 +31,11 @@ public class ExerciseController {
             @RequestParam("courseId") Long courseId,
             @RequestParam(value = "deadline", required = false) String deadline,
             @RequestParam(value = "file", required = false) MultipartFile file,
-            @RequestParam(value = "externalUrl", required = false) String externalUrl, // ✅ NUEVO
+            @RequestParam(value = "externalUrl", required = false) String externalUrl,
             Authentication auth) {
         try {
             System.out.println("\n========================================");
-            System.out.println("📝 CREANDO EJERCICIO");
+            System.out.println("CREANDO EJERCICIO");
             System.out.println("========================================");
             System.out.println("   • Título: " + title);
             System.out.println("   • Dificultad: " + difficulty);
@@ -63,7 +63,7 @@ public class ExerciseController {
 
             return ResponseEntity.ok(new ExerciseDTO(created));
         } catch (RuntimeException e) {
-            System.err.println("❌ Error al crear ejercicio: " + e.getMessage());
+            System.err.println("Error al crear ejercicio: " + e.getMessage());
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
@@ -106,7 +106,7 @@ public class ExerciseController {
             @RequestParam(value = "deadline", required = false) String deadline,
             @RequestParam(value = "file", required = false) MultipartFile file,
             @RequestParam(value = "externalUrl", required = false) String externalUrl,
-            @RequestParam(value = "removeFile", required = false) Boolean removeFile, // ✅ NUEVO
+            @RequestParam(value = "removeFile", required = false) Boolean removeFile,
             Authentication auth) {
         try {
             System.out.println("\n========================================");
@@ -116,8 +116,7 @@ public class ExerciseController {
             System.out.println("   • Título: " + title);
             System.out.println("   • Archivo: " + (file != null ? file.getOriginalFilename() : "No"));
             System.out.println("   • URL externa: " + (externalUrl != null ? externalUrl : "No especificada"));
-            System.out.println("   • Eliminar archivo: " + (removeFile != null && removeFile ? "SÍ" : "NO")); // ✅ NUEVO
-                                                                                                              // log
+            System.out.println("   • Eliminar archivo: " + (removeFile != null && removeFile ? "SÍ" : "NO"));
             System.out.println("========================================\n");
 
             Exercise exercise = new Exercise();
@@ -135,12 +134,11 @@ public class ExerciseController {
                     auth.getName(),
                     file,
                     externalUrl,
-                    removeFile // ✅ NUEVO parámetro
-            );
+                    removeFile);
 
             return ResponseEntity.ok(new ExerciseDTO(updated));
         } catch (RuntimeException e) {
-            System.err.println("❌ Error al actualizar ejercicio: " + e.getMessage());
+            System.err.println("Error al actualizar ejercicio: " + e.getMessage());
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }

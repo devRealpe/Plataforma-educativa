@@ -120,7 +120,7 @@ submitGrade() {
         panelClass: ['success-snackbar']
       });
       
-      // 🆕 RECARGAR TODAS LAS ENTREGAS DESDE EL SERVIDOR
+      // RECARGAR TODAS LAS ENTREGAS DESDE EL SERVIDOR
       this.loadSubmissions();
       
       // Emitir evento al padre

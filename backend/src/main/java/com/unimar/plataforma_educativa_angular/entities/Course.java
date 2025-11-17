@@ -20,9 +20,6 @@ public class Course {
     @Column(unique = true, nullable = false)
     private String inviteCode;
 
-    // ========================================
-    // ✅ NUEVO: Enlace de grupo de WhatsApp
-    // ========================================
     @Column(name = "whatsapp_link", length = 500)
     private String whatsappLink;
 
@@ -80,7 +77,6 @@ public class Course {
         this.inviteCode = inviteCode;
     }
 
-    // ✅ NUEVO Getter/Setter
     public String getWhatsappLink() {
         return whatsappLink;
     }
@@ -106,7 +102,7 @@ public class Course {
     }
 
     // ========================================
-    // ✅ NUEVO: Métodos de utilidad
+    // Métodos de utilidad
     // ========================================
 
     /**

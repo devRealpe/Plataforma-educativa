@@ -54,7 +54,7 @@ public class UserService {
     }
 
     // ========================================
-    // ✅ NUEVO: Actualizar nombre del usuario
+    // Actualizar nombre del usuario
     // ========================================
     public User updateUserName(String email, String newName) throws Exception {
         User user = userRepository.findByEmail(email)
@@ -65,7 +65,7 @@ public class UserService {
     }
 
     // ========================================
-    // ✅ NUEVO: Cambiar contraseña
+    // Cambiar contraseña
     // ========================================
     public void changePassword(String email, String currentPassword, String newPassword) throws Exception {
         User user = userRepository.findByEmail(email)

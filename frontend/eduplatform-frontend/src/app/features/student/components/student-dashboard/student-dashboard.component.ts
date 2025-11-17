@@ -94,7 +94,7 @@ export class StudentDashboardComponent implements OnInit {
   }
 
   /**
-   * ✅ Cargar datos del dashboard: estadísticas generales y cursos con progreso
+   * Cargar datos del dashboard: estadísticas generales y cursos con progreso
    */
   loadDashboardData() {
     this.isLoadingStats = true;
@@ -123,7 +123,7 @@ export class StudentDashboardComponent implements OnInit {
   }
 
   /**
-   * ✅ Actualizar estadísticas generales desde la API
+   * Actualizar estadísticas generales desde la API
    */
   updateStatsFromAPI(stats: StudentStats) {
     this.stats[0].value = stats.enrolledCourses.toString();
@@ -140,7 +140,7 @@ export class StudentDashboardComponent implements OnInit {
   }
 
   /**
-   * ✅ Cargar cursos con progreso individual desde la API
+   * Cargar cursos con progreso individual desde la API
    */
   loadCoursesWithProgress(courses: Course[]) {
     if (courses.length === 0) {

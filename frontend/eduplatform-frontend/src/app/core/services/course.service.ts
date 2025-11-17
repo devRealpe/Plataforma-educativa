@@ -76,11 +76,7 @@ export class CourseService {
   }
 
   // ========================================
-// AGREGAR AL FINAL DE course.service.ts
-// ========================================
-
-  // ========================================
-  // ✅ NUEVO: Gestión de enlace de WhatsApp
+  // Gestión de enlace de WhatsApp
   // ========================================
 
   /**

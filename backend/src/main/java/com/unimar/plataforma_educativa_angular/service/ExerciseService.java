@@ -68,7 +68,7 @@ public class ExerciseService {
         if (externalUrl != null && !externalUrl.trim().isEmpty()) {
             validateUrl(externalUrl);
             exercise.setExternalUrl(externalUrl.trim());
-            System.out.println("✅ URL externa guardada: " + externalUrl.trim());
+            System.out.println(" URL externa guardada: " + externalUrl.trim());
         }
 
         // Guardar archivo como bytes en la base de datos
@@ -77,21 +77,21 @@ public class ExerciseService {
                 exercise.setFileData(file.getBytes());
                 exercise.setFileName(file.getOriginalFilename());
                 exercise.setFileType(file.getContentType());
-                System.out.println("✅ Archivo guardado: " + file.getOriginalFilename());
+                System.out.println(" Archivo guardado: " + file.getOriginalFilename());
             } catch (IOException e) {
                 throw new RuntimeException("Error al procesar el archivo: " + e.getMessage());
             }
         }
 
         if (!exercise.hasFile() && !exercise.hasExternalUrl()) {
-            System.out.println("⚠️ Advertencia: Ejercicio sin recursos (archivo o URL)");
+            System.out.println(" Advertencia: Ejercicio sin recursos (archivo o URL)");
             // Nota: Esto es válido, algunos ejercicios pueden ser solo descripción
         }
 
         exercise.setCourse(course);
         Exercise saved = exerciseRepository.save(exercise);
 
-        System.out.println("📝 Ejercicio creado exitosamente:");
+        System.out.println(" Ejercicio creado exitosamente:");
         System.out.println("   • ID: " + saved.getId());
         System.out.println("   • Título: " + saved.getTitle());
         System.out.println("   • Tiene archivo: " + saved.hasFile());
@@ -138,7 +138,7 @@ public class ExerciseService {
 
     @Transactional
     public Exercise updateExercise(Long id, Exercise exerciseData, String teacherEmail,
-            MultipartFile file, String externalUrl, Boolean removeFile) { // ✅ NUEVO parámetro
+            MultipartFile file, String externalUrl, Boolean removeFile) {
         Exercise exercise = exerciseRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Ejercicio no encontrado"));
 
@@ -154,7 +154,7 @@ public class ExerciseService {
         exercise.setDifficulty(exerciseData.getDifficulty());
         exercise.setDeadline(exerciseData.getDeadline());
 
-        // ✅ NUEVO: Manejar eliminación explícita de archivo
+        // Manejar eliminación explícita de archivo
         if (removeFile != null && removeFile) {
             System.out.println("🗑️ Eliminando archivo adjunto del ejercicio");
             exercise.setFileData(null);
@@ -165,11 +165,11 @@ public class ExerciseService {
         if (externalUrl != null) {
             if (externalUrl.trim().isEmpty()) {
                 exercise.setExternalUrl(null);
-                System.out.println("🗑️ URL externa eliminada");
+                System.out.println(" URL externa eliminada");
             } else {
                 validateUrl(externalUrl);
                 exercise.setExternalUrl(externalUrl.trim());
-                System.out.println("✅ URL externa actualizada: " + externalUrl.trim());
+                System.out.println(" URL externa actualizada: " + externalUrl.trim());
             }
         }
 
@@ -179,7 +179,7 @@ public class ExerciseService {
                 exercise.setFileData(file.getBytes());
                 exercise.setFileName(file.getOriginalFilename());
                 exercise.setFileType(file.getContentType());
-                System.out.println("✅ Archivo actualizado: " + file.getOriginalFilename());
+                System.out.println(" Archivo actualizado: " + file.getOriginalFilename());
             } catch (IOException e) {
                 throw new RuntimeException("Error al actualizar el archivo: " + e.getMessage());
             }
@@ -187,7 +187,7 @@ public class ExerciseService {
 
         Exercise updated = exerciseRepository.save(exercise);
 
-        System.out.println("📝 Ejercicio actualizado exitosamente:");
+        System.out.println(" Ejercicio actualizado exitosamente:");
         System.out.println("   • ID: " + updated.getId());
         System.out.println("   • Título: " + updated.getTitle());
         System.out.println("   • Tiene archivo: " + updated.hasFile());

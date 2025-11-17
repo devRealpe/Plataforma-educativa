@@ -164,11 +164,7 @@ public class CourseController {
     }
 
     // ========================================
-    // AGREGAR ESTOS MÉTODOS AL FINAL DE CourseController.java
-    // ========================================
-
-    // ========================================
-    // ✅ NUEVO: Endpoints para gestionar WhatsApp
+    // Endpoints para gestionar WhatsApp
     // ========================================
 
     /**

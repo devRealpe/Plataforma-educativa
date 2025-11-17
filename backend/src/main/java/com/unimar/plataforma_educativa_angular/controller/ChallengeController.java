@@ -32,11 +32,11 @@ public class ChallengeController {
             @RequestParam("courseId") Long courseId,
             @RequestParam(value = "deadline", required = false) String deadline,
             @RequestParam(value = "file", required = false) MultipartFile file,
-            @RequestParam(value = "externalUrl", required = false) String externalUrl, // ✅ NUEVO
+            @RequestParam(value = "externalUrl", required = false) String externalUrl,
             Authentication auth) {
         try {
             System.out.println("\n========================================");
-            System.out.println("🏆 CREANDO RETO");
+            System.out.println("CREANDO RETO");
             System.out.println("========================================");
             System.out.println("   • Título: " + title);
             System.out.println("   • Dificultad: " + difficulty);
@@ -62,12 +62,11 @@ public class ChallengeController {
                     courseId,
                     auth.getName(),
                     file,
-                    externalUrl // ✅ NUEVO parámetro
-            );
+                    externalUrl);
 
             return ResponseEntity.ok(new ChallengeDTO(created));
         } catch (RuntimeException e) {
-            System.err.println("❌ Error al crear reto: " + e.getMessage());
+            System.err.println("Error al crear reto: " + e.getMessage());
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }
@@ -112,17 +111,17 @@ public class ChallengeController {
             @RequestParam(value = "active", required = false) Boolean active,
             @RequestParam(value = "file", required = false) MultipartFile file,
             @RequestParam(value = "externalUrl", required = false) String externalUrl,
-            @RequestParam(value = "removeFile", required = false) Boolean removeFile, // ✅ NUEVO
+            @RequestParam(value = "removeFile", required = false) Boolean removeFile,
             Authentication auth) {
         try {
             System.out.println("\n========================================");
-            System.out.println("✏️ ACTUALIZANDO RETO");
+            System.out.println("ACTUALIZANDO RETO");
             System.out.println("========================================");
             System.out.println("   • ID: " + id);
             System.out.println("   • Título: " + title);
             System.out.println("   • Archivo: " + (file != null ? file.getOriginalFilename() : "No"));
             System.out.println("   • URL externa: " + (externalUrl != null ? externalUrl : "No especificada"));
-            System.out.println("   • Eliminar archivo: " + (removeFile != null && removeFile ? "SÍ" : "NO")); // ✅ NUEVO
+            System.out.println("   • Eliminar archivo: " + (removeFile != null && removeFile ? "SÍ" : "NO"));
             System.out.println("========================================\n");
 
             Challenge challenge = new Challenge();
@@ -142,12 +141,11 @@ public class ChallengeController {
                     auth.getName(),
                     file,
                     externalUrl,
-                    removeFile // ✅ NUEVO
-            );
+                    removeFile);
 
             return ResponseEntity.ok(new ChallengeDTO(updated));
         } catch (RuntimeException e) {
-            System.err.println("❌ Error al actualizar reto: " + e.getMessage());
+            System.err.println(" Error al actualizar reto: " + e.getMessage());
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
     }

@@ -4,8 +4,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { CourseService } from '../../../../core/services/course.service';
 
 /**
- * 💬 Componente para que estudiantes vean y accedan al grupo de WhatsApp
- * Se muestra como un banner o botón en la vista del curso
+ * Componente para que estudiantes vean y accedan al grupo de WhatsApp
+ * Se muestra como botón en la vista del curso
  */
 @Component({
   selector: 'app-whatsapp-button',

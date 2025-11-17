@@ -27,14 +27,14 @@ export class AuthGuard implements CanActivate {
     | Observable<boolean | UrlTree>
     | Promise<boolean | UrlTree> {
     
-    // ✅ CORREGIDO: Usar isAuthenticated() en lugar de isLoggedIn()
+    // Usar isAuthenticated() 
     if (this.authService.isAuthenticated()) {
       return true;
     } else {
       // Si no hay token -> redirigir al login
       console.warn('🔒 Acceso denegado. Redirigiendo al login...');
       this.router.navigate(['/login'], {
-        queryParams: { returnUrl: state.url } // ✅ Guardar URL para redirigir después del login
+        queryParams: { returnUrl: state.url } // Guardar URL para redirigir después del login
       });
       return false;
     }

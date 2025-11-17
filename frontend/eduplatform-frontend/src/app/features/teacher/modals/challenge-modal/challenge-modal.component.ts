@@ -28,7 +28,7 @@ export class ChallengeModalComponent implements OnInit {
     maxBonusPoints: 5,
     deadline: '',
     active: true,
-    externalUrl: '' // ✅ Campo para URL externa
+    externalUrl: ''
   };
 
   constructor(
@@ -46,7 +46,7 @@ export class ChallengeModalComponent implements OnInit {
         this.challengeForm.deadline = date.toISOString().slice(0, 16);
       }
 
-      // ✅ Asegurar que externalUrl tenga valor
+      //  Asegurar que externalUrl tenga valor
       if (!this.challengeForm.externalUrl) {
         this.challengeForm.externalUrl = '';
       }
@@ -56,7 +56,7 @@ export class ChallengeModalComponent implements OnInit {
     removeFile() {
     this.selectedFile = null;
     
-    // ✅ Marcar archivo para eliminación
+    //  Marcar archivo para eliminación
     if (this.editingChallenge && this.editingChallenge.fileName) {
       this.fileRemoved = true;
       this.editingChallenge.fileName = undefined;
@@ -87,7 +87,7 @@ export class ChallengeModalComponent implements OnInit {
       this.challengeForm.maxBonusPoints <= 10
     );
 
-    // ✅ Validar URL si está presente
+    //  Validar URL si está presente
     if (this.challengeForm.externalUrl && this.challengeForm.externalUrl.trim()) {
       const urlPattern = /^https?:\/\/.+/;
       if (!urlPattern.test(this.challengeForm.externalUrl.trim())) {
@@ -115,7 +115,7 @@ export class ChallengeModalComponent implements OnInit {
       title: this.challengeForm.title,
       hasFile: !!this.selectedFile,
       hasUrl: !!this.challengeForm.externalUrl,
-      fileRemoved: this.fileRemoved, // ✅ Log
+      fileRemoved: this.fileRemoved, 
       externalUrl: this.challengeForm.externalUrl
     });
 
@@ -124,7 +124,7 @@ export class ChallengeModalComponent implements OnInit {
           this.editingChallenge.id,
           this.challengeForm,
           this.selectedFile || undefined,
-          this.fileRemoved // ✅ Pasar bandera
+          this.fileRemoved
         )
       : this.challengeService.createChallenge(
           this.challengeForm,
@@ -188,7 +188,7 @@ export class ChallengeModalComponent implements OnInit {
     }
   }
 
-  // ✅ Método auxiliar para validar URL
+  // Método auxiliar para validar URL
   isValidUrl(url: string): boolean {
     try {
       new URL(url);

@@ -26,7 +26,7 @@ export class ExerciseModalComponent implements OnInit {
     description: '',
     difficulty: '',
     deadline: '',
-    externalUrl: '' // ✅ NUEVO campo
+    externalUrl: ''
   };
 
   constructor(
@@ -44,7 +44,7 @@ export class ExerciseModalComponent implements OnInit {
         this.exerciseForm.deadline = date.toISOString().slice(0, 16);
       }
 
-      // ✅ NUEVO: Asegurar que externalUrl tenga valor
+      // Asegurar que externalUrl tenga valor
       if (!this.exerciseForm.externalUrl) {
         this.exerciseForm.externalUrl = '';
       }
@@ -68,7 +68,7 @@ export class ExerciseModalComponent implements OnInit {
     removeFile() {
     this.selectedFile = null;
     
-    // ✅ NUEVO: Marcar que el archivo fue eliminado intencionalmente
+    // Marcar que el archivo fue eliminado intencionalmente
     if (this.editingExercise && this.editingExercise.fileName) {
       this.fileRemoved = true;
       this.editingExercise.fileName = undefined;
@@ -83,7 +83,7 @@ export class ExerciseModalComponent implements OnInit {
       this.exerciseForm.difficulty
     );
 
-    // ✅ NUEVO: Validar URL si está presente
+    // Validar URL si está presente
     if (this.exerciseForm.externalUrl && this.exerciseForm.externalUrl.trim()) {
       const urlPattern = /^https?:\/\/.+/;
       if (!urlPattern.test(this.exerciseForm.externalUrl.trim())) {
@@ -111,7 +111,7 @@ onSubmit() {
       title: this.exerciseForm.title,
       hasFile: !!this.selectedFile,
       hasUrl: !!this.exerciseForm.externalUrl,
-      fileRemoved: this.fileRemoved, // ✅ Log del estado
+      fileRemoved: this.fileRemoved, 
       externalUrl: this.exerciseForm.externalUrl
     });
 
@@ -120,7 +120,7 @@ onSubmit() {
           this.editingExercise.id,
           this.exerciseForm,
           this.selectedFile || undefined,
-          this.fileRemoved // ✅ NUEVO: Pasar bandera de eliminación
+          this.fileRemoved // 
         )
       : this.exerciseService.createExercise(
           this.exerciseForm,
@@ -142,7 +142,7 @@ onSubmit() {
         } else if (exercise.hasExternalUrl) {
           message += ' (con enlace externo)';
         } else if (this.fileRemoved) {
-          message += ' (archivo eliminado)'; // ✅ Mensaje específico
+          message += ' (archivo eliminado)'; 
         }
         
         this.snackBar.open(message, 'Cerrar', {
@@ -184,7 +184,7 @@ onSubmit() {
     }
   }
 
-  // ✅ NUEVO: Método auxiliar para validar URL
+  // Método auxiliar para validar URL
   isValidUrl(url: string): boolean {
     try {
       new URL(url);

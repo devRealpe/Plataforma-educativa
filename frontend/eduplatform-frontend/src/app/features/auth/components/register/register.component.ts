@@ -27,7 +27,6 @@ export class RegisterComponent {
   confirmPassword: string = '';
   role: string = 'student'; // valor por defecto
 
-  // ✅ Nueva propiedad para el checkbox
   termsAccepted: boolean = false;
 
   // Estados de los modales
@@ -80,50 +79,59 @@ export class RegisterComponent {
   }
 
   // --- Registro ---
-  onSubmit() {
-    if (this.password !== this.confirmPassword) {
-      this.snackBar.open('❌ Las contraseñas no coinciden', 'Cerrar', {
+onSubmit() {
+  // Validación de longitud mínima
+  if (this.password.length < 6) {
+    this.snackBar.open('❌ La contraseña debe tener al menos 6 caracteres', 'Cerrar', {
+      duration: 3000,
+      panelClass: ['snackbar-error'],
+    });
+    return;
+  }
+
+  if (this.password !== this.confirmPassword) {
+    this.snackBar.open('❌ Las contraseñas no coinciden', 'Cerrar', {
+      duration: 3000,
+      panelClass: ['snackbar-error'],
+    });
+    return;
+  }
+
+  if (!this.termsAccepted) {
+    this.snackBar.open(
+      '⚠️ Debes aceptar los términos y condiciones para registrarte',
+      'Cerrar',
+      { duration: 3000, panelClass: ['snackbar-warning'] }
+    );
+    return;
+  }
+
+  const userData = {
+    nombre: this.name,
+    email: this.email,
+    password: this.password,
+    role: this.role.toUpperCase(),
+  };
+
+  this.authService.register(userData).subscribe({
+    next: (response) => {
+      console.log('✅ Registration successful:', response);
+      this.snackBar.open('🎉 Usuario registrado con éxito', 'Cerrar', {
+        duration: 3000,
+        panelClass: ['snackbar-success'],
+      });
+      this.router.navigate(['/login']);
+    },
+    error: (err) => {
+      console.error('❌ Registration error:', err);
+
+      const errorMessage = err.error?.message || 'Error al registrar usuario';
+
+      this.snackBar.open(`❌ ${errorMessage}`, 'Cerrar', {
         duration: 3000,
         panelClass: ['snackbar-error'],
       });
-      return;
-    }
-
-    if (!this.termsAccepted) {
-      this.snackBar.open(
-        '⚠️ Debes aceptar los términos y condiciones para registrarte',
-        'Cerrar',
-        { duration: 3000, panelClass: ['snackbar-warning'] }
-      );
-      return;
-    }
-
-    const userData = {
-      nombre: this.name,
-      email: this.email,
-      password: this.password,
-      role: this.role.toUpperCase(),
-    };
-
-    this.authService.register(userData).subscribe({
-      next: (response) => {
-        console.log('✅ Registration successful:', response);
-        this.snackBar.open('🎉 Usuario registrado con éxito', 'Cerrar', {
-          duration: 3000,
-          panelClass: ['snackbar-success'],
-        });
-        this.router.navigate(['/login']);
-      },
-      error: (err) => {
-        console.error('❌ Registration error:', err);
-
-        const errorMessage = err.error?.message || 'Error al registrar usuario';
-
-        this.snackBar.open(`❌ ${errorMessage}`, 'Cerrar', {
-          duration: 3000,
-          panelClass: ['snackbar-error'],
-        });
-      },
-    });
-  }
+    },
+  });
+}
 }

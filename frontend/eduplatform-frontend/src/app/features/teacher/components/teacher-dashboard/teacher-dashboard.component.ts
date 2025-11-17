@@ -5,7 +5,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { CourseService, Course } from '../../../../core/services/course.service';
 import { AuthService } from '../../../../core/services/auth.service';
-import { StatsService, TeacherStats } from '../../../../core/services/stats.service'; // ✅ NUEVO
+import { StatsService, TeacherStats } from '../../../../core/services/stats.service'; 
 import { CourseModalComponent } from '../../modals/course-modal/course-modal.component';
 import { EditCourseModalComponent } from '../../modals/edit-course-modal/edit-course-modal.component';
 import { ConfirmationModalComponent } from '../../../../shared/components/confirmation-modal/confirmation-modal.component';
@@ -39,7 +39,6 @@ export class TeacherDashboardComponent implements OnInit {
   // Datos
   courses: Course[] = [];
   
-  // ✅ MEJORADO: Estructura inicial correcta
   stats = [
     { title: 'Total Cursos', value: '0', icon: '📚', bgColor: '#3b82f6' },
     { title: 'Estudiantes', value: '0', icon: '👥', bgColor: '#10b981' },
@@ -50,22 +49,22 @@ export class TeacherDashboardComponent implements OnInit {
   ];
 
   deleteMessage = '';
-  isLoadingStats = false; // ✅ NUEVO: Para mostrar loading
+  isLoadingStats = false; 
 
   constructor(
     private courseService: CourseService,
     private authService: AuthService,
-    private statsService: StatsService, // ✅ NUEVO: Inyectar StatsService
+    private statsService: StatsService, 
     private router: Router,
     private snackBar: MatSnackBar
   ) {}
 
   ngOnInit() {
     this.loadCourses();
-    this.loadStats(); // ✅ NUEVO: Cargar estadísticas desde el backend
+    this.loadStats(); 
   }
 
-  // ✅ NUEVO MÉTODO: Cargar estadísticas desde el backend
+  // Cargar estadísticas desde el backend
   loadStats() {
     this.isLoadingStats = true;
     
@@ -73,7 +72,7 @@ export class TeacherDashboardComponent implements OnInit {
       next: (stats: TeacherStats) => {
         console.log('📊 Estadísticas del profesor cargadas:', stats);
         
-        // ✅ Actualizar las estadísticas con los datos reales del backend
+        // Actualizar las estadísticas con los datos reales del backend
         this.stats[0].value = stats.totalCourses.toString();
         this.stats[1].value = stats.totalStudents.toString(); // ✅ Sin duplicados
         this.stats[2].value = stats.totalExercises.toString(); // ✅ Total real
@@ -106,8 +105,6 @@ export class TeacherDashboardComponent implements OnInit {
       next: (courses) => {
         this.courses = courses;
         console.log('✅ Cursos cargados:', courses);
-        
-        // ✅ Ya no necesitamos updateStats() aquí porque loadStats() se encarga
       },
       error: (error) => {
         console.error('❌ Error al cargar cursos:', error);
@@ -118,9 +115,6 @@ export class TeacherDashboardComponent implements OnInit {
       },
     });
   }
-
-  // ❌ MÉTODO ELIMINADO - Ya no es necesario
-  // updateStats() { ... }
 
   openModal() {
     this.showCreateModal = true;
@@ -134,7 +128,7 @@ export class TeacherDashboardComponent implements OnInit {
     console.log('✅ Curso creado exitosamente:', course);
     
     this.courses.push(course);
-    this.loadStats(); // ✅ ACTUALIZAR: Recargar estadísticas desde el backend
+    this.loadStats(); // Recargar estadísticas desde el backend
     
     this.closeModal();
     
@@ -269,7 +263,7 @@ export class TeacherDashboardComponent implements OnInit {
     this.showStudentsModal = false;
     this.selectedCourse = null;
     this.loadCourses();
-    this.loadStats(); // ✅ ACTUALIZAR: Recargar estadísticas tras gestionar estudiantes
+    this.loadStats(); 
   }
 
   copyToClipboard(code: string) {

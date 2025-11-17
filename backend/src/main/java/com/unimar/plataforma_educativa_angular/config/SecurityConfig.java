@@ -50,11 +50,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/hints/**").authenticated()
 
                         // ========================================
-                        // 🔥 CRÍTICO: Endpoints de entregas
-                        // Nota: El controlador usa la ruta base "/api/submissions"
-                        // pero los endpoints están bajo "/api/exercises/submissions"
-                        // en el código del controlador. Sin embargo, Spring Security
-                        // necesita la ruta correcta del @RequestMapping.
+                        // Endpoints de entregas
                         // ========================================
                         .requestMatchers("/api/submissions/**").authenticated()
 
@@ -75,22 +71,22 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
 
-        // ✅ Orígenes permitidos
+        // Orígenes permitidos
         config.setAllowedOrigins(List.of("http://localhost:4200"));
 
-        // ✅ Métodos HTTP permitidos (incluye PATCH para publicar entregas)
+        // Métodos HTTP permitidos (incluye PATCH para publicar entregas)
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
 
-        // ✅ Headers permitidos
+        // Headers permitidos
         config.setAllowedHeaders(List.of("*"));
 
-        // ✅ Headers expuestos al cliente
+        // Headers expuestos al cliente
         config.setExposedHeaders(List.of("Authorization", "Content-Type"));
 
-        // ✅ Permitir credenciales (cookies, authorization headers)
+        // Permitir credenciales (cookies, authorization headers)
         config.setAllowCredentials(true);
 
-        // ✅ Tiempo de caché de la respuesta preflight (1 hora)
+        // Tiempo de caché de la respuesta preflight (1 hora)
         config.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

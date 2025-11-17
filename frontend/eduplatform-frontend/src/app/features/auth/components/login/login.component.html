@@ -7,21 +7,41 @@
         <div class="logo-circle">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="32"
-            height="32"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
+            width="128"
+            height="128"
+            viewBox="0 0 64 64"
           >
-            <!-- Control de videojuego 🎮 -->
-            <rect x="2" y="6" width="20" height="12" rx="6" ry="6" />
-            <path d="M6 12h4" />
-            <path d="M8 10v4" />
-            <circle cx="16" cy="10" r="1" />
-            <circle cx="16" cy="14" r="1" />
+            <!-- Fondo redondeado -->
+            <rect width="64" height="64" rx="14" fill="#FFFFFF" />
+
+            <!-- Libro naranja -->
+            <g transform="translate(8,14)">
+              <!-- Tapa izquierda -->
+              <path
+                d="M6 4 C14 0, 22 0, 30 4 V30 C22 26, 14 26, 6 30 Z"
+                fill="#F26B21"
+                opacity="0.95"
+              />
+
+              <!-- Tapa derecha -->
+              <path
+                d="M42 4 C34 0, 26 0, 18 4 V30 C26 26, 34 26, 42 30 Z"
+                fill="#F26B21"
+                opacity="0.95"
+              />
+
+              <!-- Línea central de separación -->
+              <line
+                x1="18"
+                y1="6"
+                x2="30"
+                y2="30"
+                stroke="#FFFFFF"
+                stroke-width="2"
+                stroke-linecap="round"
+                opacity="0.8"
+              />
+            </g>
           </svg>
         </div>
         <h1 class="brand-title">Mariana Learning</h1>

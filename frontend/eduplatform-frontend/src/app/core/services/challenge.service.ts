@@ -13,17 +13,17 @@ export interface Challenge {
   description: string;
   difficulty: string; // BASICO, INTERMEDIO, AVANZADO
   maxBonusPoints: number; // 1-10 XP
-  externalUrl?: string; // ✅ NUEVO: URL externa opcional
+  externalUrl?: string; // URL externa opcional
   fileName?: string;
   fileType?: string;
   deadline?: string;
   createdAt?: string;
   active?: boolean;
   courseId?: number;
-  hasFile?: boolean; // ✅ Indica si tiene archivo
-  hasExternalUrl?: boolean; // ✅ NUEVO: Indica si tiene URL
-  hasResource?: boolean; // ✅ NUEVO: Indica si tiene algún recurso
-  resourceType?: string; // ✅ NUEVO: "FILE", "URL", "BOTH", "NONE"
+  hasFile?: boolean; // Indica si tiene archivo
+  hasExternalUrl?: boolean; // Indica si tiene URL
+  hasResource?: boolean; // Indica si tiene algún recurso
+  resourceType?: string; // "FILE", "URL", "BOTH", "NONE"
   submissionsCount?: number;
 }
 
@@ -59,7 +59,7 @@ export interface PodiumEntry {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ChallengeService {
   private apiUrl = `${environment.apiUrl}/challenges`;
@@ -74,9 +74,12 @@ export class ChallengeService {
 
   /**
    * Crear reto (Profesor)
-   * ✅ Ahora incluye externalUrl
    */
-  createChallenge(challenge: Challenge, courseId: number, file?: File): Observable<Challenge> {
+  createChallenge(
+    challenge: Challenge,
+    courseId: number,
+    file?: File
+  ): Observable<Challenge> {
     const formData = new FormData();
     formData.append('title', challenge.title);
     formData.append('description', challenge.description);
@@ -88,7 +91,7 @@ export class ChallengeService {
       formData.append('deadline', challenge.deadline);
     }
 
-    // ✅ NUEVO: Agregar URL externa si existe
+    // Agregar URL externa si existe
     if (challenge.externalUrl && challenge.externalUrl.trim()) {
       formData.append('externalUrl', challenge.externalUrl.trim());
     }
@@ -100,7 +103,7 @@ export class ChallengeService {
     console.log('🏆 Creando reto con:', {
       title: challenge.title,
       hasFile: !!file,
-      hasUrl: !!challenge.externalUrl
+      hasUrl: !!challenge.externalUrl,
     });
 
     return this.http.post<Challenge>(this.apiUrl, formData);
@@ -122,55 +125,50 @@ export class ChallengeService {
 
   /**
    * Actualizar reto (Profesor)
-   * ✅ Ahora incluye externalUrl
    */
-  /**
- * Actualizar reto (Profesor)
- * ✅ Ahora incluye removeFile
- */
-updateChallenge(
-  id: number, 
-  challenge: Challenge, 
-  file?: File,
-  removeFile: boolean = false // ✅ NUEVO
-): Observable<Challenge> {
-  const formData = new FormData();
-  formData.append('title', challenge.title);
-  formData.append('description', challenge.description);
-  formData.append('difficulty', challenge.difficulty);
-  formData.append('maxBonusPoints', challenge.maxBonusPoints.toString());
+  updateChallenge(
+    id: number,
+    challenge: Challenge,
+    file?: File,
+    removeFile: boolean = false 
+  ): Observable<Challenge> {
+    const formData = new FormData();
+    formData.append('title', challenge.title);
+    formData.append('description', challenge.description);
+    formData.append('difficulty', challenge.difficulty);
+    formData.append('maxBonusPoints', challenge.maxBonusPoints.toString());
 
-  if (challenge.deadline) {
-    formData.append('deadline', challenge.deadline);
+    if (challenge.deadline) {
+      formData.append('deadline', challenge.deadline);
+    }
+
+    if (challenge.active !== undefined) {
+      formData.append('active', challenge.active.toString());
+    }
+
+    // Indicar eliminación de archivo
+    if (removeFile) {
+      formData.append('removeFile', 'true');
+      console.log('🗑️ Solicitando eliminación de archivo del reto');
+    }
+
+    if (challenge.externalUrl !== undefined) {
+      formData.append('externalUrl', challenge.externalUrl.trim());
+    }
+
+    if (file) {
+      formData.append('file', file, file.name);
+    }
+
+    console.log('✏️ Actualizando reto con:', {
+      title: challenge.title,
+      hasFile: !!file,
+      hasUrl: !!challenge.externalUrl,
+      removeFile: removeFile,
+    });
+
+    return this.http.put<Challenge>(`${this.apiUrl}/${id}`, formData);
   }
-
-  if (challenge.active !== undefined) {
-    formData.append('active', challenge.active.toString());
-  }
-
-  // ✅ NUEVO: Indicar eliminación de archivo
-  if (removeFile) {
-    formData.append('removeFile', 'true');
-    console.log('🗑️ Solicitando eliminación de archivo del reto');
-  }
-
-  if (challenge.externalUrl !== undefined) {
-    formData.append('externalUrl', challenge.externalUrl.trim());
-  }
-
-  if (file) {
-    formData.append('file', file, file.name);
-  }
-
-  console.log('✏️ Actualizando reto con:', {
-    title: challenge.title,
-    hasFile: !!file,
-    hasUrl: !!challenge.externalUrl,
-    removeFile: removeFile
-  });
-
-  return this.http.put<Challenge>(`${this.apiUrl}/${id}`, formData);
-}
 
   /**
    * Eliminar reto (Profesor)
@@ -184,7 +182,7 @@ updateChallenge(
    */
   downloadChallenge(id: number): Observable<Blob> {
     return this.http.get(`${this.apiUrl}/${id}/download`, {
-      responseType: 'blob'
+      responseType: 'blob',
     });
   }
 
@@ -195,7 +193,10 @@ updateChallenge(
   /**
    * Subir solución de reto (Estudiante)
    */
-  submitChallenge(challengeId: number, file: File): Observable<ChallengeSubmission> {
+  submitChallenge(
+    challengeId: number,
+    file: File
+  ): Observable<ChallengeSubmission> {
     const formData = new FormData();
     formData.append('challengeId', challengeId.toString());
     formData.append('file', file, file.name);
@@ -206,25 +207,37 @@ updateChallenge(
   /**
    * Editar solución (Estudiante)
    */
-  updateChallengeSubmission(submissionId: number, file: File): Observable<ChallengeSubmission> {
+  updateChallengeSubmission(
+    submissionId: number,
+    file: File
+  ): Observable<ChallengeSubmission> {
     const formData = new FormData();
     formData.append('file', file, file.name);
 
-    return this.http.put<ChallengeSubmission>(`${this.submissionUrl}/${submissionId}`, formData);
+    return this.http.put<ChallengeSubmission>(
+      `${this.submissionUrl}/${submissionId}`,
+      formData
+    );
   }
 
   /**
    * Obtener soluciones de un reto (Profesor)
    */
-  getSubmissionsByChallenge(challengeId: number): Observable<ChallengeSubmission[]> {
-    return this.http.get<ChallengeSubmission[]>(`${this.submissionUrl}/challenge/${challengeId}`);
+  getSubmissionsByChallenge(
+    challengeId: number
+  ): Observable<ChallengeSubmission[]> {
+    return this.http.get<ChallengeSubmission[]>(
+      `${this.submissionUrl}/challenge/${challengeId}`
+    );
   }
 
   /**
    * Obtener mis soluciones (Estudiante)
    */
   getMyChallengeSubmissions(): Observable<ChallengeSubmission[]> {
-    return this.http.get<ChallengeSubmission[]>(`${this.submissionUrl}/my-submissions`);
+    return this.http.get<ChallengeSubmission[]>(
+      `${this.submissionUrl}/my-submissions`
+    );
   }
 
   /**
@@ -263,13 +276,17 @@ updateChallenge(
    * Obtener mi posición en el podio
    */
   getMyPosition(courseId: number): Observable<PodiumEntry> {
-    return this.http.get<PodiumEntry>(`${this.podiumUrl}/my-position/${courseId}`);
+    return this.http.get<PodiumEntry>(
+      `${this.podiumUrl}/my-position/${courseId}`
+    );
   }
 
   /**
    * Obtiene todas las soluciones de un reto específico
    */
-  getChallengeSubmissions(challengeId: number): Observable<ChallengeSubmission[]> {
+  getChallengeSubmissions(
+    challengeId: number
+  ): Observable<ChallengeSubmission[]> {
     return this.http.get<ChallengeSubmission[]>(
       `${this.submissionUrl}/challenge/${challengeId}`
     );
@@ -279,10 +296,9 @@ updateChallenge(
    * Descarga el archivo de una solución de reto
    */
   downloadChallengeSubmission(submissionId: number): Observable<Blob> {
-    return this.http.get(
-      `${this.submissionUrl}/${submissionId}/download`,
-      { responseType: 'blob' }
-    );
+    return this.http.get(`${this.submissionUrl}/${submissionId}/download`, {
+      responseType: 'blob',
+    });
   }
 
   /**

@@ -1,6 +1,3 @@
-// ========================================
-// StudentStatsDTO.java
-// ========================================
 package com.unimar.plataforma_educativa_angular.dto;
 
 import lombok.AllArgsConstructor;

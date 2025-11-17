@@ -34,10 +34,7 @@ import { ChallengeListComponent } from '../challenge-list/challenge-list.compone
 // Link whatsapp
 import { WhatsappModalComponent } from '../../../../modals/whatsapp-modal/whatsapp-modal.component';
 
-/**
- * 🎯 ORQUESTADOR PRINCIPAL DE COURSE DETAIL - TEACHER (OPTIMIZADO)
- * ✨ Reducción automática del header al hacer scroll
- */
+
 @Component({
   selector: 'app-course-header',
   standalone: true,
@@ -73,7 +70,7 @@ export class CourseHeaderComponent implements OnInit {
   isLoadingChallenges = false;
 
   // ==========================================
-  // 🆕 ESTADO DEL SCROLL
+  // ESTADO DEL SCROLL
   // ==========================================
   isScrolled = false;
 
@@ -126,7 +123,7 @@ export class CourseHeaderComponent implements OnInit {
   ) {}
 
   // ==========================================
-  // 🆕 DETECTAR SCROLL
+  // DETECTAR SCROLL
   // ==========================================
   @HostListener('window:scroll', ['$event'])
   onWindowScroll() {
@@ -150,7 +147,7 @@ export class CourseHeaderComponent implements OnInit {
   }
 
   // ==========================================
-  // 📊 CARGA DE DATOS
+  // CARGA DE DATOS
   // ==========================================
 
   loadCourseData() {
@@ -214,7 +211,7 @@ export class CourseHeaderComponent implements OnInit {
   }
 
   // ==========================================
-  // 🔄 NAVEGACIÓN
+  // NAVEGACIÓN
   // ==========================================
 
   goBack() {
@@ -231,7 +228,7 @@ export class CourseHeaderComponent implements OnInit {
   }
 
   // ==========================================
-  // 👥 GESTIÓN DE ESTUDIANTES
+  // GESTIÓN DE ESTUDIANTES
   // ==========================================
 
   onManageStudents() {
@@ -248,7 +245,7 @@ export class CourseHeaderComponent implements OnInit {
   }
 
   // ==========================================
-  // 📝 GESTIÓN DE EJERCICIOS
+  // GESTIÓN DE EJERCICIOS
   // ==========================================
 
   onExerciseUpdated(exerciseId: number) {
@@ -341,7 +338,7 @@ export class CourseHeaderComponent implements OnInit {
   }
 
   // ==========================================
-  // 💡 GESTIÓN DE PISTAS
+  // GESTIÓN DE PISTAS
   // ==========================================
 
   openManageHints(exercise: Exercise) {
@@ -355,7 +352,7 @@ export class CourseHeaderComponent implements OnInit {
   }
 
   // ==========================================
-  // 📥 DESCARGAS
+  // DESCARGAS
   // ==========================================
 
   downloadExercise(exercise: Exercise) {
@@ -418,7 +415,7 @@ export class CourseHeaderComponent implements OnInit {
   }
 
   // ==========================================
-  // 👁️ VER ENTREGAS/SOLUCIONES
+  // VER ENTREGAS/SOLUCIONES
   // ==========================================
 
   viewExerciseSubmissions(exercise: Exercise) {
@@ -442,7 +439,7 @@ export class CourseHeaderComponent implements OnInit {
   }
 
   // ==========================================
-  // 🏆 GESTIÓN DE RETOS
+  // GESTIÓN DE RETOS
   // ==========================================
 
   onCreateChallenge() {
@@ -522,7 +519,7 @@ export class CourseHeaderComponent implements OnInit {
   }
 
   // ==========================================
-  // 🔗 GESTIÓN DE URLs EXTERNAS
+  // GESTIÓN DE URLs EXTERNAS
   // ==========================================
 
   openExternalUrl(url: string) {
@@ -550,7 +547,7 @@ export class CourseHeaderComponent implements OnInit {
   }
 
   // ==========================================
-  // 💬 GESTIÓN DE WHATSAPP
+  // GESTIÓN DE WHATSAPP
   // ==========================================
 
   openWhatsappModal() {
@@ -575,7 +572,7 @@ export class CourseHeaderComponent implements OnInit {
   }
 
   // ==========================================
-  // 🛠️ UTILIDADES
+  // UTILIDADES
   // ==========================================
 
   getDeleteExerciseMessage(): string {
