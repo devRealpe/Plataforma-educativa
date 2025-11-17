@@ -155,7 +155,7 @@ class ChallengeServiceTest_HU14 {
                 1L,
                 challengeData,
                 "teacher@test.com",
-                null // Sin archivo nuevo
+                null, null, null // Sin archivo nuevo
         );
 
         // ==================== ASSERT ====================
@@ -315,7 +315,7 @@ class ChallengeServiceTest_HU14 {
         // Act & Assert
         RuntimeException exception = assertThrows(
                 RuntimeException.class,
-                () -> challengeService.updateChallenge(1L, challengeData, "other@test.com", null),
+                () -> challengeService.updateChallenge(1L, challengeData, "other@test.com", null, null, null),
                 "Debe lanzar excepción si el profesor no es el dueño del curso");
 
         assertEquals("No tienes permiso para editar este reto", exception.getMessage());
@@ -378,7 +378,7 @@ class ChallengeServiceTest_HU14 {
         // Act & Assert
         RuntimeException exception = assertThrows(
                 RuntimeException.class,
-                () -> challengeService.updateChallenge(999L, challengeData, "teacher@test.com", null),
+                () -> challengeService.updateChallenge(999L, challengeData, "teacher@test.com", null, null, null),
                 "Debe lanzar excepción si el reto no existe");
 
         assertEquals("Reto no encontrado", exception.getMessage());

@@ -155,7 +155,8 @@ class ChallengeServiceTest_HU12 {
                                 challengeToCreate,
                                 1L,
                                 "teacher@test.com",
-                                mockFile);
+                                mockFile,
+                                null); // externalUrl
 
                 // ==================== ASSERT ====================
                 assertNotNull(result, "El reto creado no debe ser nulo");
@@ -249,7 +250,8 @@ class ChallengeServiceTest_HU12 {
                                                         challengeToCreate,
                                                         1L,
                                                         "teacher@test.com",
-                                                        null);
+                                                        null,
+                                                        null); // externalUrl
                                 },
                                 "Debe lanzar excepción cuando maxBonusPoints es null");
 
@@ -304,7 +306,7 @@ class ChallengeServiceTest_HU12 {
                                                         challengeToCreate,
                                                         1L,
                                                         "teacher@test.com",
-                                                        null);
+                                                        null, null);
                                 },
                                 "Debe rechazar bonificación mayor a 10");
 
@@ -361,7 +363,9 @@ class ChallengeServiceTest_HU12 {
                                 challengeToCreate,
                                 1L,
                                 "teacher@test.com",
+                                null,
                                 null // Sin archivo
+
                 );
 
                 // ==================== ASSERT ====================

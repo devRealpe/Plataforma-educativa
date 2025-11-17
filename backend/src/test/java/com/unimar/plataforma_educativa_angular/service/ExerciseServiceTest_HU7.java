@@ -144,7 +144,7 @@ class ExerciseServiceTest_HU7 {
                 exerciseToCreate,
                 1L,
                 "teacher@test.com",
-                mockFile);
+                mockFile, null);
 
         // ==================== ASSERT ====================
         assertNotNull(result, "El ejercicio creado no debe ser nulo");
@@ -236,7 +236,7 @@ class ExerciseServiceTest_HU7 {
                 exerciseToCreate,
                 1L,
                 "teacher@test.com",
-                null // Sin archivo
+                null, null// Sin archivo
         );
 
         // ==================== ASSERT ====================
