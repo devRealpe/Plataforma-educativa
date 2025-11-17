@@ -1,20 +1,19 @@
-import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, Input, OnInit, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ChallengeService, Challenge, ChallengeSubmission } from '../../../../../../core/services/challenge.service';
 import { ConfirmationModalComponent } from '../../../../../../shared/components/confirmation-modal/confirmation-modal.component';
-// ✅ AGREGADO: Importar MotivationalMessagesComponent
 import { MotivationalMessagesComponent } from '../../../motivational-messages/motivational-messages.component';
 
 @Component({
   selector: 'app-challenge-list',
   standalone: true,
-  // ✅ AGREGADO: MotivationalMessagesComponent en imports
-  imports: [CommonModule, ConfirmationModalComponent, MotivationalMessagesComponent],
+  imports: [CommonModule, FormsModule, ConfirmationModalComponent, MotivationalMessagesComponent],
   templateUrl: './challenge-list.component.html',
   styleUrls: ['./challenge-list.component.scss']
 })
-export class ChallengeListComponent implements OnInit {
+export class ChallengeListComponent implements OnInit, OnChanges {
   @Input() courseId!: number;
   @Input() challenges: Challenge[] = [];
   @Input() submissions: ChallengeSubmission[] = [];
@@ -24,6 +23,18 @@ export class ChallengeListComponent implements OnInit {
     challenge: Challenge;
     existingSubmission?: ChallengeSubmission;
   }>();
+
+  // 🆕 FILTROS Y BÚSQUEDA
+  filteredChallenges: Challenge[] = [];
+  searchTerm: string = '';
+  selectedFilter: string = 'all';
+  
+  filterOptions = [
+    { value: 'all', label: 'Todos los retos', icon: '🏆' },
+    { value: 'submitted', label: 'Enviados sin revisar', icon: '📤' },
+    { value: 'reviewed', label: 'Revisados', icon: '✅' },
+    { value: 'not-submitted', label: 'Sin enviar', icon: '⏳' }
+  ];
 
   // Estado del modal de subir/editar solución
   showSubmissionModal = false;
@@ -47,12 +58,82 @@ export class ChallengeListComponent implements OnInit {
     if (this.submissions.length === 0) {
       this.loadMySubmissions();
     }
+    this.applyFilters();
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['challenges'] || changes['submissions']) {
+      this.applyFilters();
+    }
+  }
+
+  // 🆕 MÉTODOS DE FILTRADO
+  onSearchChange(): void {
+    this.applyFilters();
+  }
+
+  onFilterChange(): void {
+    this.applyFilters();
+  }
+
+  applyFilters(): void {
+    let filtered = [...this.challenges];
+
+    // Aplicar filtro por estado
+    filtered = filtered.filter(challenge => {
+      const submission = this.getMySubmission(challenge.id!);
+      
+      switch (this.selectedFilter) {
+        case 'submitted':
+          return submission && submission.status !== 'REVIEWED';
+        case 'reviewed':
+          return submission && submission.status === 'REVIEWED';
+        case 'not-submitted':
+          return !submission;
+        case 'all':
+        default:
+          return true;
+      }
+    });
+
+    // Aplicar búsqueda por término
+    if (this.searchTerm.trim()) {
+      const term = this.searchTerm.toLowerCase().trim();
+      filtered = filtered.filter(challenge => 
+        challenge.title.toLowerCase().includes(term) ||
+        challenge.description.toLowerCase().includes(term) ||
+        challenge.difficulty.toLowerCase().includes(term)
+      );
+    }
+
+    this.filteredChallenges = filtered;
+  }
+
+  getFilterCounts() {
+    return {
+      all: this.challenges.length,
+      submitted: this.challenges.filter(ch => {
+        const submission = this.getMySubmission(ch.id!);
+        return submission && submission.status !== 'REVIEWED';
+      }).length,
+      reviewed: this.challenges.filter(ch => {
+        const submission = this.getMySubmission(ch.id!);
+        return submission && submission.status === 'REVIEWED';
+      }).length,
+      notSubmitted: this.challenges.filter(ch => !this.getMySubmission(ch.id!)).length
+    };
+  }
+
+  clearSearch(): void {
+    this.searchTerm = '';
+    this.applyFilters();
   }
 
   loadMySubmissions() {
     this.challengeService.getMyChallengeSubmissions().subscribe({
       next: (submissions) => {
         this.submissions = submissions;
+        this.applyFilters();
       },
       error: (error) => {
         console.error('Error al cargar mis soluciones:', error);
@@ -296,6 +377,7 @@ export class ChallengeListComponent implements OnInit {
         
         this.submissionToDelete = null;
         this.challengeToDelete = null;
+        this.applyFilters();
       },
       error: (error) => {
         console.error('❌ Error al eliminar solución:', error);
