@@ -2,13 +2,12 @@ import { Component, Input, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ChallengeService, Challenge, ChallengeSubmission } from '../../../../../../core/services/challenge.service';
-import { ChallengeSubmissionModalComponent } from '../../../../modals/challenge-submission-modal/challenge-submission-modal.component';
 import { ConfirmationModalComponent } from '../../../../../../shared/components/confirmation-modal/confirmation-modal.component';
 
 @Component({
   selector: 'app-challenge-list',
   standalone: true,
-  imports: [CommonModule, ChallengeSubmissionModalComponent, ConfirmationModalComponent],
+  imports: [CommonModule, ConfirmationModalComponent],
   templateUrl: './challenge-list.component.html',
   styleUrls: ['./challenge-list.component.scss']
 })
@@ -18,10 +17,15 @@ export class ChallengeListComponent implements OnInit {
   @Input() submissions: ChallengeSubmission[] = [];
   @Input() isLoading = false;
 
+  // Estado del modal de subir/editar solución
   showSubmissionModal = false;
   selectedChallenge: Challenge | null = null;
   existingSubmission: ChallengeSubmission | undefined;
+  selectedFile: File | null = null;
+  isSubmitting = false;
+  isEditMode = false;
 
+  // Estado del modal de eliminar
   showDeleteSubmissionModal = false;
   submissionToDelete: ChallengeSubmission | null = null;
   challengeToDelete: Challenge | null = null;
@@ -56,9 +60,26 @@ export class ChallengeListComponent implements OnInit {
     return !!this.getMySubmission(challengeId);
   }
 
+  // ==========================================
+  // GESTIÓN DEL MODAL DE SUBIR/EDITAR
+  // ==========================================
+
   openSubmissionModal(challenge: Challenge, existingSubmission?: ChallengeSubmission) {
     this.selectedChallenge = challenge;
     this.existingSubmission = existingSubmission || this.getMySubmission(challenge.id!);
+    this.isEditMode = !!this.existingSubmission;
+    this.selectedFile = null;
+    
+    // Validar si puede editar
+    if (this.isEditMode && this.existingSubmission && !this.existingSubmission.canBeEdited) {
+      this.snackBar.open(
+        '⚠️ Esta solución ya no puede ser editada',
+        'Cerrar',
+        { duration: 4000, panelClass: ['warning-snackbar'] }
+      );
+      return;
+    }
+
     this.showSubmissionModal = true;
   }
 
@@ -66,20 +87,104 @@ export class ChallengeListComponent implements OnInit {
     this.showSubmissionModal = false;
     this.selectedChallenge = null;
     this.existingSubmission = undefined;
+    this.selectedFile = null;
+    this.isEditMode = false;
   }
 
-  onSubmissionCreated(submission: ChallengeSubmission) {
-    const existingIndex = this.submissions.findIndex(s => s.challengeId === submission.challengeId);
-    
-    if (existingIndex !== -1) {
-      this.submissions[existingIndex] = submission;
-    } else {
-      this.submissions.push(submission);
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      if (file.size > 10 * 1024 * 1024) {
+        this.snackBar.open('El archivo no debe superar 10MB', 'Cerrar', { duration: 3000 });
+        return;
+      }
+      this.selectedFile = file;
+      console.log('📁 Archivo seleccionado:', file.name);
+    }
+  }
+
+  removeFile() {
+    this.selectedFile = null;
+  }
+
+  isFormValid(): boolean {
+    return !!this.selectedFile;
+  }
+
+  submitSolution() {
+    if (!this.isFormValid() || this.isSubmitting || !this.selectedChallenge?.id) {
+      return;
     }
 
-    this.loadMySubmissions();
-    this.snackBar.open('✅ Solución enviada exitosamente', 'Cerrar', { duration: 3000 });
+    this.isSubmitting = true;
+
+    const request$ = this.isEditMode && this.existingSubmission?.id
+      ? this.challengeService.updateChallengeSubmission(this.existingSubmission.id, this.selectedFile!)
+      : this.challengeService.submitChallenge(this.selectedChallenge.id, this.selectedFile!);
+
+    request$.subscribe({
+      next: (submission) => {
+        const existingIndex = this.submissions.findIndex(s => s.challengeId === submission.challengeId);
+        
+        if (existingIndex !== -1) {
+          this.submissions[existingIndex] = submission;
+        } else {
+          this.submissions.push(submission);
+        }
+
+        this.snackBar.open(
+          this.isEditMode 
+            ? '✅ Solución actualizada exitosamente' 
+            : '✅ Solución enviada exitosamente',
+          'Cerrar',
+          { duration: 3000, panelClass: ['success-snackbar'] }
+        );
+        
+        this.loadMySubmissions();
+        this.closeSubmissionModal();
+        this.isSubmitting = false;
+      },
+      error: (error) => {
+        console.error('❌ Error:', error);
+        this.snackBar.open(
+          error.error?.error || 'Error al enviar la solución',
+          'Cerrar',
+          { duration: 3000, panelClass: ['error-snackbar'] }
+        );
+        this.isSubmitting = false;
+      }
+    });
   }
+
+  // ==========================================
+  // UTILIDADES DEL MODAL
+  // ==========================================
+
+  getDaysUntilDeadline(challenge: Challenge): number | null {
+    if (!challenge.deadline) return null;
+    
+    const now = new Date();
+    const deadline = new Date(challenge.deadline);
+    
+    if (now > deadline) return 0;
+    
+    const diff = deadline.getTime() - now.getTime();
+    return Math.ceil(diff / (1000 * 60 * 60 * 24));
+  }
+
+  getDeadlineMessage(challenge: Challenge): string {
+    const days = this.getDaysUntilDeadline(challenge);
+    
+    if (days === null) return '';
+    if (days === 0) return '⏰ Plazo vencido';
+    if (days === 1) return '⚠️ ¡Último día!';
+    if (days <= 3) return `⚠️ Quedan ${days} días`;
+    return `📅 ${days} días restantes`;
+  }
+
+  // ==========================================
+  // DESCARGAS
+  // ==========================================
 
   getDifficultyColor(difficulty: string): string {
     switch (difficulty) {
@@ -153,6 +258,10 @@ export class ChallengeListComponent implements OnInit {
       }
     });
   }
+
+  // ==========================================
+  // ELIMINAR SOLUCIÓN
+  // ==========================================
 
   deleteChallengeSubmission(challenge: Challenge) {
     const submission = this.getMySubmission(challenge.id!);

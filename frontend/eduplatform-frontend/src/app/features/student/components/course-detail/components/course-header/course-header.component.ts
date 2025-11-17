@@ -55,22 +55,26 @@ export class CourseHeaderComponentStudent implements OnInit {
   isScrolled = false;
 
   // ==========================================
-  // ESTADO DE MODALES
+  // ESTADO DE MODALES - EJERCICIOS
   // ==========================================
   showUploadModal = false;
   showDeleteModal = false;
-  showDeleteChallengeSubmissionModal = false;
-  
   selectedExercise: Exercise | null = null;
   exerciseToDelete: Exercise | null = null;
   submissionToDelete: Submission | null = null;
-  
-  selectedChallenge: Challenge | null = null;
-  challengeSubmissionToDelete: ChallengeSubmission | null = null;
-  
   selectedFile: File | null = null;
   isSubmitting = false;
   isEditMode = false;
+
+  // ==========================================
+  // ESTADO DE MODALES - RETOS
+  // ==========================================
+  showChallengeSubmissionModal = false;
+  selectedChallenge: Challenge | null = null;
+  existingChallengeSubmission: ChallengeSubmission | undefined;
+  selectedChallengeFile: File | null = null;
+  isSubmittingChallenge = false;
+  isChallengeEditMode = false;
 
   // ==========================================
   // NAVEGACIÓN
@@ -138,7 +142,6 @@ export class CourseHeaderComponentStudent implements OnInit {
         }
         
         console.log('✅ Curso cargado:', this.course.title);
-        console.log('🔍 WhatsApp Link:', this.course.whatsappLink || 'No configurado');
         
         this.loadExercises();
         this.loadChallenges();
@@ -406,6 +409,100 @@ export class CourseHeaderComponentStudent implements OnInit {
   }
 
   // ==========================================
+  // 🏆 GESTIÓN DE RETOS
+  // ==========================================
+
+  openChallengeSubmissionModal(event: {challenge: Challenge, existingSubmission?: ChallengeSubmission}) {
+    this.selectedChallenge = event.challenge;
+    this.existingChallengeSubmission = event.existingSubmission;
+    this.isChallengeEditMode = !!event.existingSubmission;
+    this.selectedChallengeFile = null;
+    this.showChallengeSubmissionModal = true;
+  }
+
+  closeChallengeSubmissionModal() {
+    this.showChallengeSubmissionModal = false;
+    this.selectedChallenge = null;
+    this.existingChallengeSubmission = undefined;
+    this.selectedChallengeFile = null;
+    this.isChallengeEditMode = false;
+  }
+
+  onChallengeFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      if (file.size > 10 * 1024 * 1024) {
+        this.snackBar.open('El archivo no debe superar 10MB', 'Cerrar', { duration: 3000 });
+        return;
+      }
+      this.selectedChallengeFile = file;
+    }
+  }
+
+  removeChallengeFile() {
+    this.selectedChallengeFile = null;
+  }
+
+  submitChallengeSolution() {
+    if (!this.selectedChallengeFile || !this.selectedChallenge?.id || this.isSubmittingChallenge) {
+      return;
+    }
+
+    this.isSubmittingChallenge = true;
+
+    const request$ = this.isChallengeEditMode && this.existingChallengeSubmission?.id
+      ? this.challengeService.updateChallengeSubmission(this.existingChallengeSubmission.id, this.selectedChallengeFile)
+      : this.challengeService.submitChallenge(this.selectedChallenge.id, this.selectedChallengeFile);
+
+    request$.subscribe({
+      next: (submission) => {
+        this.loadMyChallengeSubmissions();
+        this.snackBar.open(
+          this.isChallengeEditMode 
+            ? '✅ Solución actualizada exitosamente' 
+            : '✅ Solución enviada exitosamente',
+          'Cerrar',
+          { duration: 3000, panelClass: ['success-snackbar'] }
+        );
+        
+        this.closeChallengeSubmissionModal();
+        this.isSubmittingChallenge = false;
+      },
+      error: (error) => {
+        console.error('❌ Error:', error);
+        this.snackBar.open(
+          error.error?.error || 'Error al enviar la solución',
+          'Cerrar',
+          { duration: 3000, panelClass: ['error-snackbar'] }
+        );
+        this.isSubmittingChallenge = false;
+      }
+    });
+  }
+
+  getDaysUntilChallengeDeadline(): number | null {
+    if (!this.selectedChallenge?.deadline) return null;
+    
+    const now = new Date();
+    const deadline = new Date(this.selectedChallenge.deadline);
+    
+    if (now > deadline) return 0;
+    
+    const diff = deadline.getTime() - now.getTime();
+    return Math.ceil(diff / (1000 * 60 * 60 * 24));
+  }
+
+  getChallengeDeadlineMessage(): string {
+    const days = this.getDaysUntilChallengeDeadline();
+    
+    if (days === null) return '';
+    if (days === 0) return '⏰ Plazo vencido';
+    if (days === 1) return '⚠️ ¡Último día!';
+    if (days <= 3) return `⚠️ Quedan ${days} días`;
+    return `📅 ${days} días restantes`;
+  }
+
+  // ==========================================
   // 📥 DESCARGAS
   // ==========================================
 
@@ -474,29 +571,6 @@ export class CourseHeaderComponentStudent implements OnInit {
       error: (error) => {
         console.error('Error al descargar:', error);
         this.snackBar.open('Error al descargar el archivo', 'Cerrar', { duration: 3000 });
-      }
-    });
-  }
-
-  downloadChallengeSubmission(submission: ChallengeSubmission) {
-    if (!submission.id) return;
-
-    this.challengeService.downloadChallengeSubmission(submission.id).subscribe({
-      next: (blob) => {
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = submission.fileName || 'mi_solucion.zip';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-        
-        this.snackBar.open('📥 Tu solución descargada', 'Cerrar', { duration: 2000 });
-      },
-      error: (error) => {
-        console.error('Error al descargar solución:', error);
-        this.snackBar.open('Error al descargar tu solución', 'Cerrar', { duration: 3000 });
       }
     });
   }

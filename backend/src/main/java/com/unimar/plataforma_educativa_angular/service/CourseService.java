@@ -2,8 +2,12 @@ package com.unimar.plataforma_educativa_angular.service;
 
 import com.unimar.plataforma_educativa_angular.entities.Course;
 import com.unimar.plataforma_educativa_angular.entities.User;
+import com.unimar.plataforma_educativa_angular.entities.ChallengeSubmission;
+import com.unimar.plataforma_educativa_angular.entities.StudentScore;
 import com.unimar.plataforma_educativa_angular.repositories.CourseRepository;
 import com.unimar.plataforma_educativa_angular.repositories.UserRepository;
+import com.unimar.plataforma_educativa_angular.repositories.StudentScoreRepository;
+import com.unimar.plataforma_educativa_angular.repositories.ChallengeSubmissionRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -16,10 +20,16 @@ public class CourseService {
 
     private final CourseRepository courseRepository;
     private final UserRepository userRepository;
+    private final StudentScoreRepository studentScoreRepository;
+    private final ChallengeSubmissionRepository challengeSubmissionRepository;
 
-    public CourseService(CourseRepository courseRepository, UserRepository userRepository) {
+    public CourseService(CourseRepository courseRepository, UserRepository userRepository,
+            StudentScoreRepository studentScoreRepository,
+            ChallengeSubmissionRepository challengeSubmissionRepository) {
         this.courseRepository = courseRepository;
         this.userRepository = userRepository;
+        this.studentScoreRepository = studentScoreRepository;
+        this.challengeSubmissionRepository = challengeSubmissionRepository;
     }
 
     public List<Course> getCoursesByTeacher(String teacherEmail) {
@@ -91,11 +101,18 @@ public class CourseService {
 
     @Transactional
     public Course joinCourse(String inviteCode, String studentEmail) {
+        System.out.println("\n========================================");
+        System.out.println("📚 ESTUDIANTE UNIÉNDOSE A CURSO");
+        System.out.println("========================================");
+
         Course course = courseRepository.findByInviteCode(inviteCode)
                 .orElseThrow(() -> new RuntimeException("Código inválido"));
 
         User student = userRepository.findByEmail(studentEmail)
                 .orElseThrow(() -> new RuntimeException("Estudiante no encontrado"));
+
+        System.out.println("   📖 Curso: " + course.getTitle());
+        System.out.println("   👤 Estudiante: " + student.getNombre() + " (ID: " + student.getId() + ")");
 
         if (!student.getRole().name().equals("STUDENT")) {
             throw new RuntimeException("Solo los estudiantes pueden unirse a cursos");
@@ -106,16 +123,77 @@ public class CourseService {
         }
 
         course.getStudents().add(student);
-        return courseRepository.save(course);
+        Course savedCourse = courseRepository.save(course);
+        System.out.println("   ✅ Estudiante agregado al curso");
+
+        // ✅ NUEVO: Verificar si tiene entregas revisadas anteriores
+        System.out.println("\n   🔍 Verificando entregas de retos anteriores...");
+
+        List<ChallengeSubmission> previousSubmissions = challengeSubmissionRepository
+                .findByStudentId(student.getId()).stream()
+                .filter(sub -> sub.getChallenge().getCourse().getId().equals(course.getId()))
+                .filter(sub -> sub.getStatus() == ChallengeSubmission.SubmissionStatus.REVIEWED)
+                .filter(sub -> sub.getBonusPoints() != null && sub.getBonusPoints() > 0)
+                .toList();
+
+        if (!previousSubmissions.isEmpty()) {
+            System.out.println("   📋 Encontradas " + previousSubmissions.size() + " entregas revisadas anteriores");
+
+            // Recalcular puntuación total
+            int totalPoints = 0;
+            int totalChallenges = 0;
+
+            for (ChallengeSubmission sub : previousSubmissions) {
+                totalPoints += sub.getBonusPoints();
+                totalChallenges++;
+                System.out.println("      • Reto: " + sub.getChallenge().getTitle() +
+                        " → " + sub.getBonusPoints() + " XP");
+            }
+
+            // Crear o actualizar registro en student_scores
+            StudentScore score = studentScoreRepository
+                    .findByStudentIdAndCourseId(student.getId(), course.getId())
+                    .orElse(new StudentScore());
+
+            score.setStudent(student);
+            score.setCourse(course);
+            score.setTotalBonusPoints(totalPoints);
+            score.setChallengesCompleted(totalChallenges);
+
+            studentScoreRepository.save(score);
+
+            System.out.println("\n   ✅ Puntuación restaurada en el podio:");
+            System.out.println("      • Total XP: " + totalPoints);
+            System.out.println("      • Retos completados: " + totalChallenges);
+        } else {
+            System.out.println("   ℹ️ No hay entregas revisadas anteriores");
+            System.out.println("   📊 El estudiante empezará con 0 XP en el podio");
+        }
+
+        System.out.println("========================================");
+        System.out.println("✅ INSCRIPCIÓN COMPLETADA");
+        System.out.println("========================================\n");
+
+        return savedCourse;
     }
 
+    // ========================================
+    // ✅ CORREGIDO: Eliminar puntuación al salir
+    // ========================================
     @Transactional
     public void leaveCourse(Long courseId, String studentEmail) {
+        System.out.println("\n========================================");
+        System.out.println("👋 ESTUDIANTE ABANDONANDO CURSO");
+        System.out.println("========================================");
+
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new RuntimeException("Curso no encontrado"));
 
         User student = userRepository.findByEmail(studentEmail)
                 .orElseThrow(() -> new RuntimeException("Estudiante no encontrado"));
+
+        System.out.println("   📚 Curso: " + course.getTitle());
+        System.out.println("   👤 Estudiante: " + student.getNombre());
 
         if (!student.getRole().name().equals("STUDENT")) {
             throw new RuntimeException("Solo los estudiantes pueden abandonar cursos");
@@ -125,8 +203,22 @@ public class CourseService {
             throw new RuntimeException("No estás inscrito en este curso");
         }
 
+        // ✅ NUEVO: Eliminar puntuación del podio
+        studentScoreRepository.findByStudentIdAndCourseId(student.getId(), courseId)
+                .ifPresent(score -> {
+                    System.out.println("   🗑️ Eliminando puntuación del podio:");
+                    System.out.println("      • Puntos: " + score.getTotalBonusPoints() + " XP");
+                    System.out.println("      • Retos completados: " + score.getChallengesCompleted());
+                    studentScoreRepository.delete(score);
+                    System.out.println("      ✅ Puntuación eliminada exitosamente");
+                });
+
         course.getStudents().remove(student);
         courseRepository.save(course);
+
+        System.out.println("   ✅ Estudiante eliminado del curso");
+        System.out.println("   ℹ️ Sus entregas se mantienen guardadas");
+        System.out.println("========================================\n");
     }
 
     public Course getCourseById(Long id) {
@@ -134,9 +226,6 @@ public class CourseService {
                 .orElseThrow(() -> new RuntimeException("Curso no encontrado con id: " + id));
     }
 
-    /**
-     * Obtener lista de estudiantes inscritos en un curso (Profesor)
-     */
     @Transactional
     public List<User> getStudentsByCourse(Long courseId, String teacherEmail) {
         Course course = courseRepository.findById(courseId)
@@ -152,16 +241,23 @@ public class CourseService {
         return course.getStudents().stream().collect(Collectors.toList());
     }
 
-    /**
-     * Eliminar estudiante de un curso (Profesor)
-     */
+    // ========================================
+    // ✅ CORREGIDO: Eliminar puntuación al remover estudiante
+    // ========================================
     @Transactional
     public void removeStudentFromCourse(Long courseId, Long studentId, String teacherEmail) {
+        System.out.println("\n========================================");
+        System.out.println("🚫 PROFESOR ELIMINANDO ESTUDIANTE");
+        System.out.println("========================================");
+
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new RuntimeException("Curso no encontrado"));
 
         User teacher = userRepository.findByEmail(teacherEmail)
                 .orElseThrow(() -> new RuntimeException("Profesor no encontrado"));
+
+        System.out.println("   📚 Curso: " + course.getTitle());
+        System.out.println("   👨‍🏫 Profesor: " + teacher.getNombre());
 
         if (!course.getTeacher().getId().equals(teacher.getId())) {
             throw new RuntimeException("No tienes permiso para eliminar estudiantes de este curso");
@@ -170,38 +266,45 @@ public class CourseService {
         User student = userRepository.findById(studentId)
                 .orElseThrow(() -> new RuntimeException("Estudiante no encontrado"));
 
+        System.out.println("   👤 Estudiante a eliminar: " + student.getNombre());
+
         if (!course.getStudents().contains(student)) {
             throw new RuntimeException("El estudiante no está inscrito en este curso");
         }
 
+        // ✅ NUEVO: Eliminar puntuación del podio
+        studentScoreRepository.findByStudentIdAndCourseId(studentId, courseId)
+                .ifPresent(score -> {
+                    System.out.println("   🗑️ Eliminando puntuación del podio:");
+                    System.out.println("      • Puntos: " + score.getTotalBonusPoints() + " XP");
+                    System.out.println("      • Retos completados: " + score.getChallengesCompleted());
+                    studentScoreRepository.delete(score);
+                    System.out.println("      ✅ Puntuación eliminada exitosamente");
+                });
+
         course.getStudents().remove(student);
         courseRepository.save(course);
+
+        System.out.println("   ✅ Estudiante eliminado del curso");
+        System.out.println("   ℹ️ Sus entregas se mantienen guardadas");
+        System.out.println("========================================\n");
     }
 
     // ========================================
-    // AGREGAR ESTOS MÉTODOS AL FINAL DE CourseService.java
+    // GESTIÓN DE WHATSAPP (sin cambios)
     // ========================================
 
-    // ========================================
-    // ✅ NUEVO: Gestión de enlace de WhatsApp
-    // ========================================
-
-    /**
-     * Validar que el enlace sea de WhatsApp
-     */
     private void validateWhatsappLink(String link) {
         if (link == null || link.trim().isEmpty()) {
-            return; // Link opcional
+            return;
         }
 
         String linkTrimmed = link.trim();
 
-        // Validar longitud
         if (linkTrimmed.length() > 500) {
             throw new RuntimeException("El enlace es demasiado largo (máximo 500 caracteres)");
         }
 
-        // Validar que sea un enlace válido de WhatsApp
         if (!linkTrimmed.toLowerCase().startsWith("https://chat.whatsapp.com/") &&
                 !linkTrimmed.toLowerCase().startsWith("https://wa.me/")) {
             throw new RuntimeException(
@@ -209,9 +312,6 @@ public class CourseService {
         }
     }
 
-    /**
-     * Agregar o actualizar enlace de WhatsApp (Profesor)
-     */
     @Transactional
     public Course setWhatsappLink(Long courseId, String whatsappLink, String teacherEmail) {
         System.out.println("\n========================================");
@@ -231,10 +331,8 @@ public class CourseService {
             throw new RuntimeException("No tienes permiso para modificar este curso");
         }
 
-        // Validar el enlace
         validateWhatsappLink(whatsappLink);
 
-        // Configurar el enlace
         course.setWhatsappLink(whatsappLink != null ? whatsappLink.trim() : null);
         Course updated = courseRepository.save(course);
 
@@ -245,9 +343,6 @@ public class CourseService {
         return updated;
     }
 
-    /**
-     * Eliminar enlace de WhatsApp (Profesor)
-     */
     @Transactional
     public Course removeWhatsappLink(Long courseId, String teacherEmail) {
         System.out.println("\n========================================");
@@ -275,9 +370,6 @@ public class CourseService {
         return updated;
     }
 
-    /**
-     * Obtener enlace de WhatsApp (Estudiante o Profesor)
-     */
     public String getWhatsappLink(Long courseId, String userEmail) {
         Course course = courseRepository.findById(courseId)
                 .orElseThrow(() -> new RuntimeException("Curso no encontrado"));
@@ -285,7 +377,6 @@ public class CourseService {
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        // Verificar que el usuario tenga acceso al curso
         boolean isTeacher = course.getTeacher().getId().equals(user.getId());
         boolean isStudent = course.getStudents().contains(user);
 
@@ -294,7 +385,7 @@ public class CourseService {
         }
 
         if (!course.hasWhatsappLink()) {
-            return null; // No hay enlace configurado
+            return null;
         }
 
         return course.getWhatsappLink();

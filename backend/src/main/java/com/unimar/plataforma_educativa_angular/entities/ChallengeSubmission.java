@@ -49,7 +49,8 @@ public class ChallengeSubmission {
     @Column(name = "bonus_points")
     private Integer bonusPoints; // Bonificación otorgada (0-10 XP)
 
-    @Column(length = 1000)
+    @Lob
+    @Column(columnDefinition = "TEXT")
     private String feedback;
 
     private LocalDateTime reviewedAt;

@@ -16,6 +16,15 @@ $rojo-error: #E74C3C;
 $verde-exito: #10b981;
 $verde-oscuro: #0d9668;
 
+// Variables adicionales para modal
+$gray-50: #f9fafb;
+$gray-100: #f3f4f6;
+$gray-200: #e5e7eb;
+$gray-300: #d1d5db;
+$gray-400: #9ca3af;
+$gray-600: #6b7280;
+$gray-700: #374151;
+
 // Variables de espaciado
 $spacing-xs: 0.25rem;
 $spacing-sm: 0.5rem;
@@ -374,11 +383,6 @@ $font-body: 'Roboto', 'Nunito', sans-serif;
   animation: fadeIn 0.5s ease;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
 .submission-header {
   display: flex;
   align-items: center;
@@ -609,45 +613,332 @@ $font-body: 'Roboto', 'Nunito', sans-serif;
 }
 
 // ==========================================
-// 💬 MENSAJES MOTIVACIONALES
+// 🎭 MODAL DE SUBIR/EDITAR SOLUCIÓN
 // ==========================================
 
-.motivational-message {
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba($gris-oscuro, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 1rem;
+  animation: fadeIn 0.2s ease;
+}
+
+.modal-container {
   background: $blanco;
-  border: 2px solid $naranja-tango;
+  border-radius: $radius-xl;
+  width: 100%;
+  max-width: 540px;
+  box-shadow: $shadow-xl;
+  border: 1px solid $gray-200;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(30px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 1.75rem;
+  border-bottom: 1px solid $gray-200;
+
+  h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: $gris-oscuro;
+    margin: 0;
+    font-family: $font-heading;
+  }
+}
+
+.close-btn {
+  background: $gray-100;
+  border: none;
+  padding: 0.5rem;
+  border-radius: $radius-sm;
+  cursor: pointer;
+  color: $gray-600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all $transition-base;
+
+  &:hover {
+    background: $gray-200;
+    color: $gris-oscuro;
+  }
+}
+
+.modal-content {
+  padding: 1.75rem;
+}
+
+.modal-description {
+  color: $gray-700;
+  line-height: 1.6;
+  margin: 0 0 1.5rem 0;
+  font-size: 0.9rem;
+  font-family: $font-body;
+
+  strong {
+    color: $gris-oscuro;
+    font-weight: 600;
+  }
+
+  .edit-warning {
+    display: block;
+    margin-top: 0.75rem;
+    padding: 0.75rem;
+    background: rgba($naranja-tango, 0.1);
+    border-left: 4px solid $naranja-tango;
+    border-radius: $radius-sm;
+    color: $naranja-oscuro;
+    font-size: 0.85rem;
+  }
+}
+
+// Información del reto en modal
+.challenge-info-modal {
+  background: linear-gradient(135deg, rgba($naranja-tango, 0.08) 0%, rgba($naranja-tango, 0.12) 100%);
+  padding: 1.25rem;
   border-radius: $radius-md;
-  padding: $spacing-lg;
-  margin: $spacing-md 0;
-  animation: fadeIn 0.5s ease;
+  margin-bottom: 1.5rem;
+  border: 2px solid rgba($naranja-tango, 0.2);
+}
 
-  &.success {
-    border-color: $azul-fuente;
-    background: rgba(104, 184, 190, 0.05);
-  }
+.info-row-modal {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
 
-  &.error {
-    border-color: $rojo-error;
-    background: rgba(231, 76, 60, 0.05);
-  }
+.info-item-modal {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: $naranja-oscuro;
+  font-family: $font-body;
 
-  .message-icon {
+  svg {
     color: $naranja-tango;
-    margin-right: $spacing-sm;
-    
-    &.success {
-      color: $azul-fuente;
-    }
-    
-    &.error {
+    flex-shrink: 0;
+  }
+
+  strong {
+    font-weight: 600;
+  }
+}
+
+.deadline-warning-modal {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: rgba($naranja-tango, 0.2);
+  border-radius: $radius-sm;
+  font-size: 0.875rem;
+  color: $naranja-oscuro;
+  font-weight: 600;
+  font-family: $font-body;
+
+  &.expired {
+    background: rgba($rojo-error, 0.2);
+    color: $rojo-error;
+
+    svg {
       color: $rojo-error;
     }
   }
 
-  .message-text {
+  svg {
+    color: $naranja-tango;
+    flex-shrink: 0;
+  }
+}
+
+.download-section-modal {
+  margin-bottom: 1.5rem;
+}
+
+.download-btn-modal {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.875rem;
+  background: $blanco;
+  border: 2px solid $gray-200;
+  border-radius: $radius-md;
+  color: $gray-700;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all $transition-base;
+  font-family: $font-body;
+
+  &:hover {
+    background: $gray-50;
+    border-color: $gray-300;
+    transform: translateY(-1px);
+  }
+}
+
+.file-upload-area {
+  position: relative;
+  margin-bottom: 1.5rem;
+}
+
+.file-input {
+  display: none;
+}
+
+.file-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2.5rem 1.75rem;
+  border: 2px dashed $gray-300;
+  border-radius: $radius-lg;
+  background: $gray-50;
+  cursor: pointer;
+  transition: all $transition-base;
+
+  &:hover {
+    border-color: $naranja-tango;
+    background: rgba($naranja-tango, 0.02);
+  }
+
+  svg {
+    color: $naranja-tango;
+    margin-bottom: 1rem;
+  }
+
+  span:first-of-type {
+    font-weight: 600;
     color: $gris-oscuro;
+    margin-bottom: 0.5rem;
+    font-size: 0.95rem;
     font-family: $font-body;
+  }
+
+  .file-hint {
+    font-size: 0.8rem;
+    color: $gray-600;
+    font-family: $font-body;
+  }
+}
+
+.file-selected {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  background: rgba($naranja-tango, 0.05);
+  border: 2px solid $naranja-tango;
+  border-radius: $radius-md;
+  margin-bottom: 1.5rem;
+
+  .file-info {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: $gris-oscuro;
     font-weight: 500;
-    margin: 0;
+    font-size: 0.9rem;
+    font-family: $font-body;
+
+    svg {
+      color: $naranja-tango;
+      flex-shrink: 0;
+    }
+  }
+}
+
+.remove-file-btn {
+  background: rgba($rojo-error, 0.1);
+  border: none;
+  padding: 0.5rem;
+  border-radius: $radius-sm;
+  cursor: pointer;
+  color: $rojo-error;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all $transition-base;
+
+  &:hover {
+    background: $rojo-error;
+    color: $blanco;
+  }
+}
+
+.modal-footer {
+  display: flex;
+  gap: 1rem;
+  padding: 1.25rem 1.75rem;
+  border-top: 1px solid $gray-200;
+  background: $gray-50;
+  border-radius: 0 0 $radius-xl $radius-xl;
+}
+
+.btn-cancel, .btn-submit {
+  flex: 1;
+  padding: 0.75rem 1.25rem;
+  border: none;
+  border-radius: $radius-md;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all $transition-base;
+  font-size: 0.9rem;
+  font-family: $font-body;
+}
+
+.btn-cancel {
+  background: $blanco;
+  color: $gray-700;
+  border: 2px solid $gray-300;
+
+  &:hover {
+    background: $gray-50;
+    border-color: $gray-400;
+  }
+}
+
+.btn-submit {
+  background: $naranja-tango;
+  color: $blanco;
+  border: 2px solid $naranja-tango;
+
+  &:hover:not(:disabled) {
+    background: $naranja-oscuro;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba($naranja-tango, 0.3);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 }
 
@@ -695,6 +986,16 @@ $font-body: 'Roboto', 'Nunito', sans-serif;
     align-items: flex-start;
     gap: $spacing-sm;
   }
+
+  .modal-container {
+    margin: 1rem;
+  }
+
+  .modal-header,
+  .modal-content,
+  .modal-footer {
+    padding: 1rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -718,6 +1019,16 @@ $font-body: 'Roboto', 'Nunito', sans-serif;
     span {
       font-size: 0.75rem;
     }
+  }
+
+  .modal-container {
+    border-radius: 0;
+    max-height: 100vh;
+  }
+
+  .modal-header {
+    padding: 1.5rem;
+    border-radius: 0;
   }
 }
 
