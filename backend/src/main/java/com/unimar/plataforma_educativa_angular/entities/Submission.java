@@ -8,6 +8,9 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 @Entity
 @Table(name = "submissions")
 @Data
@@ -30,7 +33,8 @@ public class Submission {
     private User student;
 
     @Lob
-    @Column(name = "file_data", columnDefinition = "LONGBLOB")
+    @JdbcTypeCode(SqlTypes.BINARY)
+    @Column(name = "file_data")
     private byte[] fileData;
 
     @Column(name = "file_name")

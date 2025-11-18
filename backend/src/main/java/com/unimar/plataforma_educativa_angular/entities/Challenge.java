@@ -10,6 +10,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 @Entity
 @Table(name = "challenges")
 @Data
@@ -38,7 +41,8 @@ public class Challenge {
     private String externalUrl;
 
     @Lob
-    @Column(name = "file_data", columnDefinition = "LONGBLOB")
+    @JdbcTypeCode(SqlTypes.BINARY)
+    @Column(name = "file_data")
     private byte[] fileData;
 
     @Column(name = "file_name")
